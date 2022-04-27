@@ -6,7 +6,8 @@
 #
 
 # Name of target to be created (-o option)
-TARGET = lab3-kickstarter$(EXE_SUFFIX)
+EXE_SUFFIX = .e
+TARGET = lab3-net$(EXE_SUFFIX)
 
 # User interface (uncomment one) (-u option)
 USERIF_LIBS = $(ALL_ENV_LIBS) # that is, $(TKENV_LIBS) $(QTENV_LIBS) $(CMDENV_LIBS)
@@ -81,6 +82,9 @@ endif
 # Main target
 all: $O/$(TARGET)
 	$(Q)$(LN) $O/$(TARGET) .
+
+run: all
+	./$(TARGET)
 
 $O/$(TARGET): $(OBJS)  $(wildcard $(EXTRA_OBJS)) Makefile $(CONFIGFILE)
 	@$(MKPATH) $O
