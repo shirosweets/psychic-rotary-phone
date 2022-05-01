@@ -3,3 +3,4 @@ out/gcc-release/**
 .qtenvrc
 lab3-net
 results/**
+ignore_*

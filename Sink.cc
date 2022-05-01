@@ -16,7 +16,8 @@ public:
 protected:
     virtual void initialize();
     virtual void finish();
-    virtual void handleMessage(cMessage *msg);
+    //virtual void handleMessage(cMessage *msg);
+    virtual void handleMessage(cPacket *msg);
 };
 
 Define_Module(Sink);
@@ -39,7 +40,8 @@ void Sink::finish(){
     recordScalar("Number of packets", delayStats.getCount());
 }
 
-void Sink::handleMessage(cMessage * msg) {
+//void Sink::handleMessage(cMessage * msg) {
+void Sink::handleMessage(cPacket * msg) {
     // compute queuing delay
     simtime_t delay = simTime() - msg->getCreationTime();
     // update stats

@@ -9,7 +9,8 @@ using namespace omnetpp;
 class Queue: public cSimpleModule {
 private:
     cQueue buffer;
-    cMessage *endServiceEvent;
+    //cMessage *endServiceEvent;
+    cPacket *endServiceEvent;
     simtime_t serviceTime;
 public:
     Queue();
@@ -17,7 +18,8 @@ public:
 protected:
     virtual void initialize();
     virtual void finish();
-    virtual void handleMessage(cMessage *msg);
+    //virtual void handleMessage(cMessage *msg);
+    virtual void handleMessage(cPacket *msg);
 };
 
 Define_Module(Queue);
@@ -32,20 +34,23 @@ Queue::~Queue() {
 
 void Queue::initialize() {
     buffer.setName("buffer");
-    endServiceEvent = new cMessage("endService");
+    //endServiceEvent = new cMessage("endService");
+    endServiceEvent = new cPacket("endService");
 }
 
 void Queue::finish() {
 }
 
-void Queue::handleMessage(cMessage *msg) {
+//void Queue::handleMessage(cMessage *msg) {
+void Queue::handleMessage(cPacket *msg) {
 
     // if msg is signaling an endServiceEvent
     if (msg == endServiceEvent) {
         // if packet in buffer, send next one
         if (!buffer.isEmpty()) {
             // dequeue packet
-            cMessage *pkt = (cMessage*) buffer.pop();
+            //cMessage *pkt = (cMessage*) buffer.pop();
+            cPacket *pkt = (cPacket*) buffer.pop();
             // send packet
             send(pkt, "out");
             // start new service
