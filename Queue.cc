@@ -9,17 +9,17 @@ using namespace omnetpp;
 class Queue: public cSimpleModule {
 private:
     cQueue buffer;
-    //cMessage *endServiceEvent;
-    cPacket *endServiceEvent;
+    cMessage *endServiceEvent;
     simtime_t serviceTime;
+    cOutVector bufferSizeVector;
+    cOutVector packetDropVector;
 public:
     Queue();
     virtual ~Queue();
 protected:
     virtual void initialize();
     virtual void finish();
-    //virtual void handleMessage(cMessage *msg);
-    virtual void handleMessage(cPacket *msg);
+    virtual void handleMessage(cMessage *msg);
 };
 
 Define_Module(Queue);
@@ -34,16 +34,13 @@ Queue::~Queue() {
 
 void Queue::initialize() {
     buffer.setName("buffer");
-    //endServiceEvent = new cMessage("endService");
-    endServiceEvent = new cPacket("endService");
+    endServiceEvent = new cMessage("endService");
 }
 
 void Queue::finish() {
 }
 
-//void Queue::handleMessage(cMessage *msg) {
-void Queue::handleMessage(cPacket *msg) {
-
+void Queue::handleMessage(cMessage *msg) {
     // if msg is signaling an endServiceEvent
     if (msg == endServiceEvent) {
         // if packet in buffer, send next one
@@ -54,17 +51,26 @@ void Queue::handleMessage(cPacket *msg) {
             // send packet
             send(pkt, "out");
             // start new service
-            serviceTime = par("serviceTime");
+            serviceTime = pkt->getDuration();
             scheduleAt(simTime() + serviceTime, endServiceEvent);
         }
     } else { // if msg is a data packet
-        // enqueue the packet
-        buffer.insert(msg);
-        // if the server is idle
-        if (!endServiceEvent->isScheduled()) {
-            // start the service
-            scheduleAt(simTime(), endServiceEvent);
-        }
+        if (buffer.getLength() >= par("bufferSize").longValue()) {
+		    // drop the packet
+		    delete(msg);
+			this->bubble("packet-dropped");
+			packetDropVector.record(1);
+		}
+		else {
+			// enqueue the packet
+			buffer.insert(msg);
+			bufferSizeVector.record(buffer.getLength());
+			// if the server is idle
+			if (!endServiceEvent->isScheduled()) {
+				// start the service
+				scheduleAt(simTime() + 0, endServiceEvent);
+			}
+		}
     }
 }
 
