@@ -12,7 +12,7 @@ simple Queue
 {
     parameters:
         //volatile double serviceTime; // sec
-       	int bufferSize; // ASK!
+        int bufferSize; // ASK!
         @display("i=block/queue;q=buffer");
     gates:
         input in;
@@ -33,6 +33,7 @@ module Sender
     parameters:
         @display("i=block/routing");
     gates:
+        input in;
         output out;
     submodules:
         gen: Generator {
@@ -56,6 +57,7 @@ module Receiver
         @display("i=block/routing");
     gates:
         input in;
+        output out;
     submodules:
         sink: Sink {
             parameters:
@@ -74,6 +76,18 @@ module Receiver
         queue.out --> {  datarate = 1Mbps; } --> sink.in;
 }
 
+//TransportTx
+simple TransportSender
+{
+    parameters:
+        //volatile double serviceTime; // sec
+        int bufferSize; // ASK!
+        @display("i=block/queue;q=buffer");
+    gates:
+        input in;
+        output out;
+}
+
 network Network
 {
     @display("bgl=2");
@@ -81,16 +95,21 @@ network Network
         sender: Sender {
             @display("p=30,30");
         }
-        queue: Queue {
+        tportSender: Queue {
             @display("p=130,30");
+        }
+        tportReceiver: Queue {
+            @display("p=130,101");
         }
         rec: Receiver {
             @display("p=230,30");
         }
     connections:
-        sender.out --> {  datarate = 1Mbps; delay = 100us; } --> queue.in;
+        sender.out --> {  datarate = 1Mbps; delay = 100us; } --> tportSender.in;
         // Case I
         // queue.out --> { datarate = 1Mbps; delay = 100us;} --> rec.in;
         // Case II
-        queue.out --> {  datarate = 0.5Mbps; delay = 100us; } --> rec.in;
+        tportSender.out --> {  datarate = 0.5Mbps; delay = 100us; } --> rec.in;
+        rec.out --> {  datarate = 0.5Mbps; delay = 100us; } --> tportReceiver.in;
+        tportReceiver.out --> {  datarate = 0.5Mbps; delay = 100us; } --> sender.in;
 }
