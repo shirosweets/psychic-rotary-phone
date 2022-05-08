@@ -2,7 +2,7 @@ simple Generator
 {
     parameters:
         volatile double generationInterval; // sec
-        int packetByteSize; // ASK!
+        int packetByteSize;
         @display("i=block/source");
     gates:
         output out;
@@ -11,8 +11,7 @@ simple Generator
 simple Queue
 {
     parameters:
-        //volatile double serviceTime; // sec
-       	int bufferSize; // ASK!
+       	int bufferSize;
         @display("i=block/queue;q=buffer");
     gates:
         input in;
@@ -41,7 +40,6 @@ module Sender
         }
         queue: Queue {
             parameters:
-                @display:("p=75,190");
                 @display("p=100,137");
         }
     connections:
@@ -63,15 +61,14 @@ module Receiver
         }
         queue: Queue {
             parameters:
-                @display:("p=75,190");
                 @display("p=100,137");
         }
     connections:
         in --> queue.in;
         // Case I
-        // queue.out --> { datarate = 0.5Mbps; } --> sink.in;
+        queue.out --> { datarate = 0.5Mbps; } --> sink.in;
         // Case II
-        queue.out --> {  datarate = 1Mbps; } --> sink.in;
+        // queue.out --> {  datarate = 1Mbps; } --> sink.in;
 }
 
 network Network
@@ -90,7 +87,7 @@ network Network
     connections:
         sender.out --> {  datarate = 1Mbps; delay = 100us; } --> queue.in;
         // Case I
-        // queue.out --> { datarate = 1Mbps; delay = 100us;} --> rec.in;
+        queue.out --> { datarate = 1Mbps; delay = 100us;} --> rec.in;
         // Case II
-        queue.out --> {  datarate = 0.5Mbps; delay = 100us; } --> rec.in;
+        // queue.out --> {  datarate = 0.5Mbps; delay = 100us; } --> rec.in;
 }
