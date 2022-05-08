@@ -38,6 +38,11 @@ y responda:
 1. ¿Cómo cree que se comporta su algoritmo de control de flujo y congestión ? ¿Funciona4
 para el caso de estudio 1 y 2 por igual? ¿Por qué?
 
+# Primer Diseño
+
+- [ ] Mensajes para ambos tipos de mensajes (datos y acks).
+- [ ] Parada y espera.
+
 # OMNet++
 
 https://doc.omnetpp.org/omnetpp/manual/
@@ -51,3 +56,5 @@ Instrucciones para descargar y ejecutar Omnet++ usando Docker.
 
 https://github.com/mmodenesi/omnetpy
 
+## cPacket
+https://doc.omnetpp.org/omnetpp/api/classomnetpp_1_1cPacket.html
