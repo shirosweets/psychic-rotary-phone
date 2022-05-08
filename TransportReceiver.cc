@@ -47,7 +47,7 @@ void TransportReceiver::handleMessage(cMessage * msg) {
     // delayVector.record(delay);
     // delete msg
     // delete(msg);
-    send(cMessage, "appLayerOut");
+    send(msg, "appLayerOut");
 }
 
 #endif /* TRANSPORTRECEIVER */

@@ -47,7 +47,7 @@ void TransportSender::handleMessage(cMessage * msg) {
     // delayVector.record(delay);
     // delete msg
     // delete(msg);
-    send(cMessage, "subnetwork$o");
+    send(msg, "subnetwork$o");
 }
 
 #endif /* TRANSPORTSENDER */
