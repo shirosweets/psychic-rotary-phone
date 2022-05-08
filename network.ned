@@ -1,30 +1,53 @@
-simple Generator
-{
-    parameters:
-        volatile double generationInterval; // sec
-        int packetByteSize; // ASK!
-        @display("i=block/source");
-    gates:
-        output out;
-}
-
 simple Queue
 {
     parameters:
-        //volatile double serviceTime; // sec
-        int bufferSize; // ASK!
+        int bufferSize;
         @display("i=block/queue;q=buffer");
     gates:
         input in;
         output out;
 }
 
-simple Sink
+simple Generator // Sender App Layer
+{
+    parameters:
+        volatile double generationInterval; // sec
+        int packetByteSize;
+        @display("i=block/source");
+    gates:
+        output out;
+}
+
+simple Sink // Receiver App Layer
 {
     parameters:
         @display("i=block/sink");
     gates:
         input in;
+}
+
+// TransportTx
+simple TransportSender
+{
+    parameters:
+        int bufferSize;
+        @display("i=block/queue;q=buffer");
+    gates:
+        input appLayerIn; // toApp
+        //input appLayer
+       	//input fromAppLayer
+        inout subnetwork; // toOut
+}
+
+// TransportRx
+simple TransportReceiver
+{
+    parameters:
+        int bufferSize;
+        @display("i=block/queue;q=buffer");
+    gates:
+        inout subnetwork;
+        output appLayerOut;
 }
 
 // NodeTx
@@ -36,18 +59,20 @@ module Sender
         input in;
         output out;
     submodules:
-        gen: Generator {
+        senderAppLayer: Generator {
             parameters:
                 @display("p=100,30");
         }
-        queue: Queue {
+        transpSend: TransportSender {
             parameters:
                 @display:("p=75,190");
                 @display("p=100,137");
         }
     connections:
-        gen.out --> queue.in;
-        queue.out --> out;
+        // TODO: Revisar
+        in --> transpSend.subnetwork$i; // Conexion que maneja los ACKs entrantes
+        senderAppLayer.out --> transpSend.appLayerIn; // Desde el generador de paquetes a la queue de capa de transporte
+        transpSend.subnetwork$o --> out; // Salida de la capa de transportes a paquetes
 }
 
 // NodeRx
@@ -59,33 +84,30 @@ module Receiver
         input in;
         output out;
     submodules:
-        sink: Sink {
+        recAppLayer: Sink {
             parameters:
                 @display("p=100,30");
         }
-        queue: Queue {
+        transpRec: TransportReceiver {
             parameters:
-                @display:("p=75,190");
                 @display("p=100,137");
         }
     connections:
-        in --> queue.in;
+        // TODO: Revisar
+        in --> transpRec.subnetwork$i; // Conexion que maneja los paquetes de data entrantes del Sender
+        // ** Start Study Cases ** //
+        // Case I 
+        transpRec.appLayerOut --> { datarate = 0.5Mbps; } --> recAppLayer.in; // Desde la queue del receptor a la capa de aplicacion
+        // Case II
+        // transpRec.appLayerOut --> { datarate = 1Mbps; } --> recAppLayer.in; // Desde la queue del receptor a la capa de aplicacion
+        // ** End Study Cases ** //
+        transpRec.subnetwork$o --> out; // Salida para mandar ACKs
+
+        //in --> queue.in;
         // Case I
         // queue.out --> { datarate = 0.5Mbps; } --> sink.in;
         // Case II
-        queue.out --> {  datarate = 1Mbps; } --> sink.in;
-}
-
-//TransportTx
-simple TransportSender
-{
-    parameters:
-        //volatile double serviceTime; // sec
-        int bufferSize; // ASK!
-        @display("i=block/queue;q=buffer");
-    gates:
-        input in;
-        output out;
+        //queue.out --> {  datarate = 1Mbps; } --> sink.in;
 }
 
 network Network
@@ -93,23 +115,31 @@ network Network
     @display("bgl=2");
     submodules:
         sender: Sender {
-            @display("p=30,30");
+            @display("p=30,70");
         }
-        tportSender: Queue {
+        dataQueue: Queue {
             @display("p=130,30");
         }
-        tportReceiver: Queue {
+        ackQueue: Queue {
             @display("p=130,101");
         }
         rec: Receiver {
-            @display("p=230,30");
+            @display("p=230,70");
         }
     connections:
-        sender.out --> {  datarate = 1Mbps; delay = 100us; } --> tportSender.in;
+        sender.out --> { datarate = 1Mbps; delay = 100us; } --> dataQueue.in;
+        // ** Start Study Cases ** //
         // Case I
-        // queue.out --> { datarate = 1Mbps; delay = 100us;} --> rec.in;
+        dataQueue.out --> { datarate = 1Mbps; delay = 100us; } --> rec.in;
         // Case II
-        tportSender.out --> {  datarate = 0.5Mbps; delay = 100us; } --> rec.in;
-        rec.out --> {  datarate = 0.5Mbps; delay = 100us; } --> tportReceiver.in;
-        tportReceiver.out --> {  datarate = 0.5Mbps; delay = 100us; } --> sender.in;
+        // dataQueue.out --> { datarate = 0.5Mbps; delay = 100us; } --> rec.in;
+        // ** End Study Cases ** //
+        rec.out --> { datarate = 1Mbps; delay = 100us; } --> ackQueue.in;
+        ackQueue.out --> { datarate = 1Mbps; delay = 100us; } --> sender.in;
+
+        // sender.out --> {  datarate = 1Mbps; delay = 100us; } --> dataQueue.in;   
+        // dataQueue.out --> { datarate = 1Mbps; delay = 100us;} --> rec.in; // Case I
+        // dataQueue.out --> {  datarate = 0.5Mbps; delay = 100us; } --> rec.in; // Case II
+        // rec.out --> {  datarate = 0.5Mbps; delay = 100us; } --> ackQueue.in;
+        // ackQueue.out --> {  datarate = 0.5Mbps; delay = 100us; } --> sender.in;
 }
