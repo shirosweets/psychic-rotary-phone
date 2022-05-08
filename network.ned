@@ -66,9 +66,9 @@ module Receiver
     connections:
         in --> queue.in;
         // Case I
-        queue.out --> { datarate = 0.5Mbps; } --> sink.in;
+        // queue.out --> { datarate = 0.5Mbps; } --> sink.in;
         // Case II
-        // queue.out --> {  datarate = 1Mbps; } --> sink.in;
+        queue.out --> {  datarate = 1Mbps; } --> sink.in;
 }
 
 network Network
@@ -87,7 +87,7 @@ network Network
     connections:
         sender.out --> {  datarate = 1Mbps; delay = 100us; } --> queue.in;
         // Case I
-        queue.out --> { datarate = 1Mbps; delay = 100us;} --> rec.in;
+        // queue.out --> { datarate = 1Mbps; delay = 100us;} --> rec.in;
         // Case II
-        // queue.out --> {  datarate = 0.5Mbps; delay = 100us; } --> rec.in;
+        queue.out --> {  datarate = 0.5Mbps; delay = 100us; } --> rec.in;
 }
