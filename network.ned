@@ -65,7 +65,6 @@ module Sender
         }
         transpSend: TransportSender {
             parameters:
-                @display:("p=75,190");
                 @display("p=100,137");
         }
     connections:
