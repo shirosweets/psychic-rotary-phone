@@ -1,4 +1,4 @@
-# Laboratorio N°3: Transporte
+# Laboratorio N°3: Capa de Transporte
 
 # Integrantes
 - Carrizo, Ernesto.
@@ -10,6 +10,10 @@
 - Leer, comprender y generar modelos de red en Omnet++.
 - Analizar tráfico de red bajo tasas de datos acotadas y tamaño de buffers limitados.
 - Diseñar y proponer soluciones de control de congestión y flujo.
+
+# Enunciado
+
+El enunciado completo en Markdown se encuentra en [Enunciado.md](Enunciado.md)
 
 # Simulación
 
