@@ -62,3 +62,24 @@ https://github.com/mmodenesi/omnetpy
 
 ## cPacket
 https://doc.omnetpp.org/omnetpp/api/classomnetpp_1_1cPacket.html
+
+### Cómo crear class template de packet
+
+1) Crear el archivo `testPacket.msg`
+
+```cpp
+packet testPacket
+{
+     int srcAddress;
+     int destAddress;
+     int remainingHops = 32;
+};
+```
+
+2) Correr el comando
+
+```bash
+opp_msgc testPacket.msg
+```
+
+3) Se habrán generado los archivos `testPacket_m.h` y `testPacket_m.cc`
