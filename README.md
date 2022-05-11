@@ -1,5 +1,7 @@
 # Laboratorio N°3: Capa de Transporte
 
+Redes y Sistemas Distribuidos - Primer cuatrimestre, FAMAF - 2022.
+
 # Integrantes
 - Carrizo, Ernesto.
 - Domínguez, Agustín.
@@ -13,7 +15,7 @@
 
 # Enunciado
 
-El enunciado completo en Markdown se encuentra en [Enunciado.md](Enunciado.md)
+El enunciado completo en Markdown se encuentra en [Enunciado.md](Enunciado.md).
 
 # Simulación
 
@@ -45,7 +47,23 @@ para el caso de estudio 1 y 2 por igual? ¿Por qué?
 # Primer Diseño
 
 - [ ] Mensajes para ambos tipos de mensajes (datos y acks).
-- [ ] Parada y espera.
+- [/] Parada y espera.
+- [ ] N° de seq.
+- [ ] ACK flag.
+- [ ] BufferSize.
+
+# Segundo diseño
+
+- [ ] Ventana corrediza.
+- [ ] Ventana de congestión.
+- [ ] Arranque lento.
+- [ ] Threshold.
+- [ ] Arranque lento al inicio y luego recuperación rápido.
+- [ ] Timer -> Timeout.
+
+# Tercer diseño
+
+- [ ] Control de flujo.
 
 # OMNet++
 
@@ -83,3 +101,7 @@ opp_msgc testPacket.msg
 ```
 
 3) Se habrán generado los archivos `testPacket_m.h` y `testPacket_m.cc`
+
+---
+
+**[Enunciado.md](Enunciado.md)**
