@@ -102,6 +102,10 @@ opp_msgc testPacket.msg
 
 3) Se habrán generado los archivos `testPacket_m.h` y `testPacket_m.cc`
 
+### Cómo saber de qué gate viene un mensaje
+
+bool arrivedOn()
+
 ---
 
 **[Enunciado.md](Enunciado.md)**

@@ -3,6 +3,7 @@
 
 #include <string.h>
 #include <omnetpp.h>
+#include "Volt.h"
 
 using namespace omnetpp;
 
@@ -43,7 +44,7 @@ void Generator::handleMessage(cMessage *msg) {
 
     // create new packet
     //cMessage *pkt = new cMessage("packet");
-    cPacket *pkt = new cPacket("packet");
+    Volt *pkt = new Volt("packet");
     pkt->setByteLength(par("packetByteSize"));
     // send to the output
     send(pkt, "out");
