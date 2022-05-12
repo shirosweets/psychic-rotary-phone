@@ -48,9 +48,9 @@ para el caso de estudio 1 y 2 por igual? ¿Por qué?
 
 - [ ] Mensajes para ambos tipos de mensajes (datos y acks).
 - [/] Parada y espera.
-- [ ] N° de seq.
-- [ ] ACK flag.
-- [ ] BufferSize.
+- [x] N° de seq.
+- [x] ACK flag.
+- [x] BufferSize.
 
 # Segundo diseño
 
@@ -58,6 +58,7 @@ para el caso de estudio 1 y 2 por igual? ¿Por qué?
 - [ ] Ventana de congestión.
 - [ ] Arranque lento.
 - [ ] Threshold.
+- [ ] Retransmisión.
 - [ ] Arranque lento al inicio y luego recuperación rápido.
 - [ ] Timer -> Timeout.
 
