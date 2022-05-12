@@ -47,15 +47,16 @@ para el caso de estudio 1 y 2 por igual? ¿Por qué?
 # Primer Diseño
 
 - [ ] Mensajes para ambos tipos de mensajes (datos y acks).
-- [/] Parada y espera.
+- [/] Parada y espera. *(Descartado)*
 - [x] N° de seq.
 - [x] ACK flag.
 - [x] BufferSize.
+- [ ] Ventana de congestión v1.
 
 # Segundo diseño
 
 - [ ] Ventana corrediza.
-- [ ] Ventana de congestión.
+- [ ] Ventana de congestión v2.
 - [ ] Arranque lento.
 - [ ] Threshold.
 - [ ] Retransmisión.
@@ -106,6 +107,10 @@ opp_msgc testPacket.msg
 ### Cómo saber de qué gate viene un mensaje
 
 bool arrivedOn()
+
+## 
+
+`cancelEvent()`
 
 ---
 
