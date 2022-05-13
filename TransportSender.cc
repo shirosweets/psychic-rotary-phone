@@ -3,6 +3,7 @@
 
 #include <string.h>
 #include <omnetpp.h>
+#include "Volt.h"
 
 using namespace omnetpp;
 
@@ -71,7 +72,7 @@ void TransportSender::handleVolt(Volt * msg) {
 			// send packet
 			send(pkt, "subnetwork$o");
 			// start new service
-			serviceTime = pkt->getDuration();
+			simtime_t serviceTime = pkt->getDuration();
 			scheduleAt(simTime() + serviceTime, endServiceEvent);
 		}
 	} else if (msg->arrivedOn("appLayerIn")){

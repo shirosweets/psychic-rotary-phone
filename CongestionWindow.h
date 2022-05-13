@@ -25,7 +25,7 @@ private:
 	int maxSize = 2147483647;
 	int size;
 	int msgSendingAmount = 0;
-	EventTimeout * [2147483647];  // INT_MAX
+	EventTimeout * window[2147483647];  // INT_MAX
 public:
 	CongestionWindow();
     virtual ~CongestionWindow();
