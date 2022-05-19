@@ -60,7 +60,7 @@ void TransportSender::handleMessage(cMessage * msg) {
     // delete msg
     // delete(msg);
 
-    send(msg, "subnetwork$o");
+//    send(msg, "subnetwork$o");
 }
 
 void TransportSender::handleVolt(Volt * msg) {
@@ -72,6 +72,7 @@ void TransportSender::handleVolt(Volt * msg) {
 			// send packet
 			send(pkt, "subnetwork$o");
 			// start new service
+// FIXME
 			simtime_t serviceTime = pkt->getDuration();
 			scheduleAt(simTime() + serviceTime, endServiceEvent);
 		}

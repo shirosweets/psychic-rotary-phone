@@ -30,11 +30,22 @@ public:
 	CongestionWindow();
     virtual ~CongestionWindow();
 
+    /* Tamaño actual de la ventana de congestión */
     int getSize();
+
+    /* Dado el tamaño de la ventana y cuanto ya está ocupada
+     * devuelve la cantidad de mensajes que se pueden agregar */
 	int getAvailableWin();
+
+	/* Setea el tamaño de la ventana de congestión */
 	void setSize(int newSize);
+
+	/* Agrega un evento que representa que un mensaje fue enviado y está
+	 * en la sub red. */
 	void addTimeoutMsg(int seqN, EventTimeout * msg);
-	void cancelTimeoutMsg(int seqN);
+
+	/* Quita un mensaje de la ventana de congestión y lo devuelve */
+	EventTimeout * popTimeoutMsg(int seqN);
 protected:
 	//
 };

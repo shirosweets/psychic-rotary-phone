@@ -36,11 +36,10 @@ void CongestionWindow::addTimeoutMsg(int seqN, EventTimeout * msg){
 	}
 }
 
-void CongestionWindow::cancelTimeoutMsg(int seqN){
-	if(this->window[seqN]->isScheduled()){
-		this->window[seqN]->cancelEvent();
-		this->msgSendingAmount--;
-	}
+EventTimeout * CongestionWindow::popTimeoutMsg(int seqN){
+	EventTimeout * event = window[seqN];
+	window[seqN] = NULL;
+	return event;
 }
 
 #endif /* CONGESTIONWINDOW */
