@@ -42,12 +42,11 @@ void Generator::finish() {
 
 void Generator::handleMessage(cMessage *msg) {
 
-    // create new packet
-    //cMessage *pkt = new cMessage("packet");
-    Volt *pkt = new Volt("packet");
-    pkt->setByteLength(par("packetByteSize"));
+    // Create new packet
+    Volt *volt = new Volt("packet");
+    volt->setByteLength(par("packetByteSize"));
     // send to the output
-    send(pkt, "out");
+    send(volt, "out");
 
     // compute the new departure time
     simtime_t departureTime = simTime() + par("generationInterval");
