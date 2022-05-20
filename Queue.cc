@@ -34,6 +34,7 @@ Queue::~Queue() {
 
 void Queue::initialize() {
     buffer.setName("buffer");
+
     endServiceEvent = new cMessage("endService");
 }
 
@@ -41,16 +42,16 @@ void Queue::finish() {
 }
 
 void Queue::handleMessage(cMessage *msg) {
-    // if msg is signaling an endServiceEvent
     if (msg == endServiceEvent) {
         // if packet in buffer, send next one
         if (!buffer.isEmpty()) {
-            // dequeue packet
-            //cMessage *pkt = (cMessage*) buffer.pop();
+            // Dequeue packet
             cPacket *pkt = (cPacket*) buffer.pop();
-            // send packet
+
+            // Send packet
             send(pkt, "out");
-            // start new service
+
+            // Start new service
             serviceTime = pkt->getDuration();
             scheduleAt(simTime() + serviceTime, endServiceEvent);
         }
@@ -62,7 +63,7 @@ void Queue::handleMessage(cMessage *msg) {
 			packetDropVector.record(1);
 		}
 		else {
-			// enqueue the packet
+			// Enqueue the packet
 			buffer.insert(msg);
 			bufferSizeVector.record(buffer.getLength());
 			// if the server is idle

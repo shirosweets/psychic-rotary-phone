@@ -31,26 +31,30 @@ Generator::~Generator() {
 
 void Generator::initialize() {
     transmissionStats.setName("TotalTransmissions");
-    // create the send packet
+    // Create the send packet
     sendMsgEvent = new cMessage("sendEvent");
-    // schedule the first event at random time
+    // Schedule the first event at random time
     scheduleAt(par("generationInterval"), sendMsgEvent);
 }
 
 void Generator::finish() {
+    recordScalar("Number of packets generated", transmissionStats.getCount());
 }
 
 void Generator::handleMessage(cMessage *msg) {
-
     // Create new packet
     Volt *volt = new Volt("packet");
     volt->setByteLength(par("packetByteSize"));
-    // send to the output
+
+    // Stats
+    transmissionStats.collect(1);
+
+    // Send to the output
     send(volt, "out");
 
-    // compute the new departure time
+    // Compute the new departure time
     simtime_t departureTime = simTime() + par("generationInterval");
-    // schedule the new packet generation
+    // Schedule the new packet generation
     scheduleAt(departureTime, sendMsgEvent);
 }
 

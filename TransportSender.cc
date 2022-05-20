@@ -9,10 +9,11 @@ using namespace omnetpp;
 
 class TransportSender : public cSimpleModule {
 private:
-    //cStdDev delayStats;
-    //cOutVector delayVector;
 	cQueue buffer;
+	cStdDev bufferSizeStdDev;
+	cOutVector bufferSizeVector;
 	cMessage *endServiceEvent;
+	//cOutVector ackTime;
 	void handleVoltToSend(Volt * msg);
 	void handleSelfMsg(cMessage * msg);
 	void handleVoltReceived(Volt * msg);
@@ -32,14 +33,22 @@ TransportSender::TransportSender() {
 }
 
 TransportSender::~TransportSender() {
+	cancelAndDelete(endServiceEvent);
 }
 
 void TransportSender::initialize(){
+	bufferSizeVector.setName("bufferSizeVector");
+	bufferSizeStdDev.setName("bufferSizeStdDev");
+
 	buffer.setName("Buffer");
+//	ackTime.setName("AckTime");
+
 	endServiceEvent = new cMessage("endService");
 }
 
 void TransportSender::finish(){
+	// Stats record at the end of simulation
+	recordScalar("Avg Buffer Size Send", bufferSizeStdDev.getMean());
 }
 
 void TransportSender::handleMessage(cMessage * msg) {
@@ -52,7 +61,6 @@ void TransportSender::handleMessage(cMessage * msg) {
 	} else {
 		// Llegó de la subnetwork
 		this->handleVoltReceived((Volt*)msg);
-
 	}
 }
 
@@ -65,6 +73,10 @@ void TransportSender::handleVoltToSend(Volt * msg) {
 		// Hay espacio en el buffer, por lo que
 		// ponemos el paquete en la cola de envío
 		buffer.insert(msg);
+
+		bufferSizeStdDev.collect(buffer.getLength());
+		bufferSizeVector.record(buffer.getLength());
+
 		// Si no estamos enviando un mensaje ahora mismo
 		if (!endServiceEvent->isScheduled()) {
 			// Empezamos el envío
@@ -78,6 +90,10 @@ void TransportSender::handleSelfMsg(cMessage * msg) {
 		// Podemos enviar un nuevo mensaje
 		if (!buffer.isEmpty()) {
 			Volt * volt = (Volt*) buffer.pop();
+
+			bufferSizeStdDev.collect(buffer.getLength());
+			bufferSizeVector.record(buffer.getLength());
+
 			send(volt, "subnetwork$o");
 			simtime_t serviceTime = volt->getDuration();
 			scheduleAt(simTime() + serviceTime, endServiceEvent);
@@ -86,8 +102,11 @@ void TransportSender::handleSelfMsg(cMessage * msg) {
 }
 
 void TransportSender::handleVoltReceived(Volt * msg) {
-// FIXME
-	delete(msg);
+	if(msg->getAckFlag()){
+		// FIXME
+		//ackTime.record();
+		delete(msg);
+	}
 }
 
 #endif /* TRANSPORTSENDER */

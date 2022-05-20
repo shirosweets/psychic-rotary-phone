@@ -21,7 +21,6 @@
 
 // Que el emisor sepa distinguir
 // [(state, timer), , ]
-// TODO: Ernesto
 class CongestionWindow {
 private:
 	int maxSize = 2147483647;
