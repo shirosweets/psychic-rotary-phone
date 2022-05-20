@@ -11,6 +11,8 @@
 #include <omnetpp.h>
 #include "EventTimeout.h"
 
+#define EVENT_TIMEOUT_KIND = 1
+
 // nedtool version check
 #define MSGC_VERSION 0x0503
 #if (MSGC_VERSION!=OMNETPP_VERSION)

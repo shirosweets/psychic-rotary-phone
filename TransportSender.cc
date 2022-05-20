@@ -13,7 +13,9 @@ private:
     //cOutVector delayVector;
 	cQueue buffer;
 	cMessage *endServiceEvent;
-	void handleVolt(Volt * msg);
+	void handleVoltToSend(Volt * msg);
+	void handleSelfMsg(cMessage * msg);
+	void handleVoltReceived(Volt * msg);
 public:
     TransportSender();
     virtual ~TransportSender();
@@ -33,75 +35,59 @@ TransportSender::~TransportSender() {
 }
 
 void TransportSender::initialize(){
-    // stats and vector names
-    // delayStats.setName("TotalDelay");
-    // delayVector.setName("Delay");
-
 	buffer.setName("Buffer");
 	endServiceEvent = new cMessage("endService");
 }
 
 void TransportSender::finish(){
-    // stats record at the end of simulation
-    // recordScalar("Avg delay", delayStats.getMean());
-    // recordScalar("Number of packets", delayStats.getCount());
 }
 
 void TransportSender::handleMessage(cMessage * msg) {
-    // Compute queuing delay
-    simtime_t delay = simTime() - msg->getCreationTime();
+	if(msg->isSelfMessage()) {
+		this->handleSelfMsg(msg);
+	} else if (msg->arrivedOn("appLayerIn")) {
+		// Llegó desde el generador (Capa de Aplicación)
+		// para enviar al receptor
+		this->handleVoltToSend((Volt*)msg);
+	} else {
+		// Llegó de la subnetwork
+		this->handleVoltReceived((Volt*)msg);
 
-    //
-    handleVolt((Volt *)msg);
-
-    // update stats
-    // delayStats.collect(delay);
-    // delayVector.record(delay);
-    // delete msg
-    // delete(msg);
-
-//    send(msg, "subnetwork$o");
+	}
 }
 
-void TransportSender::handleVolt(Volt * msg) {
-	if(msg->isSelfMessage()){
-		// Evento propio
-		if (!buffer.isEmpty()) {
-			// dequeue packet
-			Volt *pkt = (Volt*) buffer.pop();
-			// send packet
-			send(pkt, "subnetwork$o");
-			// start new service
-// FIXME
-			simtime_t serviceTime = pkt->getDuration();
-			scheduleAt(simTime() + serviceTime, endServiceEvent);
-		}
-	} else if (msg->arrivedOn("appLayerIn")){
-		// Mensaje del generador
-		if (buffer.getLength() >= par("bufferSize").longValue()) {
-			// Drop the packet
-			delete(msg);
-			this->bubble("packet-dropped");
-			// packetDropVector.record(1);
-		}
-		else {
-			// Enqueue the packet
-			buffer.insert(msg);
-			// bufferSizeVector.record(buffer.getLength());
-			// if the server is idle
-			if (!endServiceEvent->isScheduled()) {
-				// start the service
-				scheduleAt(simTime() + 0, endServiceEvent);
-			}
-		}
+void TransportSender::handleVoltToSend(Volt * msg) {
+	if (buffer.getLength() >= par("bufferSize").longValue()) {
+		// No hay espacio en el buffer: Dropeamos el paquete
+		delete(msg);
+		this->bubble("packet-dropped");
 	} else {
-		// Mensaje de la subnetwork
-		Volt *volt = (Volt*) msg;
-
-		if(volt->getAckFlag()){
-			// Mensaje de ACK
+		// Hay espacio en el buffer, por lo que
+		// ponemos el paquete en la cola de envío
+		buffer.insert(msg);
+		// Si no estamos enviando un mensaje ahora mismo
+		if (!endServiceEvent->isScheduled()) {
+			// Empezamos el envío
+			scheduleAt(simTime() + 0, endServiceEvent);
 		}
 	}
+}
+
+void TransportSender::handleSelfMsg(cMessage * msg) {
+	if (msg == endServiceEvent) {
+		// Podemos enviar un nuevo mensaje
+		if (!buffer.isEmpty()) {
+			Volt * volt = (Volt*) buffer.pop();
+			send(volt, "subnetwork$o");
+			simtime_t serviceTime = volt->getDuration();
+			scheduleAt(simTime() + serviceTime, endServiceEvent);
+		}
+	}
+}
+
+void TransportSender::handleVoltReceived(Volt * msg) {
+// FIXME
+	delete(msg);
 }
 
 #endif /* TRANSPORTSENDER */
