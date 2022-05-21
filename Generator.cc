@@ -9,6 +9,7 @@ using namespace omnetpp;
 
 class Generator : public cSimpleModule {
 private:
+	int currentSeqNumber;
     cMessage *sendMsgEvent;
     cStdDev transmissionStats;
 public:
@@ -23,6 +24,7 @@ Define_Module(Generator);
 
 Generator::Generator() {
     sendMsgEvent = NULL;
+    currentSeqNumber = 0;
 }
 
 Generator::~Generator() {
@@ -45,10 +47,14 @@ void Generator::handleMessage(cMessage *msg) {
     // Create new packet
     Volt *volt = new Volt("packet");
     volt->setByteLength(par("packetByteSize"));
+    volt->setAckFlag(false);
+    volt->setSeqNumber(currentSeqNumber);
+    currentSeqNumber = (currentSeqNumber + 1) % 1000; // FIXME
 
     // Stats
     transmissionStats.collect(1);
 
+    std::cout << "Generator :: New Packet :: " << volt->getSeqNumber() << "\n";
     // Send to the output
     send(volt, "out");
 

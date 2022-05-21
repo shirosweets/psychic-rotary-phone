@@ -22,16 +22,19 @@
 
 class CongestionWindow {
 private:
-	int maxSize = 2147483647;  // INT_MAX
+	int maxSize; // INT_MAX
 	int size;
-	int msgSendingAmount = 0;
+	int msgSendingAmount;
 
 	EventTimeout * window[1000];  // TODO Change to DM
 public:
 	CongestionWindow();
     virtual ~CongestionWindow();
 
-    /* Tamaño actual de la ventana de congestión */
+    /* Retorna el tamaño máximo de la ventana de congestión */
+    int getMaxSize();
+
+    /* Retorna el tamaño actual de la ventana de congestión */
     int getSize();
 
     /* Dado el tamaño de la ventana y cuanto ya está ocupada

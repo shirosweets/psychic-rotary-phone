@@ -45,7 +45,7 @@ y responda:
 
 # Primer Diseño
 
-- [ ] Mensajes para ambos tipos de mensajes (datos y acks).
+- [x] Mensajes para ambos tipos de mensajes (datos y acks).
 - [/] Parada y espera. *(Descartado)*
 - [x] N° de seq.
 - [x] ACK flag.

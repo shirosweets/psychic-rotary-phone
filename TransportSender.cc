@@ -53,10 +53,11 @@ void TransportSender::initialize(){
 //	ackTime.setName("AckTime");
 
 	rttEvent = new cMessage("rttEvent");
+	scheduleAt(simTime() + par("rtt"), rttEvent);
 	endServiceEvent = new cMessage("endService");
 
 	congestionWindow = CongestionWindow();
-	congestionWindow.setSize(par("packetByteSize"));
+	congestionWindow.setSize(2 * par("packetByteSize").intValue());
 
 	congestionController = CongestionController();
 }
@@ -67,6 +68,7 @@ void TransportSender::finish(){
 }
 
 void TransportSender::handleMessage(cMessage * msg) {
+	std::cout << "Sender :: [" << msg->getFullName() << "] :: " << msg->str() << "\n";
 	if(msg->isSelfMessage()) {
 		this->handleSelfMsg(msg);
 	} else if (msg->arrivedOn("appLayerIn")) {
@@ -102,46 +104,46 @@ void TransportSender::handleVoltToSend(Volt * msg) {
 
 void TransportSender::handleSelfMsg(cMessage * msg) {
 	if (msg == endServiceEvent) {
-		// Chequeamos el tamaño del packet
-		// sin quitarlo de la cola
-		Volt * volt = (Volt*) buffer.front();
+		if(!buffer.isEmpty()) {
+			// Chequeamos el tamaño del packet
+			// sin quitarlo de la cola
+			Volt * volt = (Volt*) buffer.front();
+			int packetSize = volt->getByteLength();
+			bool hasCWEnoughSpace = congestionWindow.getAvailableWin() >= packetSize;
+			if (hasCWEnoughSpace) {
+				volt = (Volt*) buffer.pop();
 
-		// Revisamos la VC
-		int packetSize = volt->getByteLength();
-		bool hasCWEnoughSpace = congestionWindow.getAvailableWin() >= packetSize;
+				bufferSizeStdDev.collect(buffer.getLength());
+				bufferSizeVector.record(buffer.getLength());
 
-		// Chequeamos si podemos enviar un nuevo mensaje
-		if (!buffer.isEmpty() && hasCWEnoughSpace) {
-			volt = (Volt*) buffer.pop();
+				send(volt, "subnetwork$o");
+				simtime_t serviceTime = volt->getDuration();
+				scheduleAt(simTime() + serviceTime, endServiceEvent);
 
-			bufferSizeStdDev.collect(buffer.getLength());
-			bufferSizeVector.record(buffer.getLength());
-
-			send(volt, "subnetwork$o");
-			simtime_t serviceTime = volt->getDuration();
-			scheduleAt(simTime() + serviceTime, endServiceEvent);
-
-			// Añadimos un nuevo evento timeout para
-			// el volt que se está enviando
-			EventTimeout * timeout = new EventTimeout("timeout", EVENT_TIMEOUT_KIND);
-			timeout->setSeqN(volt->getSeqNumber());
-			timeout->setPacketSize(packetSize);
-			congestionWindow.addTimeoutMsg(timeout->getSeqN(), timeout);
+				// Añadimos un nuevo evento timeout para
+				// el volt que se está enviando
+				EventTimeout * timeout = new EventTimeout("timeout", EVENT_TIMEOUT_KIND);
+				timeout->setSeqN(volt->getSeqNumber());
+				timeout->setPacketSize(packetSize);
+				congestionWindow.addTimeoutMsg(timeout->getSeqN(), timeout);
+			}
 		}
 	} else if (msg == rttEvent){
+		this->bubble("rtt+1");
+		std::cout << "rrt+1 \n";
+
 		if (!congestionController.getSlowStart()) {
 			// Cada RTT Aumentamos en un paquete la VC
 			congestionWindow.setSize(congestionWindow.getSize() + par("packetByteSize").longValue());
 		}
+
+		scheduleAt(simTime() + par("rtt"), rttEvent);
 	}
 }
 
 void TransportSender::handleVoltReceived(Volt * volt) {
 	if(volt->getAckFlag()){
 		//ackTime.record();
-
-		delete(volt);
-
 		EventTimeout * timeout = congestionWindow.popTimeoutMsg(volt->getSeqNumber());
 		cancelEvent(timeout);
 
@@ -149,6 +151,8 @@ void TransportSender::handleVoltReceived(Volt * volt) {
 			// Estamos en arranque lento aumentamos la VC a maxSize(Packet)
 			congestionWindow.setSize(congestionWindow.getSize() + par("packetByteSize").longValue());
 		}
+
+		delete(volt);
 	}
 }
 
