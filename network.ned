@@ -32,7 +32,8 @@ simple TransportSender
     parameters:
         int bufferSize;
         int packetByteSize;
-        volatile double rtt @unit(s);  // sec
+        double rtt @unit(s);  // sec
+        double timeout @unit(s);  // sec
         @display("i=block/queue;q=buffer");
     gates:
         input appLayerIn; // toApp

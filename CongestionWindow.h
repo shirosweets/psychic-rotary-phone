@@ -27,6 +27,7 @@ private:
 	int msgSendingAmount;
 
 	EventTimeout * window[1000];  // TODO Change to DM
+	void logAvailableWin();
 public:
 	CongestionWindow();
     virtual ~CongestionWindow();
@@ -46,7 +47,7 @@ public:
 
 	/* Agrega un evento que representa que un mensaje fue enviado y está
 	 * en la sub red. */
-	void addTimeoutMsg(int seqN, EventTimeout * msg);
+	void addTimeoutMsg(EventTimeout * msg);
 
 	/* Quita un mensaje de la ventana de congestión y lo devuelve */
 	EventTimeout * popTimeoutMsg(int seqN);

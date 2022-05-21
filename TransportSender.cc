@@ -57,7 +57,7 @@ void TransportSender::initialize(){
 	endServiceEvent = new cMessage("endService");
 
 	congestionWindow = CongestionWindow();
-	congestionWindow.setSize(2 * par("packetByteSize").intValue());
+	congestionWindow.setSize(par("packetByteSize").intValue());
 
 	congestionController = CongestionController();
 }
@@ -125,7 +125,8 @@ void TransportSender::handleSelfMsg(cMessage * msg) {
 				EventTimeout * timeout = new EventTimeout("timeout", EVENT_TIMEOUT_KIND);
 				timeout->setSeqN(volt->getSeqNumber());
 				timeout->setPacketSize(packetSize);
-				congestionWindow.addTimeoutMsg(timeout->getSeqN(), timeout);
+				scheduleAt(simTime() + par("timeout"), timeout);
+				congestionWindow.addTimeoutMsg(timeout);
 			}
 		}
 	} else if (msg == rttEvent){
@@ -144,10 +145,14 @@ void TransportSender::handleSelfMsg(cMessage * msg) {
 void TransportSender::handleVoltReceived(Volt * volt) {
 	if(volt->getAckFlag()){
 		//ackTime.record();
+		std::cout << "Sender :: handling ACK of Volt " << volt->getSeqNumber() << "\n";
 		EventTimeout * timeout = congestionWindow.popTimeoutMsg(volt->getSeqNumber());
-		cancelEvent(timeout);
+		if(timeout != NULL && !timeout->isScheduled()) {
+			std::cout << "Sender :: Timeout cancelled due to ACK\n";
+			cancelEvent(timeout);
+		}
 
-		if(congestionController.getSlowStart()){
+		if(congestionController.getSlowStart()) {
 			// Estamos en arranque lento aumentamos la VC a maxSize(Packet)
 			congestionWindow.setSize(congestionWindow.getSize() + par("packetByteSize").longValue());
 		}

@@ -30,36 +30,50 @@ int CongestionWindow::getSize() {
 	return size;
 }
 
+void CongestionWindow::logAvailableWin() {
+	std::cout << "CW :: Current Available Window: " << getAvailableWin();
+	std::cout << "/" << size << " bytes\n";
+}
+
 int CongestionWindow::getAvailableWin(){
 //	int test = ((this->size / sizeof(EventTimeout *)) - (this->msgSendingAmount * sizeof(EventTimeout *)));
 	int availableWindow = size - msgSendingAmount;
 	availableWindow = availableWindow >= 0 ? availableWindow : 0;
-	std::cout << "CW :: Current Available Window: " << availableWindow;
-	std::cout << "/" << size << " (available/winSize)\n";
 	return availableWindow;
 }
 
 void CongestionWindow::setSize(int newSize){
 	if(newSize <= this->maxSize){
+		logAvailableWin();
+		std::cout << "CW :: Changing window size\n";
 		size = newSize;
+		logAvailableWin();
 	}
 }
 
-void CongestionWindow::addTimeoutMsg(int seqN, EventTimeout * event){
+void CongestionWindow::addTimeoutMsg(EventTimeout * event){
 	if(event == NULL) {
 		return;
-	} else if(getAvailableWin() > 0) {
+	} else if(getAvailableWin() >= event->getPacketSize()) {
+		int seqN = event->getSeqN();
 		window[seqN] = event;
+		logAvailableWin();
+		std::cout << "CW :: @addTimeoutMsg :: Adding seqN " << seqN << " to the window\n";
 		msgSendingAmount += event->getPacketSize();
+		logAvailableWin();
 	}
 }
 
 EventTimeout * CongestionWindow::popTimeoutMsg(int seqN){
 	EventTimeout * event = window[seqN];
 	if(event == NULL) {
+		std::cout << "CW :: Tried pipTimeoutMsg(" << seqN << ") but no event in window. Return NULL\n";
 		return NULL;
 	}
+	logAvailableWin();
+	std::cout << "CW :: @popTimeoutMsg :: Removing seqN " << seqN << " from window\n";
 	msgSendingAmount -= event->getPacketSize();
+	logAvailableWin();
 	window[seqN] = NULL;
 	return event;
 }

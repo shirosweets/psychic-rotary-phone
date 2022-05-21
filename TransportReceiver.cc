@@ -77,6 +77,7 @@ void TransportReceiver::handleVolt(Volt * volt){
 		Volt *ackVolt = new Volt("packet");
 		ackVolt->setByteLength(9);
 		ackVolt->setAckFlag(true);
+		ackVolt->setSeqNumber(volt->getSeqNumber());
 		send(ackVolt, "subnetwork$o");
 
 		// Hay espacio en el buffer, por lo que
