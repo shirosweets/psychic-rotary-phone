@@ -28,9 +28,8 @@ void CongestionWindow::setSize(int newSize){
 	}
 }
 
-void CongestionWindow::addTimeoutMsg(int seqN, EventTimeout * msg){
+void CongestionWindow::addTimeoutMsg(int seqN, EventTimeout * event){
 	if(this->getAvailableWin() > 0){
-		EventTimeout *event = new EventTimeout(*msg);
 		this->window[seqN] = event;
 		this->msgSendingAmount++;
 	}

@@ -87,9 +87,25 @@ Reno Controller
 Congestion Window
 - Que el emisor sepa distinguir [(state, timer), etc , ]
 
-
 - seqNumber
 - acks
+
+---
+
+# Realizar
+
+Generar el evento rtt cuando se inicializa
+
+Re sched del rtt cuando se recibe
+
+Hacer el schedAt del timeout en la función handleSelfMsg
+
+Arreglar el simtime_t del rtt
+
+Implementar los métodos del CongestionController
+
+
+
 
 # OMNet++
 
