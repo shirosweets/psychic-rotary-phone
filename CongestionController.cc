@@ -8,11 +8,15 @@
 using namespace omnetpp;
 
 CongestionController::CongestionController() {
-	slidingWindow = new pairPacketData[2147483647]; // FIXME
+	slidingWindow = new pairPacketData[134217727]; // FIXME 134MB
 }
 
 CongestionController::~CongestionController() {
 	delete[] slidingWindow;
+}
+
+bool CongestionController::getSlowStart(){
+	return true;
 }
 
 #endif /* CONGESTIONCONTROLLER */

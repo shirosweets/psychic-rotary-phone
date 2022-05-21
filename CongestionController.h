@@ -9,6 +9,7 @@
 #define __CONGESTIONCONTROLLER_H
 
 #include <omnetpp.h>
+#include "Volt.h"
 
 //#define EVENT_TIMEOUT_KIND 1
 
@@ -21,7 +22,7 @@
 struct _pairPacketData {
 	Volt * volt;
 	int ackCounter;
-}
+};
 
 typedef struct _pairPacketData * pairPacketData;
 
@@ -31,6 +32,7 @@ private:
 	int baseWindow = 0;
 	int threshold = 2147483647;  // INT_MAX
 	pairPacketData * slidingWindow;
+	bool isSlowStartStage = true;
 public:
 	CongestionController();
     virtual ~CongestionController();
@@ -46,6 +48,9 @@ public:
 
     int getBaseWindow();
     void setBaseWindow(int base);
+
+    bool getSlowStart();
+    void setSlowStart(bool state);
 protected:
 };
 

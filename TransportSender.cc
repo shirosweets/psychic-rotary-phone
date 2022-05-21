@@ -5,17 +5,21 @@
 #include <omnetpp.h>
 #include "Volt.h"
 #include "CongestionWindow.h"
+#include "CongestionController.h"
 
 using namespace omnetpp;
 
 class TransportSender : public cSimpleModule {
 private:
+	simtime_t rtt;
 	cQueue buffer;
 	cStdDev bufferSizeStdDev;
 	cOutVector bufferSizeVector;
+	cMessage *rttEvent;
 	cMessage *endServiceEvent;
 	CongestionWindow congestionWindow;
 	CongestionController congestionController;
+
 	//cOutVector ackTime;
 	void handleVoltToSend(Volt * msg);
 	void handleSelfMsg(cMessage * msg);
@@ -32,10 +36,12 @@ protected:
 Define_Module(TransportSender);
 
 TransportSender::TransportSender() {
+	rttEvent = NULL;
 	endServiceEvent = NULL;
 }
 
 TransportSender::~TransportSender() {
+	cancelAndDelete(rttEvent);
 	cancelAndDelete(endServiceEvent);
 }
 
@@ -46,7 +52,9 @@ void TransportSender::initialize(){
 	buffer.setName("Buffer");
 //	ackTime.setName("AckTime");
 
+	rttEvent = new cMessage("rttEvent");
 	endServiceEvent = new cMessage("endService");
+
 	congestionWindow = CongestionWindow();
 	congestionWindow.setSize(par("packetByteSize"));
 
@@ -120,6 +128,11 @@ void TransportSender::handleSelfMsg(cMessage * msg) {
 			timeout->setPacketSize(packetSize);
 			congestionWindow.addTimeoutMsg(timeout->getSeqN(), timeout);
 		}
+	} else if (msg == rttEvent){
+		if (!congestionController.getSlowStart()) {
+			// Cada RTT Aumentamos en un paquete la VC
+			congestionWindow.setSize(congestionWindow.getSize() + par("packetByteSize").longValue());
+		}
 	}
 }
 
@@ -131,6 +144,11 @@ void TransportSender::handleVoltReceived(Volt * volt) {
 
 		EventTimeout * timeout = congestionWindow.popTimeoutMsg(volt->getSeqNumber());
 		cancelEvent(timeout);
+
+		if(congestionController.getSlowStart()){
+			// Estamos en arranque lento aumentamos la VC a maxSize(Packet)
+			congestionWindow.setSize(congestionWindow.getSize() + par("packetByteSize").longValue());
+		}
 	}
 }
 
