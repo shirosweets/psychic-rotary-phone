@@ -4,6 +4,7 @@
 #include <string.h>
 #include <omnetpp.h>
 #include "Volt.h"
+#include "CongestionWindow.h"
 
 using namespace omnetpp;
 
@@ -13,6 +14,8 @@ private:
 	cStdDev bufferSizeStdDev;
 	cOutVector bufferSizeVector;
 	cMessage *endServiceEvent;
+	CongestionWindow congestionWindow;
+	CongestionController congestionController;
 	//cOutVector ackTime;
 	void handleVoltToSend(Volt * msg);
 	void handleSelfMsg(cMessage * msg);
@@ -44,6 +47,10 @@ void TransportSender::initialize(){
 //	ackTime.setName("AckTime");
 
 	endServiceEvent = new cMessage("endService");
+	congestionWindow = CongestionWindow();
+	congestionWindow.setSize(par("packetByteSize"));
+
+	congestionController = CongestionController();
 }
 
 void TransportSender::finish(){
@@ -87,9 +94,17 @@ void TransportSender::handleVoltToSend(Volt * msg) {
 
 void TransportSender::handleSelfMsg(cMessage * msg) {
 	if (msg == endServiceEvent) {
-		// Podemos enviar un nuevo mensaje
-		if (!buffer.isEmpty()) {
-			Volt * volt = (Volt*) buffer.pop();
+		// Chequeamos el tamaño del packet
+		// sin quitarlo de la cola
+		Volt * volt = (Volt*) buffer.front();
+
+		// Revisamos la VC
+		int packetSize = volt->getByteLength();
+		bool hasCWEnoughSpace = congestionWindow.getAvailableWin() >= packetSize;
+
+		// Chequeamos si podemos enviar un nuevo mensaje
+		if (!buffer.isEmpty() && hasCWEnoughSpace) {
+			volt = (Volt*) buffer.pop();
 
 			bufferSizeStdDev.collect(buffer.getLength());
 			bufferSizeVector.record(buffer.getLength());
@@ -97,15 +112,25 @@ void TransportSender::handleSelfMsg(cMessage * msg) {
 			send(volt, "subnetwork$o");
 			simtime_t serviceTime = volt->getDuration();
 			scheduleAt(simTime() + serviceTime, endServiceEvent);
+
+			// Añadimos un nuevo evento timeout para
+			// el volt que se está enviando
+			EventTimeout * timeout = new EventTimeout("timeout", EVENT_TIMEOUT_KIND);
+			timeout->setSeqN(volt->getSeqNumber());
+			timeout->setPacketSize(packetSize);
+			congestionWindow.addTimeoutMsg(timeout->getSeqN(), timeout);
 		}
 	}
 }
 
-void TransportSender::handleVoltReceived(Volt * msg) {
-	if(msg->getAckFlag()){
-		// FIXME
+void TransportSender::handleVoltReceived(Volt * volt) {
+	if(volt->getAckFlag()){
 		//ackTime.record();
-		delete(msg);
+
+		delete(volt);
+
+		EventTimeout * timeout = congestionWindow.popTimeoutMsg(volt->getSeqNumber());
+		cancelEvent(timeout);
 	}
 }
 

@@ -31,6 +31,7 @@ simple TransportSender
 {
     parameters:
         int bufferSize;
+        int packetByteSize;
         @display("i=block/queue;q=buffer");
     gates:
         input appLayerIn; // toApp

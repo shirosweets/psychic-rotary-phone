@@ -182,6 +182,7 @@ Register_Class(EventTimeout)
 EventTimeout::EventTimeout(const char *name, short kind) : ::omnetpp::cMessage(name,kind)
 {
     this->seqN = 0;
+    this->packetSize = 0;
 }
 
 EventTimeout::EventTimeout(const EventTimeout& other) : ::omnetpp::cMessage(other)
@@ -204,18 +205,21 @@ EventTimeout& EventTimeout::operator=(const EventTimeout& other)
 void EventTimeout::copy(const EventTimeout& other)
 {
     this->seqN = other.seqN;
+    this->packetSize = other.packetSize;
 }
 
 void EventTimeout::parsimPack(omnetpp::cCommBuffer *b) const
 {
     ::omnetpp::cMessage::parsimPack(b);
     doParsimPacking(b,this->seqN);
+    doParsimPacking(b,this->packetSize);
 }
 
 void EventTimeout::parsimUnpack(omnetpp::cCommBuffer *b)
 {
     ::omnetpp::cMessage::parsimUnpack(b);
     doParsimUnpacking(b,this->seqN);
+    doParsimUnpacking(b,this->packetSize);
 }
 
 int EventTimeout::getSeqN() const
@@ -226,6 +230,16 @@ int EventTimeout::getSeqN() const
 void EventTimeout::setSeqN(int seqN)
 {
     this->seqN = seqN;
+}
+
+int EventTimeout::getPacketSize() const
+{
+    return this->packetSize;
+}
+
+void EventTimeout::setPacketSize(int packetSize)
+{
+    this->packetSize = packetSize;
 }
 
 class EventTimeoutDescriptor : public omnetpp::cClassDescriptor
@@ -293,7 +307,7 @@ const char *EventTimeoutDescriptor::getProperty(const char *propertyname) const
 int EventTimeoutDescriptor::getFieldCount() const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 1+basedesc->getFieldCount() : 1;
+    return basedesc ? 2+basedesc->getFieldCount() : 2;
 }
 
 unsigned int EventTimeoutDescriptor::getFieldTypeFlags(int field) const
@@ -306,8 +320,9 @@ unsigned int EventTimeoutDescriptor::getFieldTypeFlags(int field) const
     }
     static unsigned int fieldTypeFlags[] = {
         FD_ISEDITABLE,
+        FD_ISEDITABLE,
     };
-    return (field>=0 && field<1) ? fieldTypeFlags[field] : 0;
+    return (field>=0 && field<2) ? fieldTypeFlags[field] : 0;
 }
 
 const char *EventTimeoutDescriptor::getFieldName(int field) const
@@ -320,8 +335,9 @@ const char *EventTimeoutDescriptor::getFieldName(int field) const
     }
     static const char *fieldNames[] = {
         "seqN",
+        "packetSize",
     };
-    return (field>=0 && field<1) ? fieldNames[field] : nullptr;
+    return (field>=0 && field<2) ? fieldNames[field] : nullptr;
 }
 
 int EventTimeoutDescriptor::findField(const char *fieldName) const
@@ -329,6 +345,7 @@ int EventTimeoutDescriptor::findField(const char *fieldName) const
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     int base = basedesc ? basedesc->getFieldCount() : 0;
     if (fieldName[0]=='s' && strcmp(fieldName, "seqN")==0) return base+0;
+    if (fieldName[0]=='p' && strcmp(fieldName, "packetSize")==0) return base+1;
     return basedesc ? basedesc->findField(fieldName) : -1;
 }
 
@@ -342,8 +359,9 @@ const char *EventTimeoutDescriptor::getFieldTypeString(int field) const
     }
     static const char *fieldTypeStrings[] = {
         "int",
+        "int",
     };
-    return (field>=0 && field<1) ? fieldTypeStrings[field] : nullptr;
+    return (field>=0 && field<2) ? fieldTypeStrings[field] : nullptr;
 }
 
 const char **EventTimeoutDescriptor::getFieldPropertyNames(int field) const
@@ -411,6 +429,7 @@ std::string EventTimeoutDescriptor::getFieldValueAsString(void *object, int fiel
     EventTimeout *pp = (EventTimeout *)object; (void)pp;
     switch (field) {
         case 0: return long2string(pp->getSeqN());
+        case 1: return long2string(pp->getPacketSize());
         default: return "";
     }
 }
@@ -426,6 +445,7 @@ bool EventTimeoutDescriptor::setFieldValueAsString(void *object, int field, int 
     EventTimeout *pp = (EventTimeout *)object; (void)pp;
     switch (field) {
         case 0: pp->setSeqN(string2long(value)); return true;
+        case 1: pp->setPacketSize(string2long(value)); return true;
         default: return false;
     }
 }

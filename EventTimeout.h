@@ -24,6 +24,7 @@
  * message EventTimeout
  * {
  *     int seqN;
+ *     int packetSize;
  * }
  * </pre>
  */
@@ -31,6 +32,7 @@ class EventTimeout : public ::omnetpp::cMessage
 {
   protected:
     int seqN;
+    int packetSize;
 
   private:
     void copy(const EventTimeout& other);
@@ -51,6 +53,8 @@ class EventTimeout : public ::omnetpp::cMessage
     // field getter/setter methods
     virtual int getSeqN() const;
     virtual void setSeqN(int seqN);
+    virtual int getPacketSize() const;
+    virtual void setPacketSize(int packetSize);
 };
 
 inline void doParsimPacking(omnetpp::cCommBuffer *b, const EventTimeout& obj) {obj.parsimPack(b);}

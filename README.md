@@ -41,8 +41,7 @@ cada uno? Investigue sobre la diferencia entre control de flujo y control de con
 Utilice los mismos parámetros de los experimentos de la tarea 1, genere las curvas necesarias,
 y responda:
 
-1. ¿Cómo cree que se comporta su algoritmo de control de flujo y congestión ? ¿Funciona4
-para el caso de estudio 1 y 2 por igual? ¿Por qué?
+1. ¿Cómo cree que se comporta su algoritmo de control de flujo y congestión ? ¿Funciona para el caso de estudio 1 y 2 por igual? ¿Por qué?
 
 # Primer Diseño
 
@@ -66,6 +65,31 @@ para el caso de estudio 1 y 2 por igual? ¿Por qué?
 # Tercer diseño
 
 - [ ] Control de flujo.
+
+# Modificaciones
+
+La ventana de congestión mide su disponibilidad en cantidad de bytes (no en cantidad de segmentos).
+
+> .ini
+
+
+Network.sender.senderAppLayer.packetByteSize = 12500
+
+** nos dice que forma parte de todos como "global"
+Network.**.packetByteSize = 12500
+
+Reno Controller
+
+- umbral
+- packetDropped
+- stage
+
+Congestion Window
+- Que el emisor sepa distinguir [(state, timer), etc , ]
+
+
+- seqNumber
+- acks
 
 # OMNet++
 
