@@ -7,23 +7,34 @@
 #include "CongestionWindow.h"
 #include "CongestionController.h"
 
+#define DUPLICATE_ACK_LIMIT 3
+
 using namespace omnetpp;
 
 class TransportSender : public cSimpleModule {
 private:
-	simtime_t rtt;
-	cQueue buffer;
+	// Stats
 	cStdDev bufferSizeStdDev;
 	cOutVector bufferSizeVector;
+	//cOutVector ackTime;
+
+	// Events
 	cMessage *rttEvent;
 	cMessage *endServiceEvent;
+
+	simtime_t rtt;
+	cQueue buffer;
+
+	// TADs
 	CongestionWindow congestionWindow;
 	CongestionController congestionController;
 
-	//cOutVector ackTime;
+	// Methods
 	void handleVoltToSend(Volt * msg);
 	void handleSelfMsg(cMessage * msg);
 	void handleVoltReceived(Volt * msg);
+	void handlePacketLoss(int seqN);
+	void handleStartNextTransmission();
 public:
     TransportSender();
     virtual ~TransportSender();
@@ -108,30 +119,16 @@ void TransportSender::handleSelfMsg(cMessage * msg) {
 			// Chequeamos el tamaño del packet
 			// sin quitarlo de la cola
 			Volt * volt = (Volt*) buffer.front();
+
 			int packetSize = volt->getByteLength();
 			bool hasCWEnoughSpace = congestionWindow.getAvailableWin() >= packetSize;
 			if (hasCWEnoughSpace) {
-				volt = (Volt*) buffer.pop();
-
-				bufferSizeStdDev.collect(buffer.getLength());
-				bufferSizeVector.record(buffer.getLength());
-
-				send(volt, "subnetwork$o");
-				simtime_t serviceTime = volt->getDuration();
-				scheduleAt(simTime() + serviceTime, endServiceEvent);
-
-				// Añadimos un nuevo evento timeout para
-				// el volt que se está enviando
-				EventTimeout * timeout = new EventTimeout("timeout", EVENT_TIMEOUT_KIND);
-				timeout->setSeqN(volt->getSeqNumber());
-				timeout->setPacketSize(packetSize);
-				scheduleAt(simTime() + par("timeout"), timeout);
-				congestionWindow.addTimeoutMsg(timeout);
+				// Enviamos el Volt que está al frente de la lista
+				handleStartNextTransmission();
 			}
 		}
-	} else if (msg == rttEvent){
-		this->bubble("rtt+1");
-		std::cout << "rrt+1 \n";
+	} else if (msg == rttEvent) {
+		std::cout << "Sender :: RTT Event\n";
 
 		if (!congestionController.getSlowStart()) {
 			// Cada RTT Aumentamos en un paquete la VC
@@ -139,14 +136,41 @@ void TransportSender::handleSelfMsg(cMessage * msg) {
 		}
 
 		scheduleAt(simTime() + par("rtt"), rttEvent);
+	} else if (msg->getKind() == EVENT_TIMEOUT_KIND) {
+		/*TODO TIMEOUT*/
 	}
+}
+
+void TransportSender::handleStartNextTransmission() {
+	Volt * volt = (Volt*) buffer.pop();
+	int packetSize = volt->getByteLength();
+
+	bufferSizeStdDev.collect(buffer.getLength());
+	bufferSizeVector.record(buffer.getLength());
+
+	send(volt, "subnetwork$o");
+	simtime_t serviceTime = volt->getDuration();
+	scheduleAt(simTime() + serviceTime, endServiceEvent);
+
+	// Añadimos un nuevo evento timeout para
+	// el volt que se está enviando
+	EventTimeout * timeout = new EventTimeout("timeout", EVENT_TIMEOUT_KIND);
+	timeout->setSeqN(volt->getSeqNumber());
+	timeout->setPacketSize(packetSize);
+	scheduleAt(simTime() + par("timeout"), timeout);
+	congestionWindow.addTimeoutMsg(timeout);
+
+	// Guardamos una copia del Volt en caso que haya que retransmitirlo
+	Volt * voltCopy = volt->dup();
+	congestionController.addVolt(voltCopy);
 }
 
 void TransportSender::handleVoltReceived(Volt * volt) {
 	if(volt->getAckFlag()){
 		//ackTime.record();
-		std::cout << "Sender :: handling ACK of Volt " << volt->getSeqNumber() << "\n";
-		EventTimeout * timeout = congestionWindow.popTimeoutMsg(volt->getSeqNumber());
+		int seqN = volt->getSeqNumber();
+		std::cout << "Sender :: handling ACK of Volt " << seqN << "\n";
+		EventTimeout * timeout = congestionWindow.popTimeoutMsg(seqN);
 		if(timeout != NULL && !timeout->isScheduled()) {
 			std::cout << "Sender :: Timeout cancelled due to ACK\n";
 			cancelEvent(timeout);
@@ -157,8 +181,25 @@ void TransportSender::handleVoltReceived(Volt * volt) {
 			congestionWindow.setSize(congestionWindow.getSize() + par("packetByteSize").longValue());
 		}
 
+		congestionController.addAck(seqN);
+		int currentBaseOfSlidingWindow = congestionController.getBaseWindow();
+		if (currentBaseOfSlidingWindow == seqN) {
+			// El ACK que llegó es el que esperábamos
+			// por lo que avanzamos la ventana corrediza
+			// y eliminamos el volt guardado (que hubieramos usado para retrasmitir)
+			Volt * savedPkt = congestionController.popVolt(seqN);
+			delete(savedPkt);
+			congestionController.setBaseWindow((currentBaseOfSlidingWindow + 1) % 1000);
+			std::cout << "Sender :: Removed Volt " << seqN << " from sliding window\n";
+		} else if (congestionController.getAck(seqN) >= DUPLICATE_ACK_LIMIT) {
+			handlePacketLoss(seqN);
+		}
 		delete(volt);
 	}
+}
+
+void TransportSender::handlePacketLoss(int seqN) {
+	std::cout << " ---- Should implement handle packet loss... :c\n";
 }
 
 #endif /* TRANSPORTSENDER */
