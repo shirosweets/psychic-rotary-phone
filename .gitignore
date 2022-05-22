@@ -4,3 +4,5 @@ out/gcc-release/**
 lab3-net
 results/
 ignore_*
+
+__pycache__
