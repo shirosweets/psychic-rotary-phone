@@ -143,6 +143,7 @@ void TransportSender::handleSelfMsg(cMessage * msg) {
 
 void TransportSender::handleStartNextTransmission() {
 	Volt * volt = (Volt*) buffer.pop();
+	std::cout << "Sender :: Current buffer has " << buffer.getLength() << " elements\n";
 	int packetSize = volt->getByteLength();
 
 	bufferSizeStdDev.collect(buffer.getLength());
