@@ -7,23 +7,31 @@
 
 using namespace omnetpp;
 
+typedef std::map<int,pairPacketData>::iterator windowIterator;
+
 CongestionController::CongestionController() {
-	slidingWindow = new pairPacketData[1000]; // FIXME 134MB 134217727
 }
 
 CongestionController::~CongestionController() {
-	delete[] slidingWindow;
 }
 
 int CongestionController::getAck(int seqN) {
-	pairPacketData pair = slidingWindow[seqN];
-	return pair->ackCounter;
+	windowIterator pairIterator = slidingWindow.find(seqN);
+	if (pairIterator == slidingWindow.end()) {
+		// No existe en el diccionario
+		std::cout << "CC :: WARNING :: getAck( " << seqN << ") didn't found any pairPacketData";
+		return -1;
+	}
+	return pairIterator->second->ackCounter;
 }
 
 void CongestionController::addAck(int seqN) {
-	pairPacketData pair = slidingWindow[seqN];
-	(pair->ackCounter)++;
-	slidingWindow[seqN] = pair;
+	windowIterator pairIterator = slidingWindow.find(seqN);
+	if (pairIterator != slidingWindow.end()) {
+		pairPacketData pair = pairIterator->second;
+		(pair->ackCounter)++;
+		slidingWindow[seqN] = pair;
+	}
 }
 
 int CongestionController::getThreshold() {
@@ -40,15 +48,24 @@ void CongestionController::addVolt(Volt * volt) {
 	pairPacketData newPair = new _pairPacketData();
 	newPair->ackCounter = 0;
 	newPair->volt = volt;
+	if(slidingWindow.find(seqN) != slidingWindow.end()) {
+		std::cout << "CC :: WARNING :: addVolt is overwriting a previous instance\n";
+	}
 	slidingWindow[seqN] = newPair;
+	std::cout << "CC :: Volt " << seqN << " added successfully\n";
 }
 
 Volt * CongestionController::popVolt(int seqN) {
-	std::cout << "CC :: Volt " << seqN << " added successfully\n";
-	pairPacketData pair = slidingWindow[seqN];
-	Volt * volt = pair->volt;
-	slidingWindow[seqN] = NULL;
-	delete(pair);
+	Volt * volt = NULL;
+	windowIterator pairIterator = slidingWindow.find(seqN);
+	if (pairIterator != slidingWindow.end()) {
+		std::cout << "CC :: Removing Volt " << seqN << " from congestion controller\n";
+		volt = pairIterator->second->volt;
+		delete(pairIterator->second);
+		slidingWindow.erase(pairIterator);
+	} else {
+		std::cout << "CC :: WARNING :: popVolt could not find Volt " << seqN << "\n";
+	};
 	return volt;
 }
 

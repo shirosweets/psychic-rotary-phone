@@ -30,7 +30,7 @@ class CongestionController {
 private:
 	int baseWindow = 0;
 	int threshold = 2147483647;  // INT_MAX
-	pairPacketData * slidingWindow;
+	std::map<int,pairPacketData> slidingWindow;
 	bool isSlowStartStage = true;
 public:
 	CongestionController();
