@@ -37,8 +37,6 @@ simple TransportSender
         @display("i=block/queue;q=buffer");
     gates:
         input appLayerIn; // toApp
-        //input appLayer
-       	//input fromAppLayer
         inout subnetwork; // toOut
 }
 
@@ -71,7 +69,6 @@ module Sender
                 @display("p=100,137");
         }
     connections:
-        // TODO: Revisar
         in --> transpSend.subnetwork$i; // Conexion que maneja los ACKs entrantes
         senderAppLayer.out --> transpSend.appLayerIn; // Desde el generador de paquetes a la queue de capa de transporte
         transpSend.subnetwork$o --> out; // Salida de la capa de transportes a paquetes
@@ -95,21 +92,14 @@ module Receiver
                 @display("p=100,137");
         }
     connections:
-        // TODO: Revisar
         in --> transpRec.subnetwork$i; // Conexion que maneja los paquetes de data entrantes del Sender
         // ** Start Study Cases ** //
         // Case I 
-        transpRec.appLayerOut --> { datarate = 0.5Mbps; } --> recAppLayer.in; // Desde la queue del receptor a la capa de aplicacion
+//        transpRec.appLayerOut --> { datarate = 0.5Mbps; } --> recAppLayer.in; // Desde la queue del receptor a la capa de aplicacion
         // Case II
-        // transpRec.appLayerOut --> { datarate = 1Mbps; } --> recAppLayer.in; // Desde la queue del receptor a la capa de aplicacion
+         transpRec.appLayerOut --> { datarate = 1Mbps; } --> recAppLayer.in; // Desde la queue del receptor a la capa de aplicacion
         // ** End Study Cases ** //
         transpRec.subnetwork$o --> out; // Salida para mandar ACKs
-
-        //in --> queue.in;
-        // Case I
-        // queue.out --> { datarate = 0.5Mbps; } --> sink.in;
-        // Case II
-        //queue.out --> {  datarate = 1Mbps; } --> sink.in;
 }
 
 network Network
@@ -132,16 +122,10 @@ network Network
         sender.out --> { datarate = 1Mbps; delay = 100us; } --> dataQueue.in;
         // ** Start Study Cases ** //
         // Case I
-        dataQueue.out --> { datarate = 1Mbps; delay = 100us; } --> rec.in;
+//        dataQueue.out --> { datarate = 1Mbps; delay = 100us; } --> rec.in;
         // Case II
-        // dataQueue.out --> { datarate = 0.5Mbps; delay = 100us; } --> rec.in;
+         dataQueue.out --> { datarate = 0.5Mbps; delay = 100us; } --> rec.in;
         // ** End Study Cases ** //
         rec.out --> { datarate = 1Mbps; delay = 100us; } --> ackQueue.in;
         ackQueue.out --> { datarate = 1Mbps; delay = 100us; } --> sender.in;
-
-        // sender.out --> {  datarate = 1Mbps; delay = 100us; } --> dataQueue.in;   
-        // dataQueue.out --> { datarate = 1Mbps; delay = 100us;} --> rec.in; // Case I
-        // dataQueue.out --> {  datarate = 0.5Mbps; delay = 100us; } --> rec.in; // Case II
-        // rec.out --> {  datarate = 0.5Mbps; delay = 100us; } --> ackQueue.in;
-        // ackQueue.out --> {  datarate = 0.5Mbps; delay = 100us; } --> sender.in;
 }
