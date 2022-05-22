@@ -138,7 +138,7 @@ void TransportSender::handleSelfMsg(cMessage * msg) {
 		scheduleAt(simTime() + par("rtt"), rttEvent);
 	} else if (msg->getKind() == EVENT_TIMEOUT_KIND) {
 		EventTimeout * timeout = (EventTimeout*) msg;
-		handlePacketLoss(timeout->seqN);
+		handlePacketLoss(timeout->getSeqN());
 	}
 }
 
@@ -204,14 +204,14 @@ void TransportSender::handlePacketLoss(int seqN) {
 	std::cout << "Sender :: SeqNumber" << seqN << " from handlePacketLoss\n";
 
 	// Cancelar el timeout actual
-	EventTimeout * timeout = CongestionWindow.popTimeoutMsg(seqN);
+	EventTimeout * timeout = congestionWindow.popTimeoutMsg(seqN);
 
 	if(timeout != NULL){
 		cancelEvent(timeout);
 	}
 
 	// Obtener la copia del Volt y eliminar de la queue de copias
-	Volt * volt = CongestionController.popVolt(seqN);
+	Volt * volt = congestionController.popVolt(seqN);
 
 	if(volt == NULL) {
 		std::cout << "Sender :: ERROR :: function handlePacketLoss can't find copy of volt \n";
