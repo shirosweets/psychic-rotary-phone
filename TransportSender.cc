@@ -229,7 +229,7 @@ void TransportSender::handlePacketLoss(int seqN) {
 	// Actualizar la VC
 	int newCWSize = congestionWindow.getSize() / 2;
 	congestionWindow.setSize(newCWSize);
-	CongestionWindow.setSlowStart(false);
+	congestionWindow.setSlowStart(false);
 }
 
 #endif /* TRANSPORTSENDER */
