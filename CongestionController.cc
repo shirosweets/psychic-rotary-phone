@@ -70,13 +70,5 @@ void CongestionController::setBaseWindow(int base) {
 	baseWindow = base;
 }
 
-bool CongestionController::getSlowStart(){
-	return isSlowStartStage;
-}
-
-void CongestionController::setSlowStart(bool state) {
-	isSlowStartStage = state;
-}
-
 #endif /* CONGESTIONCONTROLLER */
 

@@ -25,6 +25,7 @@ private:
 	int maxSize; // INT_MAX
 	int size;
 	int msgSendingAmount;
+	bool isSlowStartStage = true;
 
 	std::map<int, EventTimeout*> window;
 	void logAvailableWin();
@@ -51,6 +52,9 @@ public:
 
 	/* Quita un mensaje de la ventana de congestión y lo devuelve */
 	EventTimeout * popTimeoutMsg(int seqN);
+
+    bool getSlowStart();
+    void setSlowStart(bool state);
 protected:
 	//
 };

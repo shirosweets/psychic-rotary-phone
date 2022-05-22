@@ -130,14 +130,15 @@ void TransportSender::handleSelfMsg(cMessage * msg) {
 	} else if (msg == rttEvent) {
 		std::cout << "Sender :: RTT Event\n";
 
-		if (!congestionController.getSlowStart()) {
+		if (!congestionWindow.getSlowStart()) {
 			// Cada RTT Aumentamos en un paquete la VC
 			congestionWindow.setSize(congestionWindow.getSize() + par("packetByteSize").longValue());
 		}
 
 		scheduleAt(simTime() + par("rtt"), rttEvent);
 	} else if (msg->getKind() == EVENT_TIMEOUT_KIND) {
-		/*TODO TIMEOUT*/
+		EventTimeout * timeout = (EventTimeout*) msg;
+		handlePacketLoss(timeout->seqN);
 	}
 }
 
@@ -177,7 +178,7 @@ void TransportSender::handleVoltReceived(Volt * volt) {
 			cancelEvent(timeout);
 		}
 
-		if(congestionController.getSlowStart()) {
+		if(congestionWindow.getSlowStart()) {
 			// Estamos en arranque lento aumentamos la VC a maxSize(Packet)
 			congestionWindow.setSize(congestionWindow.getSize() + par("packetByteSize").longValue());
 		}
@@ -200,7 +201,35 @@ void TransportSender::handleVoltReceived(Volt * volt) {
 }
 
 void TransportSender::handlePacketLoss(int seqN) {
-	std::cout << " ---- Should implement handle packet loss... :c\n";
+	std::cout << "Sender :: SeqNumber" << seqN << " from handlePacketLoss\n";
+
+	// Cancelar el timeout actual
+	EventTimeout * timeout = CongestionWindow.popTimeoutMsg(seqN);
+
+	if(timeout != NULL){
+		cancelEvent(timeout);
+	}
+
+	// Obtener la copia del Volt y eliminar de la queue de copias
+	Volt * volt = CongestionController.popVolt(seqN);
+
+	if(volt == NULL) {
+		std::cout << "Sender :: ERROR :: function handlePacketLoss can't find copy of volt \n";
+	}
+
+	// Insertar el Volt al inicio de la queue de envíos
+	buffer.insertBefore(buffer.front(), volt);
+
+	// Si no estamos enviando un mensaje ahora mismo
+	if (!endServiceEvent->isScheduled()) {
+		// Empezamos el envío
+		scheduleAt(simTime() + 0, endServiceEvent);
+	}
+
+	// Actualizar la VC
+	int newCWSize = congestionWindow.getSize() / 2;
+	congestionWindow.setSize(newCWSize);
+	CongestionWindow.setSlowStart(false);
 }
 
 #endif /* TRANSPORTSENDER */

@@ -30,7 +30,6 @@ class CongestionController {
 private:
 	int baseWindow = 0;
 	std::map<int,pairPacketData> slidingWindow;
-	bool isSlowStartStage = true;
 public:
 	CongestionController();
     virtual ~CongestionController();
@@ -43,9 +42,6 @@ public:
 
     int getBaseWindow();
     void setBaseWindow(int base);
-
-    bool getSlowStart();
-    void setSlowStart(bool state);
 protected:
 };
 

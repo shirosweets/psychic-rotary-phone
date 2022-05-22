@@ -33,7 +33,6 @@ void CongestionWindow::logAvailableWin() {
 }
 
 int CongestionWindow::getAvailableWin(){
-//	int test = ((this->size / sizeof(EventTimeout *)) - (this->msgSendingAmount * sizeof(EventTimeout *)));
 	int availableWindow = size - msgSendingAmount;
 	availableWindow = availableWindow >= 0 ? availableWindow : 0;
 	return availableWindow;
@@ -80,6 +79,14 @@ EventTimeout * CongestionWindow::popTimeoutMsg(int seqN){
 	std::cout << "CW :: Removed seqN " << seqN << " from window.";
 	std::cout << "\t\t(map size = " << window.size() << ")\n";
 	return event;
+}
+
+bool CongestionWindow::getSlowStart(){
+	return isSlowStartStage;
+}
+
+void CongestionWindow::setSlowStart(bool state) {
+	isSlowStartStage = state;
 }
 
 #endif /* CONGESTIONWINDOW */
