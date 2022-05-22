@@ -29,7 +29,6 @@ typedef _pairPacketData * pairPacketData;
 class CongestionController {
 private:
 	int baseWindow = 0;
-	int threshold = 2147483647;  // INT_MAX
 	std::map<int,pairPacketData> slidingWindow;
 	bool isSlowStartStage = true;
 public:
@@ -38,9 +37,6 @@ public:
 
     int getAck(int seqN);
     void addAck(int seqN);
-
-    int getThreshold();
-    void setThreshold(int newValue);
 
     void addVolt(Volt * volt);
     Volt * popVolt(int seqN);

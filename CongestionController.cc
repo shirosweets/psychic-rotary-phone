@@ -34,14 +34,6 @@ void CongestionController::addAck(int seqN) {
 	}
 }
 
-int CongestionController::getThreshold() {
-	return threshold;
-}
-
-void CongestionController::setThreshold(int newValue) {
-	threshold = newValue;
-}
-
 void CongestionController::addVolt(Volt * volt) {
 	int seqN = volt->getSeqNumber();
 	std::cout << "CC :: Adding Volt " << seqN << " to congestion controller\n";
