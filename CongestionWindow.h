@@ -26,7 +26,7 @@ private:
 	int size;
 	int msgSendingAmount;
 
-	EventTimeout * window[1000];  // TODO Change to DM
+	std::map<int, EventTimeout*> window;
 	void logAvailableWin();
 public:
 	CongestionWindow();
