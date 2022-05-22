@@ -48,9 +48,7 @@ módulo Sink toma métricas (.vec y .sca) de la demora de entrega de los paquete
 El modelo de colas ignora nociones de capacidad (tasa de transferencia de datos y memoria de
 buffers). La primer tarea es modificar y extender el proyecto para hacer un análisis del impacto
 de estos parámetros en el tráfico de red.
-Debido a que es la primera interacción con Omnet++, se provee una guía paso a paso, con
-snippets de código, que deberá ser complementada con el material de clases y consultas al
-manual de la herramienta .1
+Debido a que es la primera interacción con Omnet++, se provee una guía paso a paso, con snippets de código, que deberá ser complementada con el material de clases y consultas almanual de la herramienta .1
 
 ## Modificaciones en `network.ned`
 El nodo Generator y Sink pasarán a ser parte de módulos compuestos denominados nodeTx
