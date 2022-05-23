@@ -137,6 +137,7 @@ void TransportSender::handleSelfMsg(cMessage * msg) {
 
 		scheduleAt(simTime() + par("rtt"), rttEvent);
 	} else if (msg->getKind() == EVENT_TIMEOUT_KIND) {
+		std::cout << "\nSender :: EVENT_TIMEOUT_KIND\n";
 		EventTimeout * timeout = (EventTimeout*) msg;
 		handlePacketLoss(timeout->getSeqN());
 	}
@@ -173,9 +174,10 @@ void TransportSender::handleVoltReceived(Volt * volt) {
 		int seqN = volt->getSeqNumber();
 		std::cout << "Sender :: handling ACK of Volt " << seqN << "\n";
 		EventTimeout * timeout = congestionWindow.popTimeoutMsg(seqN);
-		if(timeout != NULL && !timeout->isScheduled()) {
+		if(timeout != NULL) {
 			std::cout << "Sender :: Timeout cancelled due to ACK\n";
 			cancelEvent(timeout);
+			delete(timeout);
 		}
 
 		if(congestionWindow.getSlowStart()) {
@@ -194,6 +196,7 @@ void TransportSender::handleVoltReceived(Volt * volt) {
 			congestionController.setBaseWindow((currentBaseOfSlidingWindow + 1) % 1000);
 			std::cout << "Sender :: Removed Volt " << seqN << " from sliding window\n";
 		} else if (congestionController.getAck(seqN) >= DUPLICATE_ACK_LIMIT) {
+			std::cout << "\nSender :: DUPLICATE_ACK_LIMIT\n";
 			handlePacketLoss(seqN);
 		}
 		delete(volt);
@@ -201,13 +204,14 @@ void TransportSender::handleVoltReceived(Volt * volt) {
 }
 
 void TransportSender::handlePacketLoss(int seqN) {
-	std::cout << "Sender :: SeqNumber" << seqN << " from handlePacketLoss\n";
+	std::cout << "\nSender :: SeqNumber " << seqN << " from handlePacketLoss\n";
 
 	// Cancelar el timeout actual
 	EventTimeout * timeout = congestionWindow.popTimeoutMsg(seqN);
 
 	if(timeout != NULL){
 		cancelEvent(timeout);
+		delete(timeout);
 	}
 
 	// Obtener la copia del Volt y eliminar de la queue de copias
