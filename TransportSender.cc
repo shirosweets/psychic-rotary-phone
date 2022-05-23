@@ -139,6 +139,7 @@ void TransportSender::handleSelfMsg(cMessage * msg) {
 	} else if (msg->getKind() == EVENT_TIMEOUT_KIND) {
 		std::cout << "\nSender :: EVENT_TIMEOUT_KIND\n";
 		EventTimeout * timeout = (EventTimeout*) msg;
+		std::cout << "Sender :: Timeout has passed. SeqN = " << timeout->getSeqN() << "\n";
 		handlePacketLoss(timeout->getSeqN());
 	}
 }
@@ -222,7 +223,13 @@ void TransportSender::handlePacketLoss(int seqN) {
 	}
 
 	// Insertar el Volt al inicio de la queue de envíos
-	buffer.insertBefore(buffer.front(), volt);
+	std::cout << "Buffer size " << buffer.getLength() << "\t front: " << buffer.front() << std::endl;
+	Volt * firstVolt = (Volt*)buffer.front();
+	if(firstVolt != NULL) {
+		buffer.insertBefore(firstVolt, volt);
+	} else {
+		buffer.insert(volt);
+	}
 
 	// Si no estamos enviando un mensaje ahora mismo
 	if (!endServiceEvent->isScheduled()) {
