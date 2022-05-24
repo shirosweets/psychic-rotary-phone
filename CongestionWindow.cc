@@ -7,16 +7,12 @@
 
 using namespace omnetpp;
 
+typedef std::map<int, EventTimeout*>::iterator cwIterator;
+
 CongestionWindow::CongestionWindow() {
 	maxSize = 2147483647;
 	size = 0;
 	msgSendingAmount = 0;
-
-	int lenWin = (sizeof(window)/sizeof(window[0]));
-
-	for(int i = 0; i<lenWin; i++){
-		window[i] = NULL;
-	}
 }
 
 CongestionWindow::~CongestionWindow() {
@@ -32,11 +28,11 @@ int CongestionWindow::getSize() {
 
 void CongestionWindow::logAvailableWin() {
 	std::cout << "CW :: Current Available Window: " << getAvailableWin();
-	std::cout << "/" << size << " bytes\n";
+	std::cout << "/" << size << " bytes\t";
+	std::cout << "(map size = " << window.size() << ")\n";
 }
 
 int CongestionWindow::getAvailableWin(){
-//	int test = ((this->size / sizeof(EventTimeout *)) - (this->msgSendingAmount * sizeof(EventTimeout *)));
 	int availableWindow = size - msgSendingAmount;
 	availableWindow = availableWindow >= 0 ? availableWindow : 0;
 	return availableWindow;
@@ -53,29 +49,44 @@ void CongestionWindow::setSize(int newSize){
 
 void CongestionWindow::addTimeoutMsg(EventTimeout * event){
 	if(event == NULL) {
+		std::cout << "CW :: WARNING :: call to addTimeoutMsg(NULL)\n";
 		return;
 	} else if(getAvailableWin() >= event->getPacketSize()) {
 		int seqN = event->getSeqN();
 		window[seqN] = event;
 		logAvailableWin();
-		std::cout << "CW :: @addTimeoutMsg :: Adding seqN " << seqN << " to the window\n";
+		std::cout << "CW :: Adding seqN " << seqN << " to the window.";
+		std::cout << "\t\t(map size = " << window.size() << ")\n";
 		msgSendingAmount += event->getPacketSize();
 		logAvailableWin();
+	} else {
+		std::cout << "CW :: WARNING :: Window has no space for new timeout\n";
 	}
 }
 
 EventTimeout * CongestionWindow::popTimeoutMsg(int seqN){
-	EventTimeout * event = window[seqN];
-	if(event == NULL) {
-		std::cout << "CW :: Tried pipTimeoutMsg(" << seqN << ") but no event in window. Return NULL\n";
+	cwIterator timeoutIterator = window.find(seqN);
+	if (timeoutIterator == window.end()) {
+		std::cout << "CW :: WARNING :: Tried popTimeoutMsg(" << seqN;
+		std::cout << ") but no event in window. returning NULL\n";
 		return NULL;
 	}
+	EventTimeout * event = timeoutIterator->second;
 	logAvailableWin();
-	std::cout << "CW :: @popTimeoutMsg :: Removing seqN " << seqN << " from window\n";
 	msgSendingAmount -= event->getPacketSize();
 	logAvailableWin();
-	window[seqN] = NULL;
+	window.erase(timeoutIterator);
+	std::cout << "CW :: Removed seqN " << seqN << " from window.";
+	std::cout << "\t\t(map size = " << window.size() << ")\n";
 	return event;
+}
+
+bool CongestionWindow::getSlowStart(){
+	return isSlowStartStage;
+}
+
+void CongestionWindow::setSlowStart(bool state) {
+	isSlowStartStage = state;
 }
 
 #endif /* CONGESTIONWINDOW */

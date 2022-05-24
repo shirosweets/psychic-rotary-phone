@@ -50,17 +50,17 @@ y responda:
 - [x] N° de seq.
 - [x] ACK flag.
 - [x] BufferSize.
-- [ ] Ventana de congestión v1.
+- [x] Ventana de congestión v1.
 
 # Segundo diseño
 
-- [ ] Ventana corrediza.
+- [x] Ventana corrediza.
 - [ ] Ventana de congestión v2.
-- [ ] Arranque lento.
-- [ ] Threshold.
+- [x] Arranque lento.
+- [/] Threshold. *(Descartado)*
 - [ ] Retransmisión.
 - [ ] Arranque lento al inicio y luego recuperación rápido.
-- [ ] Timer -> Timeout.
+- [x] Timer -> Timeout.
 
 # Tercer diseño
 
@@ -80,7 +80,7 @@ Network.**.packetByteSize = 12500
 
 Reno Controller
 
-- umbral
+- ~umbral~
 - packetDropped
 - stage
 
@@ -104,7 +104,10 @@ Arreglar el simtime_t del rtt
 
 Implementar los métodos del CongestionController
 
+# Mejoras posibles
 
+Se asume que la cola del Sender es arbitrariamente grande, por lo que no nos concierne su espacio para las retransmisiones. Sino fuese el caso se podría hacer lo siguiente para reducirlo:
+- setear un tamaño fijo en la cola para los paquetes de retransmisión. Este espacio no puede ser ocupado por lo paquetes normales.
 
 
 # OMNet++

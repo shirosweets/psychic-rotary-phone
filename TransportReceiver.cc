@@ -13,8 +13,10 @@ private:
 	cStdDev bufferSizeStdDev;
 	cOutVector bufferSizeVector;
 	cMessage *endServiceEvent;
+
 	void handleSelfMessage(cMessage * msg);
 	void handleVolt(Volt * volt);
+	int getCurrentWindowSize();
 public:
     TransportReceiver();
     virtual ~TransportReceiver();
@@ -49,7 +51,7 @@ void TransportReceiver::finish(){
 }
 
 void TransportReceiver::handleMessage(cMessage * msg) {
-	if(msg->isSelfMessage()){
+	if(msg->isSelfMessage()) {
 		this->handleSelfMessage(msg);
 	} else {
 		this->handleVolt((Volt*) msg);
@@ -57,7 +59,7 @@ void TransportReceiver::handleMessage(cMessage * msg) {
 }
 
 void TransportReceiver::handleSelfMessage(cMessage * msg){
-	if(msg == endServiceEvent){
+	if(msg == endServiceEvent) {
 		// Podemos enviar un nuevo mensaje
 		if(!buffer.isEmpty()){
 			Volt * volt = (Volt *) buffer.pop();
@@ -78,6 +80,7 @@ void TransportReceiver::handleVolt(Volt * volt){
 		ackVolt->setByteLength(9);
 		ackVolt->setAckFlag(true);
 		ackVolt->setSeqNumber(volt->getSeqNumber());
+		ackVolt->setWindowSize(getCurrentWindowSize());
 		send(ackVolt, "subnetwork$o");
 
 		// Hay espacio en el buffer, por lo que
@@ -96,6 +99,13 @@ void TransportReceiver::handleVolt(Volt * volt){
 		delete(volt);
 		this->bubble("volt-dropped");
 	}
+}
+
+int TransportReceiver::getCurrentWindowSize() {
+	int remainingBuffer = par("bufferSize").intValue() - buffer.getLength() - 2;
+	remainingBuffer = remainingBuffer >= 0 ? remainingBuffer : 0;
+	std::cout << "Receiver :: Remaining space in buffer " << remainingBuffer << "\n";
+	return par("packetByteSize").intValue() * remainingBuffer;
 }
 
 #endif /* TRANSPORTRECEIVER */
