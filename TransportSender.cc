@@ -18,6 +18,8 @@ private:
 	cOutVector bufferSizeVector;
 	//cOutVector ackTime;
 
+	int currentControlWindowSize;
+
 	// Events
 	cMessage *rttEvent;
 	cMessage *endServiceEvent;
@@ -35,6 +37,7 @@ private:
 	void handleVoltReceived(Volt * msg);
 	void handlePacketLoss(int seqN);
 	void handleStartNextTransmission();
+	void scheduleServiceIfIdle();
 public:
     TransportSender();
     virtual ~TransportSender();
@@ -71,6 +74,7 @@ void TransportSender::initialize(){
 	congestionWindow.setSize(par("packetByteSize").intValue());
 
 	congestionController = CongestionController();
+	currentControlWindowSize = par("packetByteSize").intValue();
 }
 
 void TransportSender::finish(){
@@ -105,11 +109,7 @@ void TransportSender::handleVoltToSend(Volt * msg) {
 		bufferSizeStdDev.collect(buffer.getLength());
 		bufferSizeVector.record(buffer.getLength());
 
-		// Si no estamos enviando un mensaje ahora mismo
-		if (!endServiceEvent->isScheduled()) {
-			// Empezamos el envío
-			scheduleAt(simTime() + 0, endServiceEvent);
-		}
+		scheduleServiceIfIdle();
 	}
 }
 
@@ -121,8 +121,12 @@ void TransportSender::handleSelfMsg(cMessage * msg) {
 			Volt * volt = (Volt*) buffer.front();
 
 			int packetSize = volt->getByteLength();
-			bool hasCWEnoughSpace = congestionWindow.getAvailableWin() >= packetSize;
-			if (hasCWEnoughSpace) {
+			bool hasCongestionWinEnoughSpace = congestionWindow.getAvailableWin() >= packetSize;
+			int bytesInFlight = congestionController.amountBytesInFlight();
+			bool hasControlWinEnoughSpace = currentControlWindowSize - bytesInFlight >= packetSize;
+			std::cout << "Sender ::  Enough Congestion Window: " << hasCongestionWinEnoughSpace;
+			std::cout << " Enough Control Window: " << hasControlWinEnoughSpace << "\n";
+			if (hasCongestionWinEnoughSpace && hasControlWinEnoughSpace) {
 				// Enviamos el Volt que está al frente de la lista
 				handleStartNextTransmission();
 			}
@@ -174,6 +178,9 @@ void TransportSender::handleVoltReceived(Volt * volt) {
 		//ackTime.record();
 		int seqN = volt->getSeqNumber();
 		std::cout << "Sender :: handling ACK of Volt " << seqN << "\n";
+		currentControlWindowSize = volt->getWindowSize();
+		scheduleServiceIfIdle();
+		std::cout << "Sender :: Current Control WindowSize = " << currentControlWindowSize << "\n";
 		EventTimeout * timeout = congestionWindow.popTimeoutMsg(seqN);
 		if(timeout != NULL) {
 			std::cout << "Sender :: Timeout cancelled due to ACK\n";
@@ -231,16 +238,20 @@ void TransportSender::handlePacketLoss(int seqN) {
 		buffer.insert(volt);
 	}
 
-	// Si no estamos enviando un mensaje ahora mismo
-	if (!endServiceEvent->isScheduled()) {
-		// Empezamos el envío
-		scheduleAt(simTime() + 0, endServiceEvent);
-	}
+	scheduleServiceIfIdle();
 
 	// Actualizar la VC
 	int newCWSize = congestionWindow.getSize() / 2;
 	congestionWindow.setSize(newCWSize);
 	congestionWindow.setSlowStart(false);
+}
+
+void TransportSender::scheduleServiceIfIdle() {
+	// Si no estamos enviando un mensaje ahora mismo
+	if (!endServiceEvent->isScheduled()) {
+		// Empezamos el envío
+		scheduleAt(simTime() + 0, endServiceEvent);
+	}
 }
 
 #endif /* TRANSPORTSENDER */

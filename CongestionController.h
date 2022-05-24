@@ -29,6 +29,7 @@ typedef _pairPacketData * pairPacketData;
 class CongestionController {
 private:
 	int baseWindow = 0;
+    int bytesInFlight = 0;
 	std::map<int,pairPacketData> slidingWindow;
 public:
 	CongestionController();
@@ -42,6 +43,8 @@ public:
 
     int getBaseWindow();
     void setBaseWindow(int base);
+
+    int amountBytesInFlight();
 protected:
 };
 

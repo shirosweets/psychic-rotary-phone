@@ -45,6 +45,7 @@ simple TransportReceiver
 {
     parameters:
         int bufferSize;
+        int packetByteSize;
         @display("i=block/queue;q=buffer");
     gates:
         inout subnetwork;
@@ -95,9 +96,9 @@ module Receiver
         in --> transpRec.subnetwork$i; // Conexion que maneja los paquetes de data entrantes del Sender
         // ** Start Study Cases ** //
         // Case I 
-//        transpRec.appLayerOut --> { datarate = 0.5Mbps; } --> recAppLayer.in; // Desde la queue del receptor a la capa de aplicacion
+        transpRec.appLayerOut --> { datarate = 0.5Mbps; } --> recAppLayer.in; // Desde la queue del receptor a la capa de aplicacion
         // Case II
-         transpRec.appLayerOut --> { datarate = 1Mbps; } --> recAppLayer.in; // Desde la queue del receptor a la capa de aplicacion
+//         transpRec.appLayerOut --> { datarate = 1Mbps; } --> recAppLayer.in; // Desde la queue del receptor a la capa de aplicacion
         // ** End Study Cases ** //
         transpRec.subnetwork$o --> out; // Salida para mandar ACKs
 }
@@ -122,9 +123,9 @@ network Network
         sender.out --> { datarate = 1Mbps; delay = 100us; } --> dataQueue.in;
         // ** Start Study Cases ** //
         // Case I
-//        dataQueue.out --> { datarate = 1Mbps; delay = 100us; } --> rec.in;
+        dataQueue.out --> { datarate = 1Mbps; delay = 100us; } --> rec.in;
         // Case II
-         dataQueue.out --> { datarate = 0.5Mbps; delay = 100us; } --> rec.in;
+//         dataQueue.out --> { datarate = 0.5Mbps; delay = 100us; } --> rec.in;
         // ** End Study Cases ** //
         rec.out --> { datarate = 1Mbps; delay = 100us; } --> ackQueue.in;
         ackQueue.out --> { datarate = 1Mbps; delay = 100us; } --> sender.in;
