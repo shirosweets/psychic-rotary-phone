@@ -6,16 +6,17 @@
 
 class RTTManager {
 private:
-	//
+	double stdDesviation;
+	double rtt;
 public:
-	CongestionController();
-    virtual ~CongestionController();
+	RTTManager();
+    virtual ~RTTManager();
 
     /* RTo = Retransmission Timeout */
-	simtime_t getCurrentRTo();
+	double getCurrentRTo();
 
     /* rtMeasurement = Round Trip Measurement */
-    void updateEstimation(simtime_t rtMeasurement);
+    void updateEstimation(double rtMeasurement);
 protected:
 	//
 };
