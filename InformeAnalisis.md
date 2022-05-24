@@ -80,7 +80,8 @@ El receptor va a recibir mensajes más rápidos de lo que puede procesarlos, eve
 
 Esto es un ejemplo de problemas de *Flujo*
 
-Primero se tomó un intervalo de generación relativamente grande (**`T = 2s`**). Si bien el análisis teórico del problema dice que el receptor tiene un problema de flujo, si se ocupa poco la red no debería haber pédida de paquetes o una mínima pérdida.
+Primero se tomó un intervalo de generación relativamente grande (**`T = 2s`**). Si bien el análisis teórico del problema dice que el receptor tiene un problema de flujo, 
+si se ocupa poco la red no debería haber pédida de paquetes o una mínima pérdida.
 
 ### Mediciones
 
@@ -105,17 +106,6 @@ TODO:: Ver si la unidad de AvDelay es efectivamente segundos
 | 0.14 | 2136 | 1498 | 438 | 30.99 |
 | 0.1 | 2933 | 1498 | 1231 | 35.83 |
 
-> **Notas:**
->
-> *Itv:* Intervalo de Generación
->
-> *Gen:* Paquetes Generados
->
-> *Del:* Paquetes entregados
->
-> *Drop:* Paquetes perdidos **en la cola del receptor**
->
-> *AvDel:* Retraso de entrega promedio
 
 ### Análisis y Conclusión
 
@@ -128,6 +118,59 @@ Con estos datos: Se realizaron los siguientes grafos
 
 ---
 
+## Análisis Caso II
+
+### Hipótesis
+
+| Conexión | Datarase |
+| - | - |
+| entre `emisor` y `nodo intermedio` | **`1Mbps`**
+| entre `TransRx` y `RecAppLayer` | **`0.5Mbps`**
+
+En este caso se percive que la velocidad de generacion es mas rapida que la velocidad de las cola en recibir y enviar al paquete al sink.
+
+De esta manera la cola paulatinamente se llenara y empezara a dropear paquetes.
+
+ Este es un claro problema de congestion, la interred no puede manejar la velocidad del generador y al no haber caminos alternativos siempre habra problemas de congestion.
+
+### Mediciones
+
+| Itv | Gen | Del | Drop | AvDel |
+| - | - | - | - | - |
+| 2.0 | 99 | 99 | 0 | 0.40 |
+| 0.8 | 241 | 241 | 0 | 0.42 |
+| 0.4 | 496 | 493 | 0 | 0.45 |
+| 0.3 | 659 | 655 | 0 | 0.57 |
+| 0.25 | 799 | 793 | 0 | 0.72 |
+| 0.23 | 874 | 871 | 0 | 1.02 |
+| 0.22 | 902 | 901 | 0 | 1.22 |
+| 0.21 | 948 | 944 | 0 | 1.66 |
+| 0.2 | 989 | 976 | 0 | 2.39 |
+| 0.18 | 1104 | 994 | 0 | 10.06 |
+| 0.175 | 1129 | 996 | 0 | 12.34 |
+| 0.17 | 1162 | 997 | 0 | 14.69 |
+| 0.16 | 1238 | 997 | 40 | 19.63 |
+| 0.15 | 1307 | 998 | 108 | 23.62 |
+| 0.14 | 1418 | 998 | 207 | 26.33 |
+| 0.1 | 1979 | 998 | 771 | 32.87 |
+
+### Análisis y Conclusión
+
+*Notar que a partir del rango 0.17 se dejan de perder paquetes si bien la cola esta bastante llena no se pierde ninguno.
+*La carga efectiva no sobrepasa los 998, evidente debido al recorte de velocidad del canal de la cola intermedia al sink;
+*Las colas comienzan a trabajar bacias aproximadamente en el rango 0.2 con solo unos cuantos paquetes dentro de la cola intermedia.
+
+> **Notas:**
+>
+> *Itv:* Intervalo de Generación
+>
+> *Gen:* Paquetes Generados
+>
+> *Del:* Paquetes entregados
+>
+> *Drop:* Paquetes perdidos **en la cola intermedia**
+>
+> *AvDel:* Retraso de entrega promedio
 
 # Análisis de la red con *TLCP*
 > **TLCP** : **Trasport *Limited* Control Protocol**
