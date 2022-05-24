@@ -1,6 +1,6 @@
 packet Volt
 {
-     bool ackFlag = false;
+     bool flags = false;
      int seqNumber;
      int windowSize;
 };

@@ -181,7 +181,7 @@ Register_Class(Volt)
 
 Volt::Volt(const char *name, short kind) : ::omnetpp::cPacket(name,kind)
 {
-    this->ackFlag = false;
+    this->flags = false;
     this->seqNumber = 0;
     this->windowSize = 0;
 }
@@ -205,7 +205,7 @@ Volt& Volt::operator=(const Volt& other)
 
 void Volt::copy(const Volt& other)
 {
-    this->ackFlag = other.ackFlag;
+    this->flags = other.flags;
     this->seqNumber = other.seqNumber;
     this->windowSize = other.windowSize;
 }
@@ -213,7 +213,7 @@ void Volt::copy(const Volt& other)
 void Volt::parsimPack(omnetpp::cCommBuffer *b) const
 {
     ::omnetpp::cPacket::parsimPack(b);
-    doParsimPacking(b,this->ackFlag);
+    doParsimPacking(b,this->flags);
     doParsimPacking(b,this->seqNumber);
     doParsimPacking(b,this->windowSize);
 }
@@ -221,19 +221,82 @@ void Volt::parsimPack(omnetpp::cCommBuffer *b) const
 void Volt::parsimUnpack(omnetpp::cCommBuffer *b)
 {
     ::omnetpp::cPacket::parsimUnpack(b);
-    doParsimUnpacking(b,this->ackFlag);
+    doParsimUnpacking(b,this->flags);
     doParsimUnpacking(b,this->seqNumber);
     doParsimUnpacking(b,this->windowSize);
 }
 
-bool Volt::getAckFlag() const
+bool Volt::getFlags() const
 {
-    return this->ackFlag;
+    return this->flags;
 }
 
-void Volt::setAckFlag(bool ackFlag)
+void Volt::setFlags(bool flags)
 {
-    this->ackFlag = ackFlag;
+    this->flags = flags;
+}
+
+// 7 6 5 4 3 2 1 0 [Bit id]
+// 0 0 0 0 0 0 0 0
+// - - - - - - R A
+// - - - - - - E C
+// - - - - - - T K
+
+#define ACK_FLAG (1 << 0) // 0 //00000001
+#define RET_FLAG (1 << 1) // 1 //00000010
+
+bool Volt::getAckFlag() {
+    return getFlags() & ACK_FLAG;
+}
+
+void Volt::setAckFlag(bool ackFlag) {
+    bool mask = ackFlag ? ACK_FLAG : 0;
+    bool flags = getFlags();
+
+    // Seteamos el ACK en 0
+    // XXXXXXXX flags
+    // 11111110 ~ACK_FLAG  (AND)
+    // XXXXXXX0
+    flags = flags & ~ACK_FLAG;
+
+    // Si era true volvemos a poner esa flag
+    flags = flags | mask;
+    // Caso ackFlag = false
+    // 00000000 mask
+    // XXXXXXX0 getFlags OR
+    // XXXXXXX0 resultado
+    // Caso ackFlag = true
+    // 00000001 mask
+    // XXXXXXX0 getFlags OR
+    // XXXXXXX1 resultado
+    setFlags(flags);
+}
+
+bool Volt::getRetFlag() {
+    return getFlags() & RET_FLAG;
+}
+
+void Volt::setRetFlag(bool retFlag) {
+    bool mask = retFlag ? RET_FLAG : 0;
+    bool flags = getFlags();
+
+    // Seteamos el RET en 0
+    // XXXXXXXX flags
+    // 11111101 ~RET_FLAG  (AND)
+    // XXXXXX0X
+    flags = flags & ~RET_FLAG;
+
+    // Si era true volvemos a poner esa flag
+    flags = flags | mask;
+    // Caso retFlag = false
+    // 00000000 mask
+    // XXXXXX0X getFlags OR
+    // XXXXXX0x resultado
+    // Caso retFlag = true
+    // 00000010 mask
+    // XXXXXX0X getFlags OR
+    // XXXXXX1X resultado
+    setFlags(flags);
 }
 
 int Volt::getSeqNumber() const
@@ -349,7 +412,7 @@ const char *VoltDescriptor::getFieldName(int field) const
         field -= basedesc->getFieldCount();
     }
     static const char *fieldNames[] = {
-        "ackFlag",
+        "flags",
         "seqNumber",
         "windowSize",
     };
@@ -360,7 +423,7 @@ int VoltDescriptor::findField(const char *fieldName) const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     int base = basedesc ? basedesc->getFieldCount() : 0;
-    if (fieldName[0]=='a' && strcmp(fieldName, "ackFlag")==0) return base+0;
+    if (fieldName[0]=='f' && strcmp(fieldName, "flags")==0) return base+0;
     if (fieldName[0]=='s' && strcmp(fieldName, "seqNumber")==0) return base+1;
     if (fieldName[0]=='w' && strcmp(fieldName, "windowSize")==0) return base+2;
     return basedesc ? basedesc->findField(fieldName) : -1;
@@ -446,7 +509,7 @@ std::string VoltDescriptor::getFieldValueAsString(void *object, int field, int i
     }
     Volt *pp = (Volt *)object; (void)pp;
     switch (field) {
-        case 0: return bool2string(pp->getAckFlag());
+        case 0: return bool2string(pp->getFlags());
         case 1: return long2string(pp->getSeqNumber());
         case 2: return long2string(pp->getWindowSize());
         default: return "";
@@ -463,7 +526,7 @@ bool VoltDescriptor::setFieldValueAsString(void *object, int field, int i, const
     }
     Volt *pp = (Volt *)object; (void)pp;
     switch (field) {
-        case 0: pp->setAckFlag(string2bool(value)); return true;
+        case 0: pp->setFlags(string2bool(value)); return true;
         case 1: pp->setSeqNumber(string2long(value)); return true;
         case 2: pp->setWindowSize(string2long(value)); return true;
         default: return false;

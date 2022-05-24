@@ -5,8 +5,8 @@
 #if defined(__clang__)
 #  pragma clang diagnostic ignored "-Wreserved-id-macro"
 #endif
-#ifndef __VOLT_M_H
-#define __VOLT_M_H
+#ifndef __VOLT_H
+#define __VOLT_H
 
 #include <omnetpp.h>
 
@@ -23,7 +23,7 @@
  * <pre>
  * packet Volt
  * {
- *     bool ackFlag = false;
+ *     bool flags = false;
  *     int seqNumber;
  *     int windowSize;
  * }
@@ -32,7 +32,7 @@
 class Volt : public ::omnetpp::cPacket
 {
   protected:
-    bool ackFlag;
+    bool flags;
     int seqNumber;
     int windowSize;
 
@@ -53,8 +53,12 @@ class Volt : public ::omnetpp::cPacket
     virtual void parsimUnpack(omnetpp::cCommBuffer *b) override;
 
     // field getter/setter methods
-    virtual bool getAckFlag() const;
-    virtual void setAckFlag(bool ackFlag);
+    virtual bool getFlags() const;
+    virtual void setFlags(bool flags);
+    bool getAckFlag();
+    void setAckFlag(bool ackFlag);
+    bool getRetFlag(); // Retransmission Flag
+    void setRetFlag(bool retFlag);
     virtual int getSeqNumber() const;
     virtual void setSeqNumber(int seqNumber);
     virtual int getWindowSize() const;
@@ -65,5 +69,5 @@ inline void doParsimPacking(omnetpp::cCommBuffer *b, const Volt& obj) {obj.parsi
 inline void doParsimUnpacking(omnetpp::cCommBuffer *b, Volt& obj) {obj.parsimUnpack(b);}
 
 
-#endif // ifndef __VOLT_M_H
+#endif // ifndef __VOLT_H
 
