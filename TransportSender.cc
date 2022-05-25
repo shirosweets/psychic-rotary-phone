@@ -6,6 +6,7 @@
 #include "Volt.h"
 #include "CongestionWindow.h"
 #include "CongestionController.h"
+#include "RTTManager.h"
 
 #define DUPLICATE_ACK_LIMIT 3
 
@@ -18,8 +19,6 @@ private:
 	cOutVector bufferSizeVector;
 	//cOutVector ackTime;
 
-	int currentControlWindowSize;
-
 	// Events
 	cMessage *rttEvent;
 	cMessage *endServiceEvent;
@@ -28,6 +27,8 @@ private:
 	cQueue buffer;
 
 	// TADs
+	int currentControlWindowSize;
+	RTTManager rttManager;
 	CongestionWindow congestionWindow;
 	CongestionController congestionController;
 
@@ -75,6 +76,7 @@ void TransportSender::initialize(){
 
 	congestionController = CongestionController();
 	currentControlWindowSize = par("packetByteSize").intValue();
+	rttManager = RTTManager();
 }
 
 void TransportSender::finish(){
@@ -165,7 +167,7 @@ void TransportSender::handleStartNextTransmission() {
 	EventTimeout * timeout = new EventTimeout("timeout", EVENT_TIMEOUT_KIND);
 	timeout->setSeqN(volt->getSeqNumber());
 	timeout->setPacketSize(packetSize);
-	scheduleAt(simTime() + par("timeout"), timeout);
+	scheduleAt(simTime() + rttManager.getCurrentRTo(), timeout);
 	congestionWindow.addTimeoutMsg(timeout);
 
 	// Guardamos una copia del Volt en caso que haya que retransmitirlo
@@ -194,12 +196,21 @@ void TransportSender::handleVoltReceived(Volt * volt) {
 		}
 
 		congestionController.addAck(seqN);
+
 		int currentBaseOfSlidingWindow = congestionController.getBaseWindow();
 		if (currentBaseOfSlidingWindow == seqN) {
 			// El ACK que llegó es el que esperábamos
 			// por lo que avanzamos la ventana corrediza
 			// y eliminamos el volt guardado (que hubieramos usado para retrasmitir)
 			Volt * savedPkt = congestionController.popVolt(seqN);
+
+
+			if (!volt->getRetFlag()) {
+				// Actualizamos la estimación de RTT
+				double rtt = (simTime() - savedPkt->getCreationTime()).dbl();
+				rttManager.updateEstimation(rtt);
+			}
+
 			delete(savedPkt);
 			congestionController.setBaseWindow((currentBaseOfSlidingWindow + 1) % 1000);
 			std::cout << "Sender :: Removed Volt " << seqN << " from sliding window\n";
@@ -208,6 +219,8 @@ void TransportSender::handleVoltReceived(Volt * volt) {
 			handlePacketLoss(seqN);
 		}
 		delete(volt);
+	} else {
+		std::cout << "Sender :: ERROR :: Received message through subnetwork that is not ACK\n";
 	}
 }
 

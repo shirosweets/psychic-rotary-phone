@@ -18,13 +18,15 @@ RTTManager::~RTTManager() {
 }
 
 double RTTManager::getCurrentRTo(){
-	return rtt + (4 * stdDesviation);
+	double rTo = rtt + (4 * stdDesviation);
+	std::cout << "RTTManager :: Current RTO = " << rTo << "\n";
+	return rTo;
 }
 
-void RTTManager::updateEstimation(double rtMeasurement){
+void RTTManager::updateEstimation(double rtMeasurement) {
 	double alpha = 0.875;
 	double beta = 0.75;
-	std::cout << "RTTManager :: WARNING :: updateEstimation( " << rtMeasurement << ") ";
+	std::cout << "RTTManager :: updateEstimation( " << rtMeasurement << ") \n";
 	stdDesviation = beta * stdDesviation + (1-beta) * abs(rtt - rtMeasurement);
 	rtt = alpha * rtt + (1-alpha) * rtMeasurement;
 }
