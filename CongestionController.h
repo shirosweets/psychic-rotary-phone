@@ -20,6 +20,7 @@
 struct __pairPacketData {
 	Volt * volt;
 	int ackCounter;
+    double sendTime = 0;
 };
 
 typedef struct __pairPacketData _pairPacketData;
@@ -40,6 +41,9 @@ public:
 
     void addVolt(Volt * volt);
     Volt * popVolt(int seqN);
+
+    double getsendTime(int seqN);
+    void addsendTime(int seqN, double time);
 
     int getBaseWindow();
     void setBaseWindow(int base);

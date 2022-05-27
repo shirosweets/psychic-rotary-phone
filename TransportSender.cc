@@ -15,9 +15,10 @@ using namespace omnetpp;
 class TransportSender : public cSimpleModule {
 private:
 	// Stats
-	cStdDev bufferSizeStdDev;
-	cOutVector bufferSizeVector;
-	//cOutVector ackTime;
+	cStdDev bufferSizeStdSend;
+	cOutVector bufferSizeSend;
+	cOutVector packetDropSend;
+	cOutVector ackTime;
 
 	// Events
 	cMessage *rttEvent;
@@ -61,11 +62,13 @@ TransportSender::~TransportSender() {
 }
 
 void TransportSender::initialize(){
-	bufferSizeVector.setName("bufferSizeVector");
-	bufferSizeStdDev.setName("bufferSizeStdDev");
+	bufferSizeSend.setName("bufferSizeSend");
+	bufferSizeStdSend.setName("bufferSizeStdSend");
+	packetDropSend.setName("packetDropSend");
+	packetDropSend.record(0);
+	ackTime.setName("ackTime");
 
 	buffer.setName("Buffer");
-//	ackTime.setName("AckTime");
 
 	rttEvent = new cMessage("rttEvent");
 	scheduleAt(simTime() + par("rtt"), rttEvent);
@@ -81,7 +84,7 @@ void TransportSender::initialize(){
 
 void TransportSender::finish(){
 	// Stats record at the end of simulation
-	recordScalar("Avg Buffer Size Send", bufferSizeStdDev.getMean());
+	recordScalar("Avg Buffer Size Send", bufferSizeStdSend.getMean());
 }
 
 void TransportSender::handleMessage(cMessage * msg) {
@@ -103,13 +106,14 @@ void TransportSender::handleVoltToSend(Volt * msg) {
 		// No hay espacio en el buffer: Dropeamos el paquete
 		delete(msg);
 		this->bubble("packet-dropped");
+		packetDropSend.record(1);
 	} else {
 		// Hay espacio en el buffer, por lo que
 		// ponemos el paquete en la cola de envío
 		buffer.insert(msg);
 
-		bufferSizeStdDev.collect(buffer.getLength());
-		bufferSizeVector.record(buffer.getLength());
+		bufferSizeStdSend.collect(buffer.getLength());
+		bufferSizeSend.record(buffer.getLength());
 
 		scheduleServiceIfIdle();
 	}
@@ -155,8 +159,8 @@ void TransportSender::handleStartNextTransmission() {
 	std::cout << "Sender :: Current buffer has " << buffer.getLength() << " elements\n";
 	int packetSize = volt->getByteLength();
 
-	bufferSizeStdDev.collect(buffer.getLength());
-	bufferSizeVector.record(buffer.getLength());
+	bufferSizeStdSend.collect(buffer.getLength());
+	bufferSizeSend.record(buffer.getLength());
 
 	send(volt, "subnetwork$o");
 	simtime_t serviceTime = volt->getDuration();
@@ -173,11 +177,12 @@ void TransportSender::handleStartNextTransmission() {
 	// Guardamos una copia del Volt en caso que haya que retransmitirlo
 	Volt * voltCopy = volt->dup();
 	congestionController.addVolt(voltCopy);
+    congestionController.addSendTime(volt->getSeqNumber(), simTime().dbl());
 }
 
 void TransportSender::handleVoltReceived(Volt * volt) {
 	if(volt->getAckFlag()){
-		//ackTime.record();
+//	    ackTime.record(volt->getDuration());  // Revisar
 		int seqN = volt->getSeqNumber();
 		std::cout << "Sender :: handling ACK of Volt " << seqN << "\n";
 		currentControlWindowSize = volt->getWindowSize();
@@ -202,12 +207,12 @@ void TransportSender::handleVoltReceived(Volt * volt) {
 			// El ACK que llegó es el que esperábamos
 			// por lo que avanzamos la ventana corrediza
 			// y eliminamos el volt guardado (que hubieramos usado para retrasmitir)
+		    double sendTime = congestionController.getSendTime(seqN);
 			Volt * savedPkt = congestionController.popVolt(seqN);
-
 
 			if (!volt->getRetFlag()) {
 				// Actualizamos la estimación de RTT
-				double rtt = (simTime() - savedPkt->getCreationTime()).dbl();
+				double rtt = (simTime().dbl() - sendTime);
 				rttManager.updateEstimation(rtt);
 			}
 

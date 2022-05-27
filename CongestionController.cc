@@ -63,6 +63,24 @@ Volt * CongestionController::popVolt(int seqN) {
 	return volt;
 }
 
+double CongestionController::getSendTime(int seqN){
+    windowIterator pairIterator = slidingWindow.find(seqN);
+    if (pairIterator == slidingWindow.end()) {
+        std::cout << "CC :: WARNING :: getSendTime( " << seqN << ") didn't found any pairPacketData";
+        return -1;
+    }
+    return pairIterator->second->sendTime;
+}
+
+void CongestionController::addSendTime(int seqN, double time){
+    windowIterator pairIterator = slidingWindow.find(seqN);
+    if (pairIterator != slidingWindow.end()) {
+        pairPacketData pair = pairIterator->second;
+        pair->sendTime = time;
+        slidingWindow[seqN] = pair;
+    }
+}
+
 int CongestionController::getBaseWindow() {
 	return baseWindow;
 }
