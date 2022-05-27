@@ -4,6 +4,7 @@ out/gcc-release/**
 lab3-net
 results/
 ignore_*
+out/*
 
 __pycache__
 **/.vscode
