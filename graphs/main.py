@@ -33,8 +33,6 @@ def main():
     measurements: list[Measurement] = []
     for filename in validated_filenames:
         measurements.extend(parse_data(filename))
-    for measurement in measurements:
-        print(measurement)
     graph_measurements(measurements)
 
 

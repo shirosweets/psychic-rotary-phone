@@ -1,49 +1,90 @@
-import plotly.express as px
+import matplotlib.pyplot as plt
 
 from measurement import Measurement
 
-def graph_measurements(measurements : list[Measurement]):
+
+def get_axis_data(data: dict, x_label: str, y_label: str):
+    cases = set()
+    for m_dict in data:
+        cases.add(m_dict[Measurement.CASE_TAG])
+    axis = {}
+    case_tag = Measurement.CASE_TAG
+    for case in cases:
+        axis[case] = {}
+        x_points = [m[x_label] for m in data if m[case_tag] == case]
+        y_points = [m[y_label] for m in data if m[case_tag] == case]
+        axis[case]["x_points"] = x_points
+        axis[case]["y_points"] = y_points
+    return axis
+
+
+def graph(
+    measurements,
+    x_tag,
+    y_tag,
+    x_label,
+    y_label,
+    graph_title,
+    xlambda=None,
+    ylambda=None
+):
+    axis = get_axis_data(
+        [m.to_dictionary() for m in measurements],
+        x_tag,
+        y_tag
+    )
+    fig, ax = plt.subplots()
+    for case in axis:
+        print(axis[case]["y_points"])
+        x_points = axis[case]["x_points"]
+        y_points = axis[case]["y_points"]
+
+        if (xlambda is not None):
+            x_points = list(map(xlambda, x_points))
+
+        if (ylambda is not None):
+            y_points = list(map(ylambda, y_points))
+
+        ax.plot(x_points, y_points, label=case)
+    plt.style.use("ggplot")
+    plt.legend()
+    plt.title(graph_title)
+    plt.xlabel(x_label)
+    plt.ylabel(y_label)
+    plt.show()
+
+
+def graph_measurements(measurements: list[Measurement]):
     graph_useful_load_curve(measurements)
     graph_delay_curve(measurements)
     graph_network_overload(measurements)
 
 
-def graph_useful_load_curve(measurements : list[Measurement]):
-    """
-    Eje x: Carga ofrecida: Paquetes por segundo que se enviaron
-    Eje y: Carga util: Paquetes por segundo que se recibieron
-    """
-    data = [m.to_dictionary() for m in measurements]
-
-    fig = px.line(
-        data, x=Measurement.GENRATE_TAG,
-        y=Measurement.DELIVERED_TAG,
-        color=Measurement.CASE_TAG,
-        markers = True
-    )
-    fig.show()
-
-    # x_axis = list(map(generated_pkg_per_s, measurements))
-    # x_label = "Carga Ofrecida [pkg/s]"
-    # y_axis = list(map(received_pkg_per_s, measurements))
-    # y_label = "Carga Util [pkg/s]"
-    # x_axis.insert(0, 0.0)
-    # y_axis.insert(0, 0.0)
-
-    # dataset = [ (x_axis[i], y_axis[i]) for i in range(len(x_axis))]
-    # dataset.insert(0, (0.0,0.0))
-    # for e in dataset:
-    #     print(e)
-    # fig = px.scatter(x=x_axis, y=y_axis)
-    # fig.update_layout(xaxis_title=x_label, yaxis_title=y_label)
-    # fig.show()
+def graph_useful_load_curve(measurements: list[Measurement]):
+    x_tag = Measurement.GENRATE_TAG
+    y_tag = Measurement.RECRATE_TAG
+    x_label = "Carga ofrecida [pkt/seg]"
+    y_label = "Carga util [pkt/seg]"
+    title = "Carga Util vs Ofrecida"
+    graph(measurements, x_tag, y_tag, x_label, y_label, title)
 
 
 def graph_network_overload(measurements):
-    pass
+    x_tag = Measurement.GENRATE_TAG
+    y_tag = Measurement.DROPRATE_TAG
+    x_label = "Paquetes generados [pkt/seg]"
+    y_label = "Pérdida de paquetes [%]"
+    title = "Indice de pérdida de paquetes"
+    def ylambda(x): return x * 100
+    graph(
+        measurements, x_tag, y_tag, x_label, y_label, title, ylambda=ylambda
+    )
 
 
-
-def graph_delay_curve(measurements : list[Measurement]):
-    pass
-
+def graph_delay_curve(measurements: list[Measurement]):
+    x_tag = Measurement.GENRATE_TAG
+    y_tag = Measurement.AVDEL_TAG
+    x_label = "Carga ofrecida [pkt/seg]"
+    y_label = "Retraso promedio [s]"
+    title = "Retraso"
+    graph(measurements, x_tag, y_tag, x_label, y_label, title)

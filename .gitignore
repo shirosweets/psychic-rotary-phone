@@ -6,3 +6,4 @@ results/
 ignore_*
 
 __pycache__
+**/.vscode

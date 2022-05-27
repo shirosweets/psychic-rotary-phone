@@ -1,5 +1,6 @@
 TOTAL_SIMULATION_TIME = 300  # [s]
 
+
 class Measurement:
     CASE_TAG = "Case"
     ITV_TAG = "Generation Interval"
@@ -12,7 +13,6 @@ class Measurement:
     GENRATE_TAG = "Generation Rate"
     RECRATE_TAG = "Reception Rate"
     DROPRATE_TAG = "Drop Rate"
-
 
     def __init__(self, case, itv, gen, delivered, dropQ, dropR, avdel):
         self.case = case
@@ -47,7 +47,7 @@ class Measurement:
     @staticmethod
     def parse(line: str, case: str):
         """
-        Parses a line like `| 2.0 | 144 | 144 | 0 | 0.40 |`
+        Parses a line like `| 2.0 | 144 | 144 | 0 | 0 | 0.40 |`
         to a Measurement instance
         """
         line = "".join(list(filter(lambda ch: ch != " ", line))).strip()
