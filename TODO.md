@@ -5,3 +5,10 @@
 - El receptor nunca manda datos (no responde).
 
 - El receptor asume que siempre recibe en orden.
+
+- Intentar reducir los llamados innecesarios a `dupVolt()`.
+
+- Modificar el 1000 a un valor "dinámico".
+```cpp
+congestionController.setBaseWindow((currentBaseOfSlidingWindow + 1) % 1000);
+```
