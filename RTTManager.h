@@ -17,6 +17,8 @@ public:
 
     /* rtMeasurement = Round Trip Measurement */
     void updateEstimation(double rtMeasurement);
+
+    double getCurrentRTT();
 protected:
 	//
 };

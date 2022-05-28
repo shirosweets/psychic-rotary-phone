@@ -41,9 +41,12 @@ public:
 
     void addVolt(Volt * volt);
     Volt * popVolt(int seqN);
+    Volt * dupVolt(int seqN);
 
-    double getsendTime(int seqN);
-    void addsendTime(int seqN, double time);
+    bool isVoltInWindow(int seqN);
+
+    double getSendTime(int seqN);
+    void addSendTime(int seqN, double time);
 
     int getBaseWindow();
     void setBaseWindow(int base);

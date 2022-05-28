@@ -31,4 +31,8 @@ void RTTManager::updateEstimation(double rtMeasurement) {
 	rtt = alpha * rtt + (1-alpha) * rtMeasurement;
 }
 
+double RTTManager::getCurrentRTT(){
+    return rtt;
+}
+
 #endif
