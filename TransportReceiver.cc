@@ -87,6 +87,7 @@ void TransportReceiver::handleVolt(Volt * volt){
 		Volt *ackVolt = new Volt("packet");
 		ackVolt->setByteLength(9);
 		ackVolt->setAckFlag(true);
+		ackVolt->setRetFlag(volt->getRetFlag());
 		ackVolt->setSeqNumber(volt->getSeqNumber());
 		ackVolt->setWindowSize(getCurrentWindowSize());
 		send(ackVolt, "subnetwork$o");
