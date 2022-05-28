@@ -19,7 +19,7 @@ int CongestionController::getAck(int seqN) {
 	windowIterator pairIterator = slidingWindow.find(seqN);
 	if (pairIterator == slidingWindow.end()) {
 		// No existe en el diccionario
-		std::cout << "CC :: WARNING :: getAck( " << seqN << ") didn't found any pairPacketData";
+		std::cout << "CC :: WARNING :: getAck(" << seqN << ") didn't found any pairPacketData\n";
 		return -1;
 	}
 	return pairIterator->second->ackCounter;
@@ -30,6 +30,7 @@ void CongestionController::addAck(int seqN) {
 	if (pairIterator != slidingWindow.end()) {
 		pairPacketData pair = pairIterator->second;
 		(pair->ackCounter)++;
+		std::cout << "CC :: ackCounter[" << seqN << "]++ " << pair->ackCounter << "\n";
 		slidingWindow[seqN] = pair;
 	}
 }
@@ -45,6 +46,7 @@ void CongestionController::addVolt(Volt * volt) {
 	}
 	slidingWindow[seqN] = newPair;
 	bytesInFlight += volt->getByteLength();
+	std::cout << "CC :: !bytesInFlight " << bytesInFlight << "\n";  // FIXME
 	std::cout << "CC :: Volt " << seqN << " added successfully\n";
 }
 
@@ -57,16 +59,34 @@ Volt * CongestionController::popVolt(int seqN) {
 		delete(pairIterator->second);
 		slidingWindow.erase(pairIterator);
 		bytesInFlight -= volt->getByteLength();
+		std::cout << "CC :: !bytesInFlight " << bytesInFlight << "\n";  // FIXME
 	} else {
 		std::cout << "CC :: WARNING :: popVolt could not find Volt " << seqN << "\n";
 	};
 	return volt;
 }
 
+Volt * CongestionController::dupVolt(int seqN) {
+	Volt * volt = NULL;
+	windowIterator pairIterator = slidingWindow.find(seqN);
+	if(pairIterator != slidingWindow.end()) {
+		std::cout << "CC :: Copying Volt " << seqN << "\n";
+		volt = pairIterator->second->volt->dup();
+	} else {
+		std::cout << "CC :: WARNING :: dupVolt could not find Volt " << seqN << "\n";
+	}
+	return volt;
+}
+
+bool CongestionController::isVoltInWindow(int seqN){
+	windowIterator pairIterator = slidingWindow.find(seqN);
+	return pairIterator != slidingWindow.end();
+}
+
 double CongestionController::getSendTime(int seqN){
     windowIterator pairIterator = slidingWindow.find(seqN);
     if (pairIterator == slidingWindow.end()) {
-        std::cout << "CC :: WARNING :: getSendTime( " << seqN << ") didn't found any pairPacketData";
+        std::cout << "CC :: WARNING :: getSendTime(" << seqN << ") didn't found any pairPacketData\n";
         return -1;
     }
     return pairIterator->second->sendTime;
@@ -91,6 +111,7 @@ void CongestionController::setBaseWindow(int base) {
 }
 
 int CongestionController::amountBytesInFlight() {
+	std::cout << "CC :: bytesInFlight " << bytesInFlight << "\n";
 	return bytesInFlight;
 }
 
