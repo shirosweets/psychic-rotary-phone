@@ -15,16 +15,17 @@ using namespace omnetpp;
 class TransportSender : public cSimpleModule {
 private:
 	// Stats
-	cStdDev bufferSizeStdDev;
-	cOutVector bufferSizeVector;
-	//cOutVector ackTime;
+	cStdDev bufferSizeStdSend;
+	cOutVector bufferSizeSend;
+	cOutVector packetDropSend;
+	cOutVector ackTime;
 
 	// Events
 	cMessage *rttEvent;
 	cMessage *endServiceEvent;
 
-	simtime_t rtt;
 	cQueue buffer;
+	std::list<int> retransmissionQueue;  // seqN
 
 	// TADs
 	int currentControlWindowSize;
@@ -36,6 +37,7 @@ private:
 	void handleVoltToSend(Volt * msg);
 	void handleSelfMsg(cMessage * msg);
 	void handleVoltReceived(Volt * msg);
+	void handleAck(Volt * msg);
 	void handlePacketLoss(int seqN);
 	void handleStartNextTransmission();
 	void scheduleServiceIfIdle();
@@ -51,6 +53,7 @@ protected:
 Define_Module(TransportSender);
 
 TransportSender::TransportSender() {
+	std::cout << std::boolalpha;
 	rttEvent = NULL;
 	endServiceEvent = NULL;
 }
@@ -61,14 +64,17 @@ TransportSender::~TransportSender() {
 }
 
 void TransportSender::initialize(){
-	bufferSizeVector.setName("bufferSizeVector");
-	bufferSizeStdDev.setName("bufferSizeStdDev");
+	bufferSizeSend.setName("bufferSizeSend");
+	bufferSizeStdSend.setName("bufferSizeStdSend");
+	packetDropSend.setName("packetDropSend");
+	packetDropSend.record(0);
+	ackTime.setName("ackTime");
 
 	buffer.setName("Buffer");
-//	ackTime.setName("AckTime");
 
+	rttManager = RTTManager();
 	rttEvent = new cMessage("rttEvent");
-	scheduleAt(simTime() + par("rtt"), rttEvent);
+	scheduleAt(simTime() + rttManager.getCurrentRTT(), rttEvent);
 	endServiceEvent = new cMessage("endService");
 
 	congestionWindow = CongestionWindow();
@@ -76,16 +82,15 @@ void TransportSender::initialize(){
 
 	congestionController = CongestionController();
 	currentControlWindowSize = par("packetByteSize").intValue();
-	rttManager = RTTManager();
 }
 
 void TransportSender::finish(){
 	// Stats record at the end of simulation
-	recordScalar("Avg Buffer Size Send", bufferSizeStdDev.getMean());
+	recordScalar("Avg Buffer Size Send", bufferSizeStdSend.getMean());
 }
 
+/* Handler general que OMNET llama para manejar todos los eventos del modulo */
 void TransportSender::handleMessage(cMessage * msg) {
-	std::cout << "Sender :: [" << msg->getFullName() << "] :: " << msg->str() << "\n";
 	if(msg->isSelfMessage()) {
 		this->handleSelfMsg(msg);
 	} else if (msg->arrivedOn("appLayerIn")) {
@@ -98,36 +103,50 @@ void TransportSender::handleMessage(cMessage * msg) {
 	}
 }
 
+/* Maneja un Volt que viene de la propia capa de aplicacion.
+ * Este volt se desea enviar al receptor */
 void TransportSender::handleVoltToSend(Volt * msg) {
 	if (buffer.getLength() >= par("bufferSize").longValue()) {
 		// No hay espacio en el buffer: Dropeamos el paquete
 		delete(msg);
 		this->bubble("packet-dropped");
+		packetDropSend.record(1);
 	} else {
 		// Hay espacio en el buffer, por lo que
 		// ponemos el paquete en la cola de envío
 		buffer.insert(msg);
 
-		bufferSizeStdDev.collect(buffer.getLength());
-		bufferSizeVector.record(buffer.getLength());
+		bufferSizeStdSend.collect(buffer.getLength());
+		bufferSizeSend.record(buffer.getLength());
 
 		scheduleServiceIfIdle();
 	}
 }
 
+/* Maneja los mensajes creados en el Sender */
 void TransportSender::handleSelfMsg(cMessage * msg) {
 	if (msg == endServiceEvent) {
-		if(!buffer.isEmpty()) {
-			// Chequeamos el tamaño del packet
-			// sin quitarlo de la cola
-			Volt * volt = (Volt*) buffer.front();
+		if(!buffer.isEmpty() || !retransmissionQueue.empty()) {
+			// Chequeamos el tamaño del packet sin quitarlo de la cola
+			int packetSize;
+			
+			if (buffer.isEmpty()) {
+				int retSeqN = retransmissionQueue.front();
+				Volt * auxVolt = congestionController.dupVolt(retSeqN);
+				packetSize = auxVolt->getByteLength();
+				delete(auxVolt);
+			} else {
+				packetSize = ((Volt*) buffer.front())->getByteLength();
+			}
 
-			int packetSize = volt->getByteLength();
 			bool hasCongestionWinEnoughSpace = congestionWindow.getAvailableWin() >= packetSize;
 			int bytesInFlight = congestionController.amountBytesInFlight();
+
+			std::cout << "Sender :: currentControlWindowSize " << currentControlWindowSize << " bytes\n";
 			bool hasControlWinEnoughSpace = currentControlWindowSize - bytesInFlight >= packetSize;
-			std::cout << "Sender ::  Enough Congestion Window: " << hasCongestionWinEnoughSpace;
+			std::cout << "Sender :: Enough Congestion Window: " << hasCongestionWinEnoughSpace;
 			std::cout << " Enough Control Window: " << hasControlWinEnoughSpace << "\n";
+
 			if (hasCongestionWinEnoughSpace && hasControlWinEnoughSpace) {
 				// Enviamos el Volt que está al frente de la lista
 				handleStartNextTransmission();
@@ -141,87 +160,133 @@ void TransportSender::handleSelfMsg(cMessage * msg) {
 			congestionWindow.setSize(congestionWindow.getSize() + par("packetByteSize").longValue());
 		}
 
-		scheduleAt(simTime() + par("rtt"), rttEvent);
+		scheduleAt(simTime() + rttManager.getCurrentRTT(), rttEvent);
 	} else if (msg->getKind() == EVENT_TIMEOUT_KIND) {
-		std::cout << "\nSender :: EVENT_TIMEOUT_KIND\n";
 		EventTimeout * timeout = (EventTimeout*) msg;
-		std::cout << "Sender :: Timeout has passed. SeqN = " << timeout->getSeqN() << "\n";
+		std::cout << "\nSender :: EVENT_TIMEOUT_KIND. SeqN = " << timeout->getSeqN() << "\n";
 		handlePacketLoss(timeout->getSeqN());
 	}
 }
 
+/* Maneja el envío del próximo Volt
+   - Si la queue de retransmisión está vacía, envía el primer Volt del buffer
+   - Sino está vacía, retransmite el Volt de esta queue
+   - Añade el timeout
+ */
 void TransportSender::handleStartNextTransmission() {
-	Volt * volt = (Volt*) buffer.pop();
+	Volt * voltToSend = NULL;
+
+	if(!retransmissionQueue.empty()) {
+		// Retransmitimos el primer mensaje de la queue
+		int retSeqN = retransmissionQueue.front();
+		retransmissionQueue.pop_front();
+
+		voltToSend = congestionController.dupVolt(retSeqN);
+	} else {
+		// No hay que retransmitir mensajes
+		voltToSend = (Volt*) buffer.pop();
+
+		// Guardamos una copia del voltToSend en caso que haya que retransmitirlo
+		Volt * voltCopy = voltToSend->dup();
+		congestionController.addVolt(voltCopy);
+		congestionController.addSendTime(voltToSend->getSeqNumber(), simTime().dbl());
+	}
+
 	std::cout << "Sender :: Current buffer has " << buffer.getLength() << " elements\n";
-	int packetSize = volt->getByteLength();
 
-	bufferSizeStdDev.collect(buffer.getLength());
-	bufferSizeVector.record(buffer.getLength());
+	bufferSizeStdSend.collect(buffer.getLength());
+	bufferSizeSend.record(buffer.getLength());
 
-	send(volt, "subnetwork$o");
-	simtime_t serviceTime = volt->getDuration();
+	send(voltToSend, "subnetwork$o");
+	simtime_t serviceTime = voltToSend->getDuration();
 	scheduleAt(simTime() + serviceTime, endServiceEvent);
 
-	// Añadimos un nuevo evento timeout para
-	// el volt que se está enviando
+	// Añadimos un nuevo evento timeout para el voltToSend que se está enviando
 	EventTimeout * timeout = new EventTimeout("timeout", EVENT_TIMEOUT_KIND);
-	timeout->setSeqN(volt->getSeqNumber());
-	timeout->setPacketSize(packetSize);
+	timeout->setSeqN(voltToSend->getSeqNumber());
+	timeout->setPacketSize(voltToSend->getByteLength());
 	scheduleAt(simTime() + rttManager.getCurrentRTo(), timeout);
 	congestionWindow.addTimeoutMsg(timeout);
-
-	// Guardamos una copia del Volt en caso que haya que retransmitirlo
-	Volt * voltCopy = volt->dup();
-	congestionController.addVolt(voltCopy);
 }
 
+/* */
 void TransportSender::handleVoltReceived(Volt * volt) {
 	if(volt->getAckFlag()){
-		//ackTime.record();
-		int seqN = volt->getSeqNumber();
-		std::cout << "Sender :: handling ACK of Volt " << seqN << "\n";
-		currentControlWindowSize = volt->getWindowSize();
-		scheduleServiceIfIdle();
-		std::cout << "Sender :: Current Control WindowSize = " << currentControlWindowSize << "\n";
-		EventTimeout * timeout = congestionWindow.popTimeoutMsg(seqN);
-		if(timeout != NULL) {
-			std::cout << "Sender :: Timeout cancelled due to ACK\n";
-			cancelEvent(timeout);
-			delete(timeout);
-		}
-
-		if(congestionWindow.getSlowStart()) {
-			// Estamos en arranque lento aumentamos la VC a maxSize(Packet)
-			congestionWindow.setSize(congestionWindow.getSize() + par("packetByteSize").longValue());
-		}
-
-		congestionController.addAck(seqN);
-
-		int currentBaseOfSlidingWindow = congestionController.getBaseWindow();
-		if (currentBaseOfSlidingWindow == seqN) {
-			// El ACK que llegó es el que esperábamos
-			// por lo que avanzamos la ventana corrediza
-			// y eliminamos el volt guardado (que hubieramos usado para retrasmitir)
-			Volt * savedPkt = congestionController.popVolt(seqN);
-
-
-			if (!volt->getRetFlag()) {
-				// Actualizamos la estimación de RTT
-				double rtt = (simTime() - savedPkt->getCreationTime()).dbl();
-				rttManager.updateEstimation(rtt);
-			}
-
-			delete(savedPkt);
-			congestionController.setBaseWindow((currentBaseOfSlidingWindow + 1) % 1000);
-			std::cout << "Sender :: Removed Volt " << seqN << " from sliding window\n";
-		} else if (congestionController.getAck(seqN) >= DUPLICATE_ACK_LIMIT) {
-			std::cout << "\nSender :: DUPLICATE_ACK_LIMIT\n";
-			handlePacketLoss(seqN);
-		}
-		delete(volt);
+		handleAck(volt);
 	} else {
 		std::cout << "Sender :: ERROR :: Received message through subnetwork that is not ACK\n";
 	}
+}
+
+/*
+	Maneja un mensaje de ACK entrante:
+	- Cancelamos el timeout de retransmisión
+	- Actualizamos la ventana de control
+	- Si está en la cola de retransmisión, lo quitamos
+	- Si estamos en slow start, aumenta la VC
+	- Aumentamos el contador de ACK de la SW (Sliding Window)
+	- Si paquete no fue retransmitido antes, actualizamos la estimacion de RTT
+	- Si el ACK es el de la base de la SW, la movemos
+ */
+void TransportSender::handleAck(Volt * volt) {
+//	    ackTime.record(volt->getDuration());  // Revisar
+	int seqN = volt->getSeqNumber();
+	std::cout << "Sender :: handling ACK of Volt " << seqN << "\n";
+
+	std::cout << "Sender :: Current Control WindowSize = " << volt->getWindowSize() << "\n";
+	std::cout << "MIRROR :: Check Volt " << volt << "\n";  // FIXME
+
+	/* ----------------------- CANCEL TIMEOUT ----------------------- */
+	scheduleServiceIfIdle();
+	EventTimeout * timeout = congestionWindow.popTimeoutMsg(seqN);
+	if(timeout != NULL) {
+		std::cout << "Sender :: Timeout cancelled due to ACK\n";
+		cancelEvent(timeout);
+		delete(timeout);
+	}
+
+	/* ------------------- UPDATE CONTROL WINDOW --------------------- */
+	currentControlWindowSize = volt->getWindowSize();
+
+	/* ----------------- POP RETRANSMISSION QUEUE ------------------ */
+	retransmissionQueue.remove(seqN);
+
+	/* ----------------------- SLOW START --------------------------- */
+	if(congestionWindow.getSlowStart()) {
+		// Estamos en arranque lento aumentamos la VC a maxSize(Packet)
+		congestionWindow.setSize(congestionWindow.getSize() + par("packetByteSize").longValue());
+	}
+
+	/* ----------------------- +1 ACK COUNTER ---------------------- */
+	congestionController.addAck(seqN);
+
+
+	/* --------------- UPDATE RTT IF NOT RETRANSMITTED --------------*/
+	double sendTime = congestionController.getSendTime(seqN);  // ?
+
+	Volt * auxVolt = congestionController.dupVolt(seqN);
+
+	if (!auxVolt->getRetFlag()) {
+		// Actualizamos la estimación de RTT
+		double newRtt = (simTime().dbl() - sendTime);
+		rttManager.updateEstimation(newRtt);
+	}
+
+	/* -------------------- MOVE SW IF ACK BASE -------------------*/
+	// Mientras el volt de la base del SW tenga al menos una confirmación de recepción...
+	while (congestionController.getAck(congestionController.getBaseWindow()) > 0){
+		// La base actual del congestionController ya fue confirmada como recibida
+		// eliminamos el volt guardado (que hubieramos usado para retrasmitir)
+		int currentBaseOfSlidingWindow = congestionController.getBaseWindow();
+		Volt * savedPkt = congestionController.popVolt(currentBaseOfSlidingWindow);
+		delete(savedPkt);
+		
+		// Movemos la SW
+		congestionController.setBaseWindow((currentBaseOfSlidingWindow + 1) % 1000);  // FIXME 1000
+	}
+
+	delete(auxVolt);
+	delete(volt);
 }
 
 void TransportSender::handlePacketLoss(int seqN) {
@@ -235,21 +300,9 @@ void TransportSender::handlePacketLoss(int seqN) {
 		delete(timeout);
 	}
 
-	// Obtener la copia del Volt y eliminar de la queue de copias
-	Volt * volt = congestionController.popVolt(seqN);
-
-	if(volt == NULL) {
-		std::cout << "Sender :: ERROR :: function handlePacketLoss can't find copy of volt \n";
-	}
-
-	// Insertar el Volt al inicio de la queue de envíos
-	std::cout << "Buffer size " << buffer.getLength() << "\t front: " << buffer.front() << std::endl;
-	Volt * firstVolt = (Volt*)buffer.front();
-	if(firstVolt != NULL) {
-		buffer.insertBefore(firstVolt, volt);
-	} else {
-		buffer.insert(volt);
-	}
+	// Lo agregamos a la queue de retransmisión
+	retransmissionQueue.push_back(seqN);
+	rttManager.updateTimeoutRTo();
 
 	scheduleServiceIfIdle();
 
@@ -259,10 +312,11 @@ void TransportSender::handlePacketLoss(int seqN) {
 	congestionWindow.setSlowStart(false);
 }
 
+/* */
 void TransportSender::scheduleServiceIfIdle() {
 	// Si no estamos enviando un mensaje ahora mismo
 	if (!endServiceEvent->isScheduled()) {
-		// Empezamos el envío
+		// Scheduleamos el envío
 		scheduleAt(simTime() + 0, endServiceEvent);
 	}
 }

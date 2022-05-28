@@ -20,12 +20,13 @@
 struct __pairPacketData {
 	Volt * volt;
 	int ackCounter;
+    double sendTime = 0;
 };
 
 typedef struct __pairPacketData _pairPacketData;
 typedef _pairPacketData * pairPacketData;
 
-
+/* Sliding Window */
 class CongestionController {
 private:
 	int baseWindow = 0;
@@ -35,15 +36,34 @@ public:
 	CongestionController();
     virtual ~CongestionController();
 
+    /* Retorna la cantidad de ACKs que tiene ese Volt */
     int getAck(int seqN);
+    /* Si hay un volt con ese seqN, incrementa en uno el contador de ACKs */
     void addAck(int seqN);
 
+    /* Agregar el volt a la ventana */
     void addVolt(Volt * volt);
+    /* Retorna el volt de la ventana eliminando su espacio reservado
+     * Retorna NULL si no se encuentra un volt con ese seqN */
     Volt * popVolt(int seqN);
+    /* Retorna una copia del Volt. El usuario debe encargarse de borrarlo
+     * Retorna NULL si no se encuentra un volt con ese seqN */
+    Volt * dupVolt(int seqN);
 
+    /* Retorna si el volt se encuenta en la SW */
+    bool isVoltInWindow(int seqN);
+
+    /* Retorna el tiempo de envío del Volt */
+    double getSendTime(int seqN);
+    /* Agrega el tiempo de envío del Volt */
+    void addSendTime(int seqN, double time);
+
+    /* Retorna el seqN de la base de la SW */
     int getBaseWindow();
+    /* Setea el seqN de la base de la SW */
     void setBaseWindow(int base);
 
+    /* Retorna la cantidad de bytes que se encuentran enviado */
     int amountBytesInFlight();
 protected:
 };

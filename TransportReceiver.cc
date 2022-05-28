@@ -9,11 +9,17 @@ using namespace omnetpp;
 
 class TransportReceiver : public cSimpleModule {
 private:
-	cQueue buffer;
-	cStdDev bufferSizeStdDev;
-	cOutVector bufferSizeVector;
+    // Stats
+	cStdDev bufferSizeStdRec;
+	cOutVector bufferSizeRec;
+	cOutVector packetDropRec;
+
+	// Events
 	cMessage *endServiceEvent;
 
+    cQueue buffer;
+
+	// Methods
 	void handleSelfMessage(cMessage * msg);
 	void handleVolt(Volt * volt);
 	int getCurrentWindowSize();
@@ -37,8 +43,10 @@ TransportReceiver::~TransportReceiver() {
 }
 
 void TransportReceiver::initialize(){
-	bufferSizeVector.setName("bufferSizeVector");
-	bufferSizeStdDev.setName("bufferSizeStdDev");
+	bufferSizeRec.setName("bufferSizeRec");
+	bufferSizeStdRec.setName("bufferSizeStdRec");
+	packetDropRec.setName("packetDropRec");
+	packetDropRec.record(0);
 
 	buffer.setName("buffer");
 
@@ -47,7 +55,7 @@ void TransportReceiver::initialize(){
 
 void TransportReceiver::finish(){
     // Stats record at the end of simulation
-	recordScalar("Avg Buffer Size Rec", bufferSizeStdDev.getMean());
+	recordScalar("Avg Buffer Size Rec", bufferSizeStdRec.getMean());
 }
 
 void TransportReceiver::handleMessage(cMessage * msg) {
@@ -64,8 +72,8 @@ void TransportReceiver::handleSelfMessage(cMessage * msg){
 		if(!buffer.isEmpty()){
 			Volt * volt = (Volt *) buffer.pop();
 
-			bufferSizeStdDev.collect(buffer.getLength());
-			bufferSizeVector.record(buffer.getLength());
+			bufferSizeStdRec.collect(buffer.getLength());
+			bufferSizeRec.record(buffer.getLength());
 
 			send(volt, "appLayerOut");
 			simtime_t serviceTime = volt->getDuration();
@@ -79,6 +87,7 @@ void TransportReceiver::handleVolt(Volt * volt){
 		Volt *ackVolt = new Volt("packet");
 		ackVolt->setByteLength(9);
 		ackVolt->setAckFlag(true);
+		ackVolt->setRetFlag(volt->getRetFlag());
 		ackVolt->setSeqNumber(volt->getSeqNumber());
 		ackVolt->setWindowSize(getCurrentWindowSize());
 		send(ackVolt, "subnetwork$o");
@@ -87,8 +96,8 @@ void TransportReceiver::handleVolt(Volt * volt){
 		// ponemos el paquete en la cola de envío
 		buffer.insert(volt);
 
-		bufferSizeStdDev.collect(buffer.getLength());
-		bufferSizeVector.record(buffer.getLength());
+		bufferSizeStdRec.collect(buffer.getLength());
+		bufferSizeRec.record(buffer.getLength());
 
 		// Si no estamos enviando un mensaje ahora mismo
 		if (!endServiceEvent->isScheduled()) {
@@ -98,6 +107,7 @@ void TransportReceiver::handleVolt(Volt * volt){
 	} else {
 		delete(volt);
 		this->bubble("volt-dropped");
+		packetDropRec.record(1);
 	}
 }
 
