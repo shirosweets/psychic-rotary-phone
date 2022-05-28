@@ -20,6 +20,7 @@
 #endif
 
 
+/* RenoController */
 class CongestionWindow {
 private:
 	int maxSize; // INT_MAX
@@ -53,7 +54,9 @@ public:
 	/* Quita un mensaje de la ventana de congestión y lo devuelve */
 	EventTimeout * popTimeoutMsg(int seqN);
 
+	/* Devuelve si el estado actual de Reno es arranque lento */
     bool getSlowStart();
+	/* Setea si el estado de Reno es arranque lento */
     void setSlowStart(bool state);
 protected:
 	//
