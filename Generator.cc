@@ -3,11 +3,13 @@
 
 #include <string.h>
 #include <omnetpp.h>
+#include "Volt.h"
 
 using namespace omnetpp;
 
 class Generator : public cSimpleModule {
 private:
+	int currentSeqNumber;
     cMessage *sendMsgEvent;
     cStdDev transmissionStats;
 public:
@@ -22,6 +24,7 @@ Define_Module(Generator);
 
 Generator::Generator() {
     sendMsgEvent = NULL;
+    currentSeqNumber = 0;
 }
 
 Generator::~Generator() {
@@ -30,27 +33,34 @@ Generator::~Generator() {
 
 void Generator::initialize() {
     transmissionStats.setName("TotalTransmissions");
-    // create the send packet
+    // Create the send packet
     sendMsgEvent = new cMessage("sendEvent");
-    // schedule the first event at random time
+    // Schedule the first event at random time
     scheduleAt(par("generationInterval"), sendMsgEvent);
 }
 
 void Generator::finish() {
+    recordScalar("Number of packets generated", transmissionStats.getCount());
 }
 
 void Generator::handleMessage(cMessage *msg) {
+    // Create new packet
+    Volt *volt = new Volt("packet");
+    volt->setByteLength(par("packetByteSize"));
+    volt->setAckFlag(false);
+    volt->setSeqNumber(currentSeqNumber);
+    currentSeqNumber = (currentSeqNumber + 1) % 1000; // FIXME
 
-    // create new packet
-    //cMessage *pkt = new cMessage("packet");
-    cPacket *pkt = new cPacket("packet");
-    pkt->setByteLength(par("packetByteSize"));
-    // send to the output
-    send(pkt, "out");
+    // Stats
+    transmissionStats.collect(1);
 
-    // compute the new departure time
+    std::cout << "Generator :: New Packet :: " << volt->getSeqNumber() << "\n";
+    // Send to the output
+    send(volt, "out");
+
+    // Compute the new departure time
     simtime_t departureTime = simTime() + par("generationInterval");
-    // schedule the new packet generation
+    // Schedule the new packet generation
     scheduleAt(departureTime, sendMsgEvent);
 }
 

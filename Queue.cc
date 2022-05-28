@@ -8,11 +8,15 @@ using namespace omnetpp;
 
 class Queue: public cSimpleModule {
 private:
+    // Stats
+    cOutVector bufferSizeQueue;
+    cOutVector packetDropQueue;
+
     cQueue buffer;
-    cMessage *endServiceEvent;
     simtime_t serviceTime;
-    cOutVector bufferSizeVector;
-    cOutVector packetDropVector;
+
+    // Events
+    cMessage *endServiceEvent;
 public:
     Queue();
     virtual ~Queue();
@@ -34,6 +38,10 @@ Queue::~Queue() {
 
 void Queue::initialize() {
     buffer.setName("buffer");
+    bufferSizeQueue.setName("bufferSizeQueue");
+    packetDropQueue.setName("packetDropQueue");
+    packetDropQueue.record(0);
+
     endServiceEvent = new cMessage("endService");
 }
 
@@ -41,16 +49,16 @@ void Queue::finish() {
 }
 
 void Queue::handleMessage(cMessage *msg) {
-    // if msg is signaling an endServiceEvent
     if (msg == endServiceEvent) {
         // if packet in buffer, send next one
         if (!buffer.isEmpty()) {
-            // dequeue packet
-            //cMessage *pkt = (cMessage*) buffer.pop();
+            // Dequeue packet
             cPacket *pkt = (cPacket*) buffer.pop();
-            // send packet
+
+            // Send packet
             send(pkt, "out");
-            // start new service
+
+            // Start new service
             serviceTime = pkt->getDuration();
             scheduleAt(simTime() + serviceTime, endServiceEvent);
         }
@@ -59,12 +67,12 @@ void Queue::handleMessage(cMessage *msg) {
 		    // drop the packet
 		    delete(msg);
 			this->bubble("packet-dropped");
-			packetDropVector.record(1);
+			packetDropQueue.record(1);
 		}
 		else {
-			// enqueue the packet
+			// Enqueue the packet
 			buffer.insert(msg);
-			bufferSizeVector.record(buffer.getLength());
+			bufferSizeQueue.record(buffer.getLength());
 			// if the server is idle
 			if (!endServiceEvent->isScheduled()) {
 				// start the service
