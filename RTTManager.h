@@ -9,6 +9,9 @@ private:
 	double stdDesviation;
 	double rtt;
     double rto;
+    bool isFirstAckReceived;
+    
+    void updateSmoothRTT(double rtMeasurement);
 public:
 	RTTManager();
     virtual ~RTTManager();

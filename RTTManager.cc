@@ -13,6 +13,7 @@ RTTManager::RTTManager() {
 	rtt = 1; // RFC 6298
 	stdDesviation = 0;
 	rto = 1;  // 1s
+	isFirstAckReceived = false;
 }
 
 RTTManager::~RTTManager() {
@@ -29,7 +30,7 @@ void RTTManager::updateTimeoutRTo(){
 	std::cout << "\nRTTManager :: New RTO = " << rto << "\n";
 }
 
-void RTTManager::updateEstimation(double rtMeasurement) {
+void RTTManager::updateSmoothRTT(double rtMeasurement) {
 	double alpha = 0.875;
 	double beta = 0.75;
 	std::cout << "\nRTTManager :: updateEstimation(" << rtMeasurement << ") \n";
@@ -44,6 +45,17 @@ void RTTManager::updateEstimation(double rtMeasurement) {
 
 	rtt = alpha * rtt + (1-alpha) * rtMeasurement;
 	rto = rtt + (4 * stdDesviation);
+}
+
+void RTTManager::updateEstimation(double rtMeasurement) {
+	if (isFirstAckReceived) {
+		updateSmoothRTT(rtMeasurement);
+	} else {
+		rtt = rtMeasurement;
+		stdDesviation = rtt / 2.0;
+		rto = rtt * 3.0;
+		isFirstAckReceived = true;
+	}
 }
 
 double RTTManager::getCurrentRTT(){
