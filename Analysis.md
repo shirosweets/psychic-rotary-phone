@@ -83,8 +83,7 @@ Esto es un ejemplo de problemas de *flujo*.
 
 ### Mediciones
 
-Primero se tomó un intervalo de generación relativamente grande (**`T = 2s`**). Si bien el análisis teórico del problema dice que el receptor tiene un problema de flujo, 
-si se ocupa poco la red no debería haber pédida de paquetes o una mínima pérdida.
+Primero se tomó un intervalo de generación relativamente grande (**`T = 2s`**). Si bien el análisis teórico del problema dice que el receptor tiene un problema de flujo, si se ocupa poco la red no debería haber pédida de paquetes o una mínima pérdida.
 
 | Itv   | Gen  | Del  | Drop Q | Drop R | AvDel [s] |
 |-------|------|------|--------|--------|-----------|
@@ -105,7 +104,7 @@ si se ocupa poco la red no debería haber pédida de paquetes o una mínima pér
 | 0.14  | 2136 | 1498 | 0      | 438    | 30.99     |
 | 0.1   | 2933 | 1498 | 0      | 1231   | 35.83     |
 
-> **Referencia:**
+> **Referencia**
 >
 > *Itv:* Intervalo de Generación
 >
@@ -116,6 +115,9 @@ si se ocupa poco la red no debería haber pédida de paquetes o una mínima pér
 > *Drop:* Paquetes perdidos **en la cola intermedia**
 >
 > *AvDel:* Retraso de entrega promedio
+
+###
+![Caso I Buffer Size](/documents/assets/case_I/case_I_bufferStacked.png)
 
 ### Análisis
 
@@ -159,11 +161,21 @@ Este es un claro problema de congestión, la interred no puede manejar la veloci
 | 0.14  | 2136 | 1498 | 538    | 0      | 17.96     |
 | 0.1   | 2933 | 1498 | 1332   | 0      | 19.98     |
 
+###
+![Caso II Buffer Size](/documents/assets/case_II/case_II_bufferStacked.png)
+
+
+![](/documents/assets/case_II/)
+
 ### Análisis
 
 Comparando con el caso 1 vemos 2 cambios significativos:
-* **Capa de receiver**: En este caso no hay dropeo en la cola del receptor debido a que el datarate es el doble de rapido y por este mismo motivo el delay baja.
-* **Drop Q**: En este caso el datarate entre la cola intermedia y la capa del deceptor se divide a la mitad (de 1Mbps a 0.5Mbps), se mantiene el datarate del generador con la cola intermedia (1Mbps) lo que provoca el llenado de la cola intermedia generando paquetes dropeados.
+* **Capa de receiver**: En este caso no hay dropeo en la cola del receptor debido a que el datarate es el doble de rápido y por este mismo motivo el delay baja.
+* **Drop Q**: En este caso el datarate entre la cola intermedia y la capa del deceptor se divide a la mitad (de 1Mbps a 0.5Mbps), se mantiene el datarate del generador con la cola intermedia (1Mbps) lo que provoca el llenado de la cola intermedia, generando paquetes dropeados.
+
+###
+
+![](/documents/assets/util_vs_ofrecida.png)
 
 # Análisis de la red con *TLCP*
 > **TLCP** : **Trasport *Limited* Control Protocol**
