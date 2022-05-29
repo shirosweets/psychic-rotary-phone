@@ -4,7 +4,7 @@
 #include <string.h>
 #include <omnetpp.h>
 #include "Volt.h"
-#include "CongestionWindow.h"
+#include "RenoManager.h"
 #include "CongestionController.h"
 #include "RTTManager.h"
 
@@ -30,7 +30,7 @@ private:
 	// TADs
 	int currentControlWindowSize;
 	RTTManager rttManager;
-	CongestionWindow congestionWindow;
+	RenoManager renoManager;
 	CongestionController congestionController;
 
 	// Methods
@@ -77,8 +77,8 @@ void TransportSender::initialize(){
 	scheduleAt(simTime() + rttManager.getCurrentRTT(), rttEvent);
 	endServiceEvent = new cMessage("endService");
 
-	congestionWindow = CongestionWindow();
-	congestionWindow.setSize(par("packetByteSize").intValue());
+	renoManager = RenoManager();
+	renoManager.setSize(par("packetByteSize").intValue());
 
 	congestionController = CongestionController();
 	currentControlWindowSize = par("packetByteSize").intValue();
@@ -139,7 +139,7 @@ void TransportSender::handleSelfMsg(cMessage * msg) {
 				packetSize = ((Volt*) buffer.front())->getByteLength();
 			}
 
-			bool hasCongestionWinEnoughSpace = congestionWindow.getAvailableWin() >= packetSize;
+			bool hasCongestionWinEnoughSpace = renoManager.getAvailableWin() >= packetSize;
 			int bytesInFlight = congestionController.amountBytesInFlight();
 
 			std::cout << "Sender :: currentControlWindowSize " << currentControlWindowSize << " bytes\n";
@@ -155,9 +155,9 @@ void TransportSender::handleSelfMsg(cMessage * msg) {
 	} else if (msg == rttEvent) {
 		std::cout << "Sender :: RTT Event\n";
 
-		if (!congestionWindow.getSlowStart()) {
+		if (!renoManager.getSlowStart()) {
 			// Cada RTT Aumentamos en un paquete la VC
-			congestionWindow.setSize(congestionWindow.getSize() + par("packetByteSize").longValue());
+			renoManager.setSize(renoManager.getSize() + par("packetByteSize").longValue());
 		}
 
 		scheduleAt(simTime() + rttManager.getCurrentRTT(), rttEvent);
@@ -206,7 +206,7 @@ void TransportSender::handleStartNextTransmission() {
 	timeout->setSeqN(voltToSend->getSeqNumber());
 	timeout->setPacketSize(voltToSend->getByteLength());
 	scheduleAt(simTime() + rttManager.getCurrentRTo(), timeout);
-	congestionWindow.addTimeoutMsg(timeout);
+	renoManager.addTimeoutMsg(timeout);
 }
 
 /* */
@@ -238,7 +238,7 @@ void TransportSender::handleAck(Volt * volt) {
 
 	/* ----------------------- CANCEL TIMEOUT ----------------------- */
 	scheduleServiceIfIdle();
-	EventTimeout * timeout = congestionWindow.popTimeoutMsg(seqN);
+	EventTimeout * timeout = renoManager.popTimeoutMsg(seqN);
 	if(timeout != NULL) {
 		std::cout << "Sender :: Timeout cancelled due to ACK\n";
 		cancelEvent(timeout);
@@ -252,9 +252,9 @@ void TransportSender::handleAck(Volt * volt) {
 	retransmissionQueue.remove(seqN);
 
 	/* ----------------------- SLOW START --------------------------- */
-	if(congestionWindow.getSlowStart()) {
+	if(renoManager.getSlowStart()) {
 		// Estamos en arranque lento aumentamos la VC a maxSize(Packet)
-		congestionWindow.setSize(congestionWindow.getSize() + par("packetByteSize").longValue());
+		renoManager.setSize(renoManager.getSize() + par("packetByteSize").longValue());
 	}
 
 	/* ----------------------- +1 ACK COUNTER ---------------------- */
@@ -293,7 +293,7 @@ void TransportSender::handlePacketLoss(int seqN) {
 	std::cout << "\nSender :: SeqNumber " << seqN << " from handlePacketLoss\n";
 
 	// Cancelar el timeout actual
-	EventTimeout * timeout = congestionWindow.popTimeoutMsg(seqN);
+	EventTimeout * timeout = renoManager.popTimeoutMsg(seqN);
 
 	if(timeout != NULL){
 		cancelEvent(timeout);
@@ -307,9 +307,9 @@ void TransportSender::handlePacketLoss(int seqN) {
 	scheduleServiceIfIdle();
 
 	// Actualizar la VC
-	int newCWSize = congestionWindow.getSize() / 2;
-	congestionWindow.setSize(newCWSize);
-	congestionWindow.setSlowStart(false);
+	int newCWSize = renoManager.getSize() / 2;
+	renoManager.setSize(newCWSize);
+	renoManager.setSlowStart(false);
 }
 
 /* */

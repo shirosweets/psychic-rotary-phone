@@ -5,8 +5,8 @@
 #if defined(__clang__)
 #  pragma clang diagnostic ignored "-Wreserved-id-macro"
 #endif
-#ifndef __CONGESTIONWINDOW_H
-#define __CONGESTIONWINDOW_H
+#ifndef __RENOMANAGER_H
+#define __RENOMANAGER_H
 
 #include <omnetpp.h>
 #include "EventTimeout.h"
@@ -21,7 +21,7 @@
 
 
 /* RenoController */
-class CongestionWindow {
+class RenoManager {
 private:
 	int maxSize; // INT_MAX
 	int size;
@@ -31,8 +31,8 @@ private:
 	std::map<int, EventTimeout*> window;
 	void logAvailableWin();
 public:
-	CongestionWindow();
-    virtual ~CongestionWindow();
+	RenoManager();
+    virtual ~RenoManager();
 
     /* Retorna el tamaño máximo de la ventana de congestión */
     int getMaxSize();
@@ -62,5 +62,5 @@ protected:
 	//
 };
 
-#endif // ifndef __CONGESTIONWINDOW_H
+#endif // ifndef __RENOMANAGER_H
 

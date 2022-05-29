@@ -42,26 +42,24 @@ Si bien resuelve el problema de flujo e indirectamente el problema de congestió
 ## Evolución del modelo base
 
 # Ventana de congestión
-La primera adición a nuestro modelo fue la `CongestionWindow.h` esta nos permite organizar cuales son los paquetes que estan en la red en todo momento. Un detalle de la implementación es que cuando un paquete es agregado a la ventana inicia el temporizador de un evento del `timeout` de ese paquete, el cual nos sirve para retransmitir paquetes, este modulo es utilizado por la capa del transmisor. Otra característica es la posibilidad de recibir `feedback` de la capa de receptor a través de ACKs.
+La primera adición a nuestro modelo fue `RenoManager.h` (originalmente llamado *CongestionWindow.h*) esta nos permite organizar cuales son los paquetes que estan en la red en todo momento. Un detalle de la implementación es que cuando un paquete es agregado a la ventana inicia el temporizador de un evento del `timeout` de ese paquete, el cual nos sirve para retransmitir paquetes, este modulo es utilizado por la capa del transmisor. Otra característica es la posibilidad de recibir `feedback` de la capa de receptor a través de ACKs.
 
 ```C++
-class CongestionWindow {
+class RenoManager {
 private:
-  int maxSize;
-  int size;
-  int msgSendingAmount;
-  bool isSlowStartStage = true;
-  std::map<int, EventTimeout*> window;
-  void logAvailableWin();
+	int maxSize; // INT_MAX
+	int size;
+	int msgSendingAmount;
+	bool isSlowStartStage;
+	std::map<int, EventTimeout*> window;
+	void logAvailableWin();
 public:
-  CongestionWindow();
-  virtual ~CongestionWindow();
   int getMaxSize();
   int getSize();
-  int getAvailableWin();
-  void setSize(int newSize);
-  void addTimeoutMsg(EventTimeout * msg);
-  EventTimeout * popTimeoutMsg(int seqN);
+	int getAvailableWin();
+	void setSize(int newSize);
+	void addTimeoutMsg(EventTimeout * msg);
+	EventTimeout * popTimeoutMsg(int seqN);
   bool getSlowStart();
   void setSlowStart(bool state);
 }
