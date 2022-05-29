@@ -21,9 +21,19 @@ Redes y Sistemas Distribuidos - Primer cuatrimestre, FAMaF - 2022.
 
 # Cómo correrlo
 
-Se necesita la herramienta de simulación discreta **OMNET++**.
+Se necesita la herramienta de simulación discreta **OMNET++**, [¿cómo descargar Omnet?](#descarga-de-omnet)
 
-## Descarga de Omnet
+Luego se debe importar el proyecto. En [esta sección](#como-importarlo-en-omnet) está paso a paso cómo hacerlo.
+
+## Correr una simulación
+
+Tenemos un makefile que compila el codigo fuente y lanza la simulación:
+
+```bash
+make clean && make run > /dev/null
+```
+
+# Descarga de Omnet
 
 * [Imagen de Lubuntu con Omnet instalada](https://mega.nz/file/eaJUGIQQ#3h_VvTJlkmK3KHGZPiLd6EubADPxfze2JNRtHfcc3A4)
 * [Imagen de docker con Omnet++](https://github.com/mmodenesi/omnetpy)
@@ -37,25 +47,29 @@ Se necesita la herramienta de simulación discreta **OMNET++**.
 
 ## Como importarlo en Omnet
 
+**File > Import**
 <p align="center">
-<img src="documents/assets/guide_import_project_0.png" width="1500" title="Omnet Guide 0">
+<img src="documents/assets/guide_import_project/guide_import_project_0.png" width="300" title="Omnet Guide 0">
+</p>
+
+**General > Projects from Folder or Archivr**
+<p align="center">
+<img src="documents/assets/guide_import_project/guide_import_project_1.png" width="600" title="Omnet Guide 1">
+</p>
+
+**Path del repositorio y le damos aceptar**
+<p align="center">
+<img src="documents/assets/guide_import_project/guide_import_project_2.png" width="600" title="Omnet Guide 2">
 </p>
 
 <p align="center">
-<img src="documents/assets/guide_import_project_1.png" width="1500" title="Omnet Guide 1">
+<img src="documents/assets/guide_import_project/guide_import_project_3.png" width="600" title="Omnet Guide 3">
 </p>
 
+**En caso de que nos aparezca un mensaje emergente, le daremo a YES**
 <p align="center">
-<img src="documents/assets/guide_import_project_2.png" width="1500" title="Omnet Guide 2">
+<img src="documents/assets/guide_import_project/guide_import_project_4.png" width="500" title="Omnet Guide 4">
 </p>
-
-## Correr una simulación
-
-Tenemos un makefile que compila el codigo fuente y lanza la simulación:
-
-```bash
-make clean && make run
-```
 
 ---
 

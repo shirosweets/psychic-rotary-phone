@@ -57,27 +57,22 @@ el módulo de cola existente.
 Las conexiones deberán configurarse con tasas y demoras de transmisión para dos casos de
 estudio específicos:
 
-● Caso de estudio 1:
-○ NodeTx a Queue: datarate = 1 Mbps y delay = 100 us
-○ Queue a NodeRx: datarate = 1 Mbps y delay = 100 us
-○ Queue a Sink: datarate = 0.5 Mbps
+- Caso de estudio 1:
+  - NodeTx a Queue: `datarate = 1 Mbps` y `delay = 100 us`
+  - Queue a NodeRx: **`datarate = 1 Mbps`** y `delay = 100 us`
+  - Queue a Sink: **`datarate = 0.5 Mbps`**
 
-● Caso de estudio 2:
-○ NodeTx a Queue: datarate = 1 Mbps y delay = 100 us
-○ Queue a NodeRx: datarate = 0.5 Mbps y delay = 100 us
-○ Queue a Sink: datarate = 1 Mbps
+- Caso de estudio 2:
+  - NodeTx a Queue: `datarate = 1 Mbps` y `delay = 100 us`
+  - Queue a NodeRx: **`datarate = 0.5 Mbps`** y `delay = 100 us`
+  - Queue a Sink: **`datarate = 1 Mbps`**
 
-El módulo gen deberá tomar como parámetro el tamaño del paquete en Bytes
-(packetByteSize) que tendrá un valor de 12500 Bytes. Los mismos serán generados en
-intervalos de tiempos exponenciales con media de 100 ms.
-Las queue serán limitados en tamaño de buffer (bufferSize), expresado en cantidad de
-paquetes. Se configurará con un valor máximo de 200, salvo la cola del nodo transmisor que se
-dejará arbitrariamente alta (El transmisor, en general, ya tiene en su memoria el contenido que desea transmitir, por lo que el tamaño de su buffer de salida no suele ser una limitante).
+El módulo gen deberá tomar como parámetro el tamaño del paquete en Bytes (packetByteSize) que tendrá un valor de 12500 Bytes. Los mismos serán generados en intervalos de tiempos exponenciales con media de 100 ms.
+
+Las queue serán limitados en tamaño de buffer (bufferSize), expresado en cantidad de paquetes. Se configurará con un valor máximo de 200, salvo la cola del nodo transmisor que se dejará arbitrariamente alta (el transmisor, en general, ya tiene en su memoria el contenido que desea transmitir, por lo que el tamaño de su buffer de salida no suele ser una limitante).
 
 ## Modificaciones en clases de C++
-Los objetos cMessage no tienen parámetros de tamaño en Bytes. Se deberá cambiar por
-objetos cPacket y configurar su tamaño en base al parámetro de configuración
-correspondiente.
+Los objetos `cMessage` no tienen parámetros de tamaño en Bytes. Se deberá cambiar por objetos `cPacket` y configurar su tamaño en base al parámetro de configuración correspondiente.
 
 ```c++
 // create new packet
@@ -208,9 +203,9 @@ escenario permitirá estudiar el algoritmo con ambas funcionalidades operando si
 
 # Requisitos del Código a Entregar
 
-● El código debe ser claro y contener comentarios con detalles de lo que hicieron.
-● Se solicita un informe en el que se presenten los análisis de los experimentos y las respuestas a las preguntas de cada tarea. El informe debe estar escrito en texto plano o Markdown.
-● Las entregas serán a través del repositorio Git provisto por la Facultad para la Cátedra, con fecha límite indicada en el cronograma del aula virtual
+- El código debe ser claro y contener comentarios con detalles de lo que hicieron.
+- Se solicita un informe en el que se presenten los análisis de los experimentos y las respuestas a las preguntas de cada tarea. El informe debe estar escrito en texto plano o Markdown.
+- Las entregas serán a través del repositorio Git provisto por la Facultad para la Cátedra, con fecha límite indicada en el cronograma del aula virtual
 
 # Ayuda Tarea Análisis
 

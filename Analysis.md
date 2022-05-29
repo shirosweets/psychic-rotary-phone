@@ -1,4 +1,3 @@
-
 # Control de Congestión y Flujo en la Capa de Transporte con OMNET++
 
 > Informe de la tarea de Análisis del laboratorio 3 de Redes y Sistemas Distribuidos (1C 2022)
@@ -38,7 +37,7 @@ La red simplificada tiene un `sender` y un `receiver`, y un nodo intermedio `que
 
 El emisor genera paquetes de *12500 bytes* bajo una distribucción exponencial centrada en un tiempo **`T`** y tanto la `queue` intermedia como el receptor tienen un buffer interno para manejar paquetes entrantes.
 
-El receptor tiene un *datarate* interno para su `Sink`. El Sink modela lo que sería la capa de Aplicación del lado del receptor, y este datarate existe para simular problemas de flujo propios del receptor.
+El receptor tiene un *datarate* interno para su `Sink`. El Sink modela lo que sería la capa de aplicación del lado del receptor, y este datarate existe para simular problemas de flujo propios del receptor.
 
 Por razones de conveniencia con respecto a la segunda parte de este análisis, se modificó la simulación original en los siguientes aspectos:
 
@@ -49,7 +48,7 @@ Por razones de conveniencia con respecto a la segunda parte de este análisis, s
 
 ### Introducción a la red con TLCP
 
-La implementación de nuestro algoritmo requiere un canal de vuelta entre el receptor y emisor, por lo que se agregó ese canal con las mismas características (datarate y delay) del nodo intermedio. También en cada caso los parámetros de los enlaces de envío al receptor son los mismos que en la red básica para que sus mediciones sean comparables.
+La implementación de nuestro algoritmo requiere un canal de vuelta entre el receptor y emisor, por lo que se agregó ese canal con las mismas características (`datarate` y `delay`) del **nodo intermedio**. También en cada caso los parámetros de los enlaces de envío al receptor son los mismos que en la red básica para que sus mediciones sean comparables.
 
 ## Presentación del Caso I
 
@@ -76,11 +75,11 @@ La implementación de nuestro algoritmo requiere un canal de vuelta entre el rec
 
 ### Hipótesis
 
-Con esos datos podemos ver a simple vista que existe un cuello de botella entre las dos capas de aplicación que se encuentra en el receptor mismo.
+Con esos datos podemos ver a simple vista que existe un **cuello de botella** entre las dos capas de aplicación que se encuentra en el receptor mismo.
 
-El receptor va a recibir mensajes más rápidos de lo que puede procesarlos, eventualmente generando *droppeos* de paquetes.
+El *receptor* va a recibir mensajes más rápidos de lo que puede procesarlos, eventualmente generando **droppeos** de paquetes.
 
-Esto es un ejemplo de problemas de *Flujo*
+Esto es un ejemplo de problemas de *flujo*.
 
 ### Mediciones
 
@@ -133,11 +132,11 @@ Con estos datos: Se realizaron los siguientes grafos
 
 ### Hipótesis
 
-En este caso se percive que la velocidad de generacion es mas rapida que la velocidad de las cola en recibir y enviar al paquete al sink.
+En este caso se percibe que la velocidad de generación es más rápida que la velocidad de las cola en recibir y enviar al paquete al sink.
 
-De esta manera la cola paulatinamente se llenara y empezara a dropear paquetes.
+De esta manera la cola paulativamente se llenará y empezará a dropear paquetes.
 
-Este es un claro problema de congestion, la interred no puede manejar la velocidad del generador y al no haber caminos alternativos siempre habra problemas de congestion.
+Este es un claro problema de congestión, la interred no puede manejar la velocidad del generador y al no haber caminos alternativos siempre habrá problemas de congestión.
 
 ### Mediciones
 
@@ -163,8 +162,8 @@ Este es un claro problema de congestion, la interred no puede manejar la velocid
 ### Análisis
 
 Comparando con el caso 1 vemos 2 cambios significativos:
-* Capa de receiver: En este caso no hay dropeo en la cola del receptor debido a que el datarate es el doble de rapida por el mismo motivo el delay baja.s
-* Drop Q: En este caso el datarate entre la cola intermedia y la capa del Receptor de divide a la mitad (de 1Mbps a 0.5Mbps), se mantiene el datarate del generador con la cola intermedia (1Mbps) esto provoca el llenado de la cola intermedia generando paquetes dropeados.
+* **Capa de receiver**: En este caso no hay dropeo en la cola del receptor debido a que el datarate es el doble de rapido y por este mismo motivo el delay baja.
+* **Drop Q**: En este caso el datarate entre la cola intermedia y la capa del deceptor se divide a la mitad (de 1Mbps a 0.5Mbps), se mantiene el datarate del generador con la cola intermedia (1Mbps) lo que provoca el llenado de la cola intermedia generando paquetes dropeados.
 
 # Análisis de la red con *TLCP*
 > **TLCP** : **Trasport *Limited* Control Protocol**

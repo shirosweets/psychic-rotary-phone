@@ -4,17 +4,17 @@
 
 **Transport Limited Control Protocol**
 
-**TLCP**, el protocolo de capa de transporte que implementamos, es una aproximación limitada a *TCP-Reno*, por lo que comparte varias de sus características generales. Tiene control de congestion sin tener acceso directo a la subred, y control de flujo mediante una negociación entre hosts.
+**TLCP**, el protocolo de capa de transporte que implementamos, es una aproximación limitada a *TCP-Reno*, por lo que comparte varias de sus características generales. Tiene control de congestión sin tener acceso directo a la subred, y control de flujo mediante una negociación entre hosts.
 
 Las características del algoritmo son las siguientes:
 
  * Segmentos intercambiados de mismo tipo.
    > El tipo de mensaje que se intercambian los host (llamados en nuestra implementación `Sender` y `Receiver`) tanto para mensajes de data como para mensaje de control con el mismo. Lo llamamos **`Volt`**.
  * Ventana de control.
- * Ventana de congestion Reno
+ * Ventana de congestión Reno
    * Arranque lento al inicializar
-   * Seteo de la *VC* (ventana de congestion) a la mitad luego de un timeout
-   * Aumento linear de la *VC* cada RTT de congestion) luego de un timeout
+   * Seteo de la *VC* (ventana de congestión) a la mitad luego de un timeout
+   * Aumento linear de la *VC* cada RTT de congestión) luego de un timeout
  * Temporizador de Retransmisión basado en RTT
  * Estimación suave de RTT basado en tiempo de respuesta.
    > Se implementó **Algoritmo de Jacobson (1988)** y **Algoritmo de Karn**
@@ -29,19 +29,20 @@ Las características del algoritmo son las siguientes:
 
 ## Ideas Preliminares
 
-Desde un principio decidimos que conceptos iba a satisfacer nuestro protocolo: retransmision, control de flujo y control de congestión, formato de paquetes, 
+Desde un principio decidimos que conceptos iba a satisfacer nuestro protocolo:
+  - retransmisión,
+  - control de flujo,
+  - control de congestión,
+  - formato de paquetes, 
 
-El primer acercamiento a nuestra implementación fue el metodo de parada y espera (*stop-and-wait*).
-Este metodo asegura que la información no se pierda y que los paquetes se reciban en orden pero dada su metodología, el rendimiento era peor que el diseño proporcionado por la catedra.
-Por eso descartamos esta implementacion.concluye con un uso pobre de la red.
+El primer acercamiento a nuestra implementación fue el metodo de parada y espera (*stop-and-wait*). Este metodo asegura que la información no se pierda y que los paquetes se reciban en orden pero dada su metodología, pero el rendimiento era peor que el diseño proporcionado por el kickstart de la cátedra. Por esta razón descartamos esta implementación.concluye con un uso pobre de la red.
 
-Si bien resuelve el problema de flujo e indirectamente el problema de congestion debido al extremo desuso de la red.
+Si bien resuelve el problema de flujo e indirectamente el problema de congestión debido al extremo desuso de la red.
 
 ## Evolución del modelo base
 
-# Ventana de congestion
-La primera adición a nuestro modelo fue la `CongestionWindow.h` esta nos permite organizar cuales son los paquetes que estan en la red en todo momento, un detalle de la implementacion es que cuando un paquete es agregado a la ventana inicia el temporizador de un evento del `timeout` de ese paquete el cual nos sirve para retransmitir paquetes, este modulo es utilizado por la capa del transmisor.
-Otra caracteristica es la posibilidad de recibir `feedback` de la capa de receptor atravez de ACKs.
+# Ventana de congestión
+La primera adición a nuestro modelo fue la `CongestionWindow.h` esta nos permite organizar cuales son los paquetes que estan en la red en todo momento. Un detalle de la implementación es que cuando un paquete es agregado a la ventana inicia el temporizador de un evento del `timeout` de ese paquete, el cual nos sirve para retransmitir paquetes, este modulo es utilizado por la capa del transmisor. Otra característica es la posibilidad de recibir `feedback` de la capa de receptor a través de ACKs.
 
 ```C++
 class CongestionWindow {
@@ -66,28 +67,18 @@ public:
 }
 ```
 
-# Controlador de congestion //
+# Controlador de congestión
 
+**Decisiones de diseño**
 
-
-
-
-
-
-
-**Decisiones de diseño**- Solo actualizamos el RTT cuando no sean acks duplicados ni retransmitidos.
+- Solo actualizamos el RTT cuando no sean acks duplicados ni retransmitidos.
 - Nunca vamos a tener acks duplicados que no seas paquetes retransmitidos.
 
 # 
 
-# Primera version
+# Primera versión
 
 Lo primero que apuntamos
-
-
-
-
-
 
 ----
 
@@ -104,7 +95,7 @@ RTT Dynamic
 
 ## `Volt`
 
-El paquete que se intercambian los host se llama Volt, y fue generado con la herramienta de template que ofrece omnet: `opp_msgc` con el template siguiente:
+El paquete que se intercambian los hosts se llama *Volt*, y fue generado con la herramienta de template que ofrece omnet (`opp_msgc`) con el siguiente template:
 
 ```C++
 packet Volt
