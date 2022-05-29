@@ -9,14 +9,20 @@
   - [Index](#index)
   - [Abstract](#abstract)
 - [Análisis de la red sin control de congestión ni flujo](#análisis-de-la-red-sin-control-de-congestión-ni-flujo)
-  - [Introducción a la red](#introducción-a-la-red)
-    - [Caso I](#caso-i)
-    - [Caso II](#caso-ii)
-  - [Análisis Caso I](#análisis-caso-i)
+  - [Introducción a la red básica](#introducción-a-la-red-básica)
+    - [Introducción a la red con TLCP](#introducción-a-la-red-con-tlcp)
+  - [Presentación del Caso I](#presentación-del-caso-i)
+  - [Presentación del Caso II](#presentación-del-caso-ii)
+  - [Análisis del Caso I](#análisis-del-caso-i)
     - [Hipótesis](#hipótesis)
     - [Mediciones](#mediciones)
-    - [Análisis y Conclusión](#análisis-y-conclusión)
+    - [Análisis](#análisis)
+  - [Análisis Caso II](#análisis-caso-ii)
+    - [Hipótesis](#hipótesis-1)
+    - [Mediciones](#mediciones-1)
+    - [Análisis](#análisis-1)
 - [Análisis de la red con *TLCP*](#análisis-de-la-red-con-tlcp)
+  - [Pantallazo a *Transport Limited Control Protocol*](#pantallazo-a-transport-limited-control-protocol)
 
 ## Abstract
 
@@ -30,7 +36,7 @@ La red simplificada tiene un `sender` y un `receiver`, y un nodo intermedio `que
 
 ![Red Básica](documents/assets/case_1_network.png)
 
-El emisor genera paquetes de *12500 bytes* bajo una distribucción exponencial centrada en un tiempo **`T`** y tanto la `queue` intermedia como el receptor tienen un buffer interno para manejar.
+El emisor genera paquetes de *12500 bytes* bajo una distribucción exponencial centrada en un tiempo **`T`** y tanto la `queue` intermedia como el receptor tienen un buffer interno para manejar paquetes entrantes.
 
 El receptor tiene un *datarate* interno para su `Sink`. El Sink modela lo que sería la capa de Aplicación del lado del receptor, y este datarate existe para simular problemas de flujo propios del receptor.
 
@@ -41,18 +47,18 @@ Por razones de conveniencia con respecto a la segunda parte de este análisis, s
  * El largo de la simulación se aumentó de **200 segundos** a **300 segundos**
     > Esto para normalizar aun más los datos estadísticos provenientes de la generación azarosa de paquetes.
 
-## Introducción a la red con TLCP
+### Introducción a la red con TLCP
 
 La implementación de nuestro algoritmo requiere un canal de vuelta entre el receptor y emisor, por lo que se agregó ese canal con las mismas características (datarate y delay) del nodo intermedio. También en cada caso los parámetros de los enlaces de envío al receptor son los mismos que en la red básica para que sus mediciones sean comparables.
 
-### Presentación del Caso I
+## Presentación del Caso I
 
 | Conexión | Datarase |
 | - | - |
 | entre `emisor` y `nodo intermedio` | **`1.0Mbps`**
 | entre `TransRx` y `RecAppLayer` | **`0.5Mbps`**
 
-### Presentación del Caso II
+## Presentación del Caso II
 
 | Conexión | Datarase |
 | - | - |
@@ -100,7 +106,19 @@ si se ocupa poco la red no debería haber pédida de paquetes o una mínima pér
 | 0.14 | 2136 | 1498 | 0 | 438 | 30.99 |
 | 0.1 | 2933 | 1498 | 0 | 1231 | 35.83 |
 
-### Análisis y Conclusión
+> **Referencia:**
+>
+> *Itv:* Intervalo de Generación
+>
+> *Gen:* Paquetes Generados
+>
+> *Del:* Paquetes entregados
+>
+> *Drop:* Paquetes perdidos **en la cola intermedia**
+>
+> *AvDel:* Retraso de entrega promedio
+
+### Análisis
 
 * Se puede notar que hasta el rango de aproximadamente 0.25 de intervalo la red no tiene ningún tipo de retraso. Las colas están prácticamente todo el tiempo vacías
 * Luego de eso hasta el rango 0.18 las colas comienzan a llenarse pero todavía no se pierden paquetes. El problema comienza a vislumbrarse, lo cual se manifiesta en que retraso promedio que suba en 2 órdenes de magnitud (de 0.4 -> 14.52).
@@ -119,7 +137,7 @@ En este caso se percive que la velocidad de generacion es mas rapida que la velo
 
 De esta manera la cola paulatinamente se llenara y empezara a dropear paquetes.
 
- Este es un claro problema de congestion, la interred no puede manejar la velocidad del generador y al no haber caminos alternativos siempre habra problemas de congestion.
+Este es un claro problema de congestion, la interred no puede manejar la velocidad del generador y al no haber caminos alternativos siempre habra problemas de congestion.
 
 ### Mediciones
 
@@ -142,23 +160,14 @@ De esta manera la cola paulatinamente se llenara y empezara a dropear paquetes.
 | 0.14 | 2136 | 1498 | 538 | 0 | 17.96 |
 | 0.1 | 2933 | 1498 | 1332 | 0 | 19.98 |
 
-### Análisis y Conclusión
+### Análisis
 
-* Comparando con el caso 1 vemos 2 cambios significativos:
-* Capa de receiver: En este caso no hay dropeo en la cola del NodeRx debido a que el datarate es el doble de rapida por el mismo motivo el delay baja
-* Drop Q: En este caso el datarate entre la cola intermedia y la capa del NodeRx de divide a la mitad (de 1Mbps a 0.5Mbps), se mantiene el datarate del generador con la cola intermedia (1Mbps) esto provoca el llenado de la cola intermedia generando paquetes dropeados.
-
-> **Notas:**
->
-> *Itv:* Intervalo de Generación
->
-> *Gen:* Paquetes Generados
->
-> *Del:* Paquetes entregados
->
-> *Drop:* Paquetes perdidos **en la cola intermedia**
->
-> *AvDel:* Retraso de entrega promedio
+Comparando con el caso 1 vemos 2 cambios significativos:
+* Capa de receiver: En este caso no hay dropeo en la cola del receptor debido a que el datarate es el doble de rapida por el mismo motivo el delay baja.s
+* Drop Q: En este caso el datarate entre la cola intermedia y la capa del Receptor de divide a la mitad (de 1Mbps a 0.5Mbps), se mantiene el datarate del generador con la cola intermedia (1Mbps) esto provoca el llenado de la cola intermedia generando paquetes dropeados.
 
 # Análisis de la red con *TLCP*
 > **TLCP** : **Trasport *Limited* Control Protocol**
+
+## Pantallazo a *Transport Limited Control Protocol*
+
