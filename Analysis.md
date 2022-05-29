@@ -52,17 +52,17 @@ La implementación de nuestro algoritmo requiere un canal de vuelta entre el rec
 
 ## Presentación del Caso I
 
-| Conexión | Datarase |
-| - | - |
-| entre `emisor` y `nodo intermedio` | **`1.0Mbps`**
-| entre `TransRx` y `RecAppLayer` | **`0.5Mbps`**
+| Conexión                           | Datarase      |
+| ---------------------------------- | ------------- |
+| entre `TransRx` y `RecAppLayer`    | **`0.5Mbps`** |
+| entre `emisor` y `nodo intermedio` | **`1.0Mbps`** |
 
 ## Presentación del Caso II
 
-| Conexión | Datarase |
-| - | - |
-| entre `emisor` y `nodo intermedio` | **`0.5Mbps`**
-| entre `TransRx` y `RecAppLayer` | **`1.0Mbps`**
+| Conexión                           | Datarase      |
+| ---------------------------------- | ------------- |
+| entre `TransRx` y `RecAppLayer`    | **`1.0Mbps`** |
+| entre `emisor` y `nodo intermedio` | **`0.5Mbps`** |
 
 ---
 > `TransRx` : Capa de transporte del Receptor
@@ -83,27 +83,26 @@ Esto es un ejemplo de problemas de *flujo*.
 
 ### Mediciones
 
-Primero se tomó un intervalo de generación relativamente grande (**`T = 2s`**). Si bien el análisis teórico del problema dice que el receptor tiene un problema de flujo, 
-si se ocupa poco la red no debería haber pédida de paquetes o una mínima pérdida.
+Primero se tomó un intervalo de generación relativamente grande (**`T = 2s`**). Si bien el análisis teórico del problema dice que el receptor tiene un problema de flujo, si se ocupa poco la red no debería haber pédida de paquetes o una mínima pérdida.
 
-| Itv | Gen | Del | Drop Q | Drop R | AvDel [s] |
-| - | - | - | - | - | - |
-| 2.0 | 144 | 144 | 0 | 0 | 0.40 |
-| 0.8 | 367 | 367 | 0 | 0 | 0.43 |
-| 0.4 | 754 | 754 | 0 | 0 | 0.49 |
-| 0.3 | 989 | 989 | 0 | 0 | 0.58 |
-| 0.25 | 1190 | 1187 | 0 | 0 | 0.72 |
-| 0.23 | 1280 | 1279 | 0 | 0 | 0.94 |
-| 0.22 | 1344 | 1344 | 0 | 0 | 1.11 |
-| 0.21 | 1418 | 1401 | 0 | 0 | 1.49 |
-| 0.2 | 1494 | 1469 | 0 | 0 | 2.41 |
-| 0.18 | 1664 | 1494 | 0 | 0 | 14.52 |
-| 0.175 | 1710 | 1496 | 0 | 15 | 18.07 |
-| 0.17 | 1763 | 1497 | 0 | 65 | 21.54 |
-| 0.16 | 1867 | 1497 | 0 | 166 | 26.45 |
-| 0.15 | 1979 | 1498 | 0 | 278 | 29.16 |
-| 0.14 | 2136 | 1498 | 0 | 438 | 30.99 |
-| 0.1 | 2933 | 1498 | 0 | 1231 | 35.83 |
+| Itv   | Gen  | Del  | Drop Q | Drop R | AvDel [s] |
+| ----- | ---- | ---- | ------ | ------ | --------- |
+| 0.1   | 2933 | 1498 | 0      | 1231   | 35.83     |
+| 0.14  | 2136 | 1498 | 0      | 438    | 30.99     |
+| 0.15  | 1979 | 1498 | 0      | 278    | 29.16     |
+| 0.16  | 1867 | 1497 | 0      | 166    | 26.45     |
+| 0.17  | 1763 | 1497 | 0      | 65     | 21.54     |
+| 0.175 | 1710 | 1496 | 0      | 15     | 18.07     |
+| 0.18  | 1664 | 1494 | 0      | 0      | 14.52     |
+| 0.2   | 1494 | 1469 | 0      | 0      | 2.41      |
+| 0.21  | 1418 | 1401 | 0      | 0      | 1.49      |
+| 0.22  | 1344 | 1344 | 0      | 0      | 1.11      |
+| 0.23  | 1280 | 1279 | 0      | 0      | 0.94      |
+| 0.25  | 1190 | 1187 | 0      | 0      | 0.72      |
+| 0.3   | 989  | 989  | 0      | 0      | 0.58      |
+| 0.4   | 754  | 754  | 0      | 0      | 0.49      |
+| 0.8   | 367  | 367  | 0      | 0      | 0.43      |
+| 2.0   | 144  | 144  | 0      | 0      | 0.40      |
 
 > **Referencia:**
 >
@@ -140,24 +139,24 @@ Este es un claro problema de congestión, la interred no puede manejar la veloci
 
 ### Mediciones
 
-| Itv | Gen | Del | Drop Q | Drop R | AvDel [s] |
-| - | - | - | - | - | - |
-| 2.0 | 144 | 144 | 0 | 0 | 0.40 |
-| 0.8 | 367 | 367 | 0 | 0 | 0.43 |
-| 0.4 | 754 | 754 | 0 | 0 | 0.49 |
-| 0.3 | 989 | 989 | 0 | 0 | 0.58 |
-| 0.25 | 1190 | 1187 | 0 | 0 | 0.72 |
-| 0.23 | 1280 | 1279 | 0 | 0 | 0.94 |
-| 0.22 | 1344 | 1334 | 0 | 0 | 1.11 |
-| 0.21 | 1418 | 1401 | 0 | 0 | 1.49 |
-| 0.2 | 1494 | 1469 | 0 | 0 | 2.41 |
-| 0.18 | 1664 | 1494 | 67 | 0 | 13.25 |
-| 0.175 | 1710 | 1496 | 115 | 0 | 14.41 |
-| 0.17 | 1763 | 1497 | 165 | 0 | 15.25 |
-| 0.16 | 1867 | 1497 | 266 | 0 | 16.59 |
-| 0.15 | 1979 | 1498 | 379 | 0 | 17.40 |
-| 0.14 | 2136 | 1498 | 538 | 0 | 17.96 |
-| 0.1 | 2933 | 1498 | 1332 | 0 | 19.98 |
+| Itv   | Gen  | Del  | Drop Q | Drop R | AvDel [s] |
+| ----- | ---- | ---- | ------ | ------ | --------- |
+| 0.1   | 2933 | 1498 | 1332   | 0      | 19.98     |
+| 0.14  | 2136 | 1498 | 538    | 0      | 17.96     |
+| 0.15  | 1979 | 1498 | 379    | 0      | 17.40     |
+| 0.16  | 1867 | 1497 | 266    | 0      | 16.59     |
+| 0.17  | 1763 | 1497 | 165    | 0      | 15.25     |
+| 0.175 | 1710 | 1496 | 115    | 0      | 14.41     |
+| 0.18  | 1664 | 1494 | 67     | 0      | 13.25     |
+| 0.2   | 1494 | 1469 | 0      | 0      | 2.41      |
+| 0.21  | 1418 | 1401 | 0      | 0      | 1.49      |
+| 0.22  | 1344 | 1334 | 0      | 0      | 1.11      |
+| 0.23  | 1280 | 1279 | 0      | 0      | 0.94      |
+| 0.25  | 1190 | 1187 | 0      | 0      | 0.72      |
+| 0.3   | 989  | 989  | 0      | 0      | 0.58      |
+| 0.4   | 754  | 754  | 0      | 0      | 0.49      |
+| 0.8   | 367  | 367  | 0      | 0      | 0.43      |
+| 2.0   | 144  | 144  | 0      | 0      | 0.40      |
 
 ### Análisis
 
