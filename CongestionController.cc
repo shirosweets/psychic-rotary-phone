@@ -9,13 +9,13 @@ using namespace omnetpp;
 
 typedef std::map<int,pairPacketData>::iterator windowIterator;
 
-CongestionController::CongestionController() {
+SlidingWindow::SlidingWindow() {
 }
 
-CongestionController::~CongestionController() {
+SlidingWindow::~SlidingWindow() {
 }
 
-int CongestionController::getAck(int seqN) {
+int SlidingWindow::getAck(int seqN) {
 	windowIterator pairIterator = slidingWindow.find(seqN);
 	if (pairIterator == slidingWindow.end()) {
 		// No existe en el diccionario
@@ -25,7 +25,7 @@ int CongestionController::getAck(int seqN) {
 	return pairIterator->second->ackCounter;
 }
 
-void CongestionController::addAck(int seqN) {
+void SlidingWindow::addAck(int seqN) {
 	windowIterator pairIterator = slidingWindow.find(seqN);
 	if (pairIterator != slidingWindow.end()) {
 		pairPacketData pair = pairIterator->second;
@@ -35,7 +35,7 @@ void CongestionController::addAck(int seqN) {
 	}
 }
 
-void CongestionController::addVolt(Volt * volt) {
+void SlidingWindow::addVolt(Volt * volt) {
 	int seqN = volt->getSeqNumber();
 	std::cout << "CC :: Adding Volt " << seqN << " to congestion controller\n";
 	pairPacketData newPair = new _pairPacketData();
@@ -50,7 +50,7 @@ void CongestionController::addVolt(Volt * volt) {
 	std::cout << "CC :: Volt " << seqN << " added successfully\n";
 }
 
-Volt * CongestionController::popVolt(int seqN) {
+Volt * SlidingWindow::popVolt(int seqN) {
 	Volt * volt = NULL;
 	windowIterator pairIterator = slidingWindow.find(seqN);
 	if (pairIterator != slidingWindow.end()) {
@@ -66,7 +66,7 @@ Volt * CongestionController::popVolt(int seqN) {
 	return volt;
 }
 
-Volt * CongestionController::dupVolt(int seqN) {
+Volt * SlidingWindow::dupVolt(int seqN) {
 	Volt * volt = NULL;
 	windowIterator pairIterator = slidingWindow.find(seqN);
 	if(pairIterator != slidingWindow.end()) {
@@ -78,12 +78,12 @@ Volt * CongestionController::dupVolt(int seqN) {
 	return volt;
 }
 
-bool CongestionController::isVoltInWindow(int seqN){
+bool SlidingWindow::isVoltInWindow(int seqN){
 	windowIterator pairIterator = slidingWindow.find(seqN);
 	return pairIterator != slidingWindow.end();
 }
 
-double CongestionController::getSendTime(int seqN){
+double SlidingWindow::getSendTime(int seqN){
     windowIterator pairIterator = slidingWindow.find(seqN);
     if (pairIterator == slidingWindow.end()) {
         std::cout << "CC :: WARNING :: getSendTime(" << seqN << ") didn't found any pairPacketData\n";
@@ -92,7 +92,7 @@ double CongestionController::getSendTime(int seqN){
     return pairIterator->second->sendTime;
 }
 
-void CongestionController::addSendTime(int seqN, double time){
+void SlidingWindow::addSendTime(int seqN, double time){
     windowIterator pairIterator = slidingWindow.find(seqN);
     if (pairIterator != slidingWindow.end()) {
         pairPacketData pair = pairIterator->second;
@@ -101,16 +101,16 @@ void CongestionController::addSendTime(int seqN, double time){
     }
 }
 
-int CongestionController::getBaseWindow() {
+int SlidingWindow::getBaseWindow() {
 	return baseWindow;
 }
 
-void CongestionController::setBaseWindow(int base) {
+void SlidingWindow::setBaseWindow(int base) {
 	std::cout << "CC :: Moving Sliding Window from " << baseWindow << " to " << base << "\n";
 	baseWindow = base;
 }
 
-int CongestionController::amountBytesInFlight() {
+int SlidingWindow::amountBytesInFlight() {
 	std::cout << "CC :: bytesInFlight " << bytesInFlight << "\n";
 	return bytesInFlight;
 }

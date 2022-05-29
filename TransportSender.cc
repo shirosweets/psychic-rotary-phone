@@ -31,7 +31,7 @@ private:
 	int currentControlWindowSize;
 	RTTManager rttManager;
 	RenoManager renoManager;
-	CongestionController congestionController;
+	SlidingWindow slidingWindow;
 
 	// Methods
 	void handleVoltToSend(Volt * msg);
@@ -80,7 +80,7 @@ void TransportSender::initialize(){
 	renoManager = RenoManager();
 	renoManager.setSize(par("packetByteSize").intValue());
 
-	congestionController = CongestionController();
+	slidingWindow = SlidingWindow();
 	currentControlWindowSize = par("packetByteSize").intValue();
 }
 
@@ -132,7 +132,7 @@ void TransportSender::handleSelfMsg(cMessage * msg) {
 			
 			if (buffer.isEmpty()) {
 				int retSeqN = retransmissionQueue.front();
-				Volt * auxVolt = congestionController.dupVolt(retSeqN);
+				Volt * auxVolt = slidingWindow.dupVolt(retSeqN);
 				packetSize = auxVolt->getByteLength();
 				delete(auxVolt);
 			} else {
@@ -140,7 +140,7 @@ void TransportSender::handleSelfMsg(cMessage * msg) {
 			}
 
 			bool hasCongestionWinEnoughSpace = renoManager.getAvailableWin() >= packetSize;
-			int bytesInFlight = congestionController.amountBytesInFlight();
+			int bytesInFlight = slidingWindow.amountBytesInFlight();
 
 			std::cout << "Sender :: currentControlWindowSize " << currentControlWindowSize << " bytes\n";
 			bool hasControlWinEnoughSpace = currentControlWindowSize - bytesInFlight >= packetSize;
@@ -181,15 +181,15 @@ void TransportSender::handleStartNextTransmission() {
 		int retSeqN = retransmissionQueue.front();
 		retransmissionQueue.pop_front();
 
-		voltToSend = congestionController.dupVolt(retSeqN);
+		voltToSend = slidingWindow.dupVolt(retSeqN);
 	} else {
 		// No hay que retransmitir mensajes
 		voltToSend = (Volt*) buffer.pop();
 
 		// Guardamos una copia del voltToSend en caso que haya que retransmitirlo
 		Volt * voltCopy = voltToSend->dup();
-		congestionController.addVolt(voltCopy);
-		congestionController.addSendTime(voltToSend->getSeqNumber(), simTime().dbl());
+		slidingWindow.addVolt(voltCopy);
+		slidingWindow.addSendTime(voltToSend->getSeqNumber(), simTime().dbl());
 	}
 
 	std::cout << "Sender :: Current buffer has " << buffer.getLength() << " elements\n";
@@ -258,13 +258,13 @@ void TransportSender::handleAck(Volt * volt) {
 	}
 
 	/* ----------------------- +1 ACK COUNTER ---------------------- */
-	congestionController.addAck(seqN);
+	slidingWindow.addAck(seqN);
 
 
 	/* --------------- UPDATE RTT IF NOT RETRANSMITTED --------------*/
-	double sendTime = congestionController.getSendTime(seqN);  // ?
+	double sendTime = slidingWindow.getSendTime(seqN);  // ?
 
-	Volt * auxVolt = congestionController.dupVolt(seqN);
+	Volt * auxVolt = slidingWindow.dupVolt(seqN);
 
 	if (!auxVolt->getRetFlag()) {
 		// Actualizamos la estimación de RTT
@@ -274,15 +274,15 @@ void TransportSender::handleAck(Volt * volt) {
 
 	/* -------------------- MOVE SW IF ACK BASE -------------------*/
 	// Mientras el volt de la base del SW tenga al menos una confirmación de recepción...
-	while (congestionController.getAck(congestionController.getBaseWindow()) > 0){
-		// La base actual del congestionController ya fue confirmada como recibida
+	while (slidingWindow.getAck(slidingWindow.getBaseWindow()) > 0){
+		// La base actual del slidingWindow ya fue confirmada como recibida
 		// eliminamos el volt guardado (que hubieramos usado para retrasmitir)
-		int currentBaseOfSlidingWindow = congestionController.getBaseWindow();
-		Volt * savedPkt = congestionController.popVolt(currentBaseOfSlidingWindow);
+		int currentBaseOfSlidingWindow = slidingWindow.getBaseWindow();
+		Volt * savedPkt = slidingWindow.popVolt(currentBaseOfSlidingWindow);
 		delete(savedPkt);
 		
 		// Movemos la SW
-		congestionController.setBaseWindow((currentBaseOfSlidingWindow + 1) % 1000);  // FIXME 1000
+		slidingWindow.setBaseWindow((currentBaseOfSlidingWindow + 1) % 1000);  // FIXME 1000
 	}
 
 	delete(auxVolt);

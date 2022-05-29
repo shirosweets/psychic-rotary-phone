@@ -5,8 +5,8 @@
 #if defined(__clang__)
 #  pragma clang diagnostic ignored "-Wreserved-id-macro"
 #endif
-#ifndef __CONGESTIONCONTROLLER_H
-#define __CONGESTIONCONTROLLER_H
+#ifndef __SLIDING_WINDOW_H
+#define __SLIDING_WINDOW_H
 
 #include <omnetpp.h>
 #include "Volt.h"
@@ -27,14 +27,14 @@ typedef struct __pairPacketData _pairPacketData;
 typedef _pairPacketData * pairPacketData;
 
 /* Sliding Window */
-class CongestionController {
+class SlidingWindow {
 private:
 	int baseWindow = 0;
     int bytesInFlight = 0;
 	std::map<int,pairPacketData> slidingWindow;
 public:
-	CongestionController();
-    virtual ~CongestionController();
+	SlidingWindow();
+    virtual ~SlidingWindow();
 
     /* Retorna la cantidad de ACKs que tiene ese Volt */
     int getAck(int seqN);
@@ -68,5 +68,5 @@ public:
 protected:
 };
 
-#endif // ifndef __CONGESTIONCONTROLLER_H
+#endif // ifndef __SLIDING_WINDOW_H
 
