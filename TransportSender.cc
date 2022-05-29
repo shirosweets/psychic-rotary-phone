@@ -5,7 +5,7 @@
 #include <omnetpp.h>
 #include "Volt.h"
 #include "RenoManager.h"
-#include "CongestionController.h"
+#include "SlidingWindow.h"
 #include "RTTManager.h"
 
 #define DUPLICATE_ACK_LIMIT 3

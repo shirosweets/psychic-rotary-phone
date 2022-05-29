@@ -3,7 +3,7 @@
 
 #include <string.h>
 #include <omnetpp.h>
-#include "CongestionController.h"
+#include "SlidingWindow.h"
 
 using namespace omnetpp;
 
