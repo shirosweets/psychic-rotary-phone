@@ -1,0 +1,18 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/home/usuario/omnetworkspace/DEV'
+ 
+mkdir -p out/gcc-release//
+echo "Generator.cc"
+g++ -c -std=c++11 -O3 -DNDEBUG=1 -MMD -MP -MF out/gcc-release//Generator.d  -fPIC  -fno-stack-protector -DHAVE_SWAPCONTEXT -DXMLPARSER=libxml -DPREFER_QTENV -DWITH_QTENV -DWITH_PARSIM -DWITH_NETBUILDER -DWITH_OSG -DWITH_OSGEARTH   -I. -I/home/usuario/omnetpp-5.3/include -o out/gcc-release//Generator.o Generator.cc
+mkdir -p out/gcc-release//
+echo "Queue.cc"
+g++ -c -std=c++11 -O3 -DNDEBUG=1 -MMD -MP -MF out/gcc-release//Queue.d  -fPIC  -fno-stack-protector -DHAVE_SWAPCONTEXT -DXMLPARSER=libxml -DPREFER_QTENV -DWITH_QTENV -DWITH_PARSIM -DWITH_NETBUILDER -DWITH_OSG -DWITH_OSGEARTH   -I. -I/home/usuario/omnetpp-5.3/include -o out/gcc-release//Queue.o Queue.cc
+mkdir -p out/gcc-release//
+echo "Sink.cc"
+g++ -c -std=c++11 -O3 -DNDEBUG=1 -MMD -MP -MF out/gcc-release//Sink.d  -fPIC  -fno-stack-protector -DHAVE_SWAPCONTEXT -DXMLPARSER=libxml -DPREFER_QTENV -DWITH_QTENV -DWITH_PARSIM -DWITH_NETBUILDER -DWITH_OSG -DWITH_OSGEARTH   -I. -I/home/usuario/omnetpp-5.3/include -o out/gcc-release//Sink.o Sink.cc
+mkdir -p out/gcc-release/
+echo Creating executable: out/gcc-release//lab3-net
+g++ -Wl,-rpath,/home/usuario/omnetpp-5.3/lib -Wl,-rpath,/lib -Wl,-rpath,.  -Wl,--export-dynamic -L/home/usuario/omnetpp-5.3/lib -o out/gcc-release//lab3-net out/gcc-release//Generator.o out/gcc-release//Queue.o out/gcc-release//Sink.o  -Wl,--no-as-needed -Wl,--whole-archive  -Wl,--no-whole-archive -loppmain -Wl,-u,_cmdenv_lib -Wl,--no-as-needed -loppcmdenv -loppenvir -Wl,-u,_qtenv_lib -Wl,--no-as-needed -Wl,-rpath-link=/usr/lib/x86_64-linux-gnu -loppqtenv -loppenvir -lopplayout  -loppsim -ldl -lstdc++ 
+ln -f out/gcc-release//lab3-net .
+make: Leaving directory '/home/usuario/omnetworkspace/DEV'
+ 

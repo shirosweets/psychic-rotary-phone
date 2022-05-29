@@ -1,0 +1,737 @@
+make all --print-data-base --no-builtin-variables --no-builtin-rules --question
+# GNU Make 4.1
+# Built for x86_64-pc-linux-gnu
+# Copyright (C) 1988-2014 Free Software Foundation, Inc.
+# License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+# This is free software: you are free to change and redistribute it.
+# There is NO WARRANTY, to the extent permitted by law.
+
+# Make data base, printed on Thu May 26 15:02:04 2022
+
+# Variables
+
+# automatic
+<D = $(patsubst %/,%,$(dir $<))
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 36)
+OMNETPP_IMAGE_PATH := ./bitmaps:./images:/home/usuario/omnetpp-5.3/images
+# automatic
+?F = $(notdir $?)
+# environment
+DESKTOP_SESSION = Lubuntu
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 98)
+vecho = @true
+# default
+.SHELLFLAGS := -c
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 150)
+HAVE_DLOPEN = 1
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 183)
+JNI_LIB_SUFFIX = $(SO_LIB_SUFFIX)
+# environment
+XDG_SESSION_TYPE = x11
+# environment
+VSCODE_LOG_NATIVE = false
+# makefile (from 'Makefile', line 10)
+TARGET = lab3-net$(EXE_SUFFIX)
+# automatic
+?D = $(patsubst %/,%,$(dir $?))
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 121)
+LDFLAG_LIB = -l
+# makefile (from 'Makefile', line 64)
+COPTS = $(CFLAGS) $(IMPORT_DEFINES)  $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)
+# automatic
+@D = $(patsubst %/,%,$(dir $@))
+# environment
+XAUTHORITY = /home/usuario/.Xauthority
+# environment
+GDMSESSION = Lubuntu
+# default
+MAKE_VERSION := 4.1
+# makefile
+CURDIR := /home/usuario/omnetworkspace/DEV
+# makefile
+SHELL = /bin/sh
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 141)
+LN = ln -f
+# environment
+GDM_LANG = es_AR
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 97)
+Q := @
+# environment
+VTE_VERSION = 5201
+# makefile (from 'Makefile', line 22)
+EXTRA_OBJS = 
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 165)
+PTHREAD_CFLAGS = 
+# environment
+VSCODE_NLS_CONFIG = {"locale":"es-419","availableLanguages":{},"_languagePackSupport":true}
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 167)
+XMLPARSER = libxml
+# environment
+_ = /usr/bin/code
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 117)
+CFLAGS = $(CFLAGS_RELEASE) -MMD -MP -MF $(basename $@).d  -fPIC  -fno-stack-protector $(DEFINES)
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 191)
+TKENV_LIBS = $(LDFLAG_INCLUDE)_tkenv_lib $(AS_NEEDED_OFF) -lopptkenv$D -loppenvir$D -lopplayout$D
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 154)
+QT_CFLAGS = -isystem /usr/include/x86_64-linux-gnu/qt5 -isystem /usr/include/x86_64-linux-gnu/qt5/QtCore -isystem /usr/include/x86_64-linux-gnu/qt5/QtGui -isystem /usr/include/x86_64-linux-gnu/qt5/QtWidgets -isystem /usr/include/x86_64-linux-gnu/qt5/QtOpenGL -isystem /usr/include/x86_64-linux-gnu/qt5/QtPrintSupport
+# environment
+XDG_CONFIG_DIRS = /etc/xdg/lubuntu:/etc/xdg/xdg-Lubuntu:/etc/xdg
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 156)
+QTENV_LDFLAGS = -Wl,-rpath-link=/usr/lib/x86_64-linux-gnu
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 182)
+DLL_LIB_SUFFIX = .dll
+# environment
+GTK_OVERLAY_SCROLLING = 0
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 166)
+PTHREAD_LIBS = -lpthread
+# makefile (from 'out/gcc-release//Sink.d', line 1)
+MAKEFILE_LIST :=  Makefile /home/usuario/omnetpp-5.3/bin/../Makefile.inc out/gcc-release//Generator.d out/gcc-release//Queue.d out/gcc-release//Sink.d
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 70)
+D = 
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 147)
+UIC = /usr/bin/uic
+# automatic
+@F = $(notdir $@)
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 161)
+ZLIB_CFLAGS = 
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 155)
+QT_LIBS = -lQt5Gui -lQt5Core -lQt5Widgets -lQt5PrintSupport -lQt5OpenGL -L/usr/lib/x86_64-linux-gnu -Wl,-rpath=/usr/lib/x86_64-linux-gnu
+# 'override' directive
+GNUMAKEFLAGS := 
+# makefile (from 'Makefile', line 30)
+O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 196)
+OPPMAIN_LIB = $(LDFLAG_LIB)oppmain$D
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 118)
+CXXFLAGS = -std=c++11
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 185)
+LIB_PREFIX = lib
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 145)
+QMAKE = /usr/bin/qmake
+# environment
+XDG_DATA_DIRS = /etc/xdg/lubuntu:/usr/local/share:/usr/share:/usr/share/gdm:/var/lib/menu-xdg:/usr/share/Lubuntu:/usr/local/share/:/usr/share/
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 19)
+WITH_SYSTEMC = no
+# environment
+DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/1000/bus
+# environment
+VSCODE_VERBOSE_LOGGING = true
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 132)
+AS = as
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 99)
+qecho = @echo
+# makefile (from 'Makefile', line 33)
+OBJS = $O/Generator.o $O/Queue.o $O/Sink.o
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 174)
+JAVA_CFLAGS = -fno-strict-aliasing -I/usr/lib/jvm/default-java/include -I/usr/lib/jvm/default-java/include/linux
+# environment
+LESSOPEN = | /usr/bin/lesspipe %s
+# environment
+VSCODE_CWD = /home/usuario/omnetworkspace/DEV
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 168)
+XML_CFLAGS = -I/usr/include/libxml2
+# environment
+QT_STYLE_OVERRIDE = gtk
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 43)
+OMNETPP_TKENV_DIR = $(OMNETPP_SRC_DIR)/tkenv
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 8)
+OMNETPP_BUILDID = 180411-87513e3
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 41)
+OMNETPP_SRC_DIR = $(OMNETPP_ROOT)/src
+# environment
+XDG_SESSION_PATH = /org/freedesktop/DisplayManager/Session0
+# default
+MAKE_HOST := x86_64-pc-linux-gnu
+# environment
+PATH = /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/usuario/omnetpp-5.3/bin
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 180)
+A_LIB_SUFFIX = .a
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 175)
+JAVA_LIBS = -L/usr/lib/jvm/default-java/jre/lib/i386/client -Wl,-rpath,/usr/lib/jvm/default-java/jre/lib/i386/client:. -ljvm
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 103)
+opp_rwildcard = $(foreach d,$(wildcard $1*),$(call opp_rwildcard,$d/,$2) $(filter $(subst *,%,$2),$d))
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 137)
+DLLTOOL = dlltool
+# environment
+_LXSESSION_PID = 743
+# environment
+GPG_AGENT_INFO = /run/user/1000/gnupg/S.gpg-agent:0:1
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 109)
+YACC = bison -y
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 124)
+WHOLE_ARCHIVE_ON = -Wl,--whole-archive
+# environment
+XDG_RUNTIME_DIR = /run/user/1000
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 6)
+OMNETPP_RELEASE = omnetpp-5.3
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 136)
+SHLIB_LD = g++ -shared -fPIC
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 119)
+LDFLAG_LIBPATH = -L
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 142)
+MKPATH = mkdir -p
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 40)
+OMNETPP_OUT_DIR = $(OMNETPP_ROOT)/out$(OUTPUT_PREFIX)
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 133)
+AR = ar cr
+# environment
+XDG_MENU_PREFIX = lxde-
+# environment
+VSCODE_LOG_STACK = false
+# environment
+ELECTRON_RUN_AS_NODE = 1
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 123)
+LDFLAGS = -Wl,-rpath,$(OMNETPP_LIB_DIR) -Wl,-rpath,$(OMNETPP_TOOLS_DIR)/lib -Wl,-rpath,.  -Wl,--export-dynamic $(LDFLAG_LIBPATH)$(OMNETPP_LIB_DIR)
+# default
+.FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 184)
+EXE_SUFFIX = 
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 35)
+OMNETPP_ROOT := /home/usuario/omnetpp-5.3
+# environment
+XDG_GREETER_DATA_DIR = /var/lib/lightdm-data/usuario
+# environment
+LS_COLORS = rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:
+# environment
+XDG_SESSION_DESKTOP = Lubuntu
+# environment
+SSH_AUTH_SOCK = /tmp/ssh-ipmAxxB3krwh/agent.743
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 181)
+SO_LIB_SUFFIX = .so
+# automatic
+%F = $(notdir $%)
+# environment
+DISPLAY = :0
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 171)
+AKAROA_CFLAGS = -I/usr/local/akaroa/include
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 22)
+PREFER_SQLITE_RESULT_FILES = no
+# makefile (from 'Makefile', line 36)
+MSGFILES = 
+# environment
+VSCODE_PIPE_LOGGING = true
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 18)
+WITH_PARSIM = yes
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 42)
+OMNETPP_UTILS_DIR = $(OMNETPP_SRC_DIR)/utils
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 128)
+PIC_FLAGS = -fPIC
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 46)
+OMNETPP_SAMPLES_DIR = $(OMNETPP_ROOT)/samples
+# environment
+PWD = /home/usuario/omnetworkspace/DEV
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 68)
+MODE = release
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 20)
+WITH_TKENV = no
+# environment
+QT_QPA_PLATFORMTHEME = lxqt
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 186)
+SHARED_LIB_SUFFIX = $(SO_LIB_SUFFIX)
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 172)
+AKAROA_LIBS = -L/usr/local/akaroa/lib -lakaroa -lfl
+# environment
+XDG_SEAT = seat0
+# environment
+SSH_AGENT_PID = 832
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 173)
+JNILIBS_IF_POSSIBLE = missing-dependency
+# environment
+ORIGINAL_XDG_CURRENT_DESKTOP = LXDE
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 126)
+AS_NEEDED_ON = -Wl,--as-needed
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 47)
+OMNETPP_TEST_DIR = $(OMNETPP_ROOT)/test
+# environment
+VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
+# environment
+HOME = /home/usuario
+# environment
+LESSCLOSE = /usr/bin/lesspipe %s %s
+# environment
+VSCODE_CLI = 1
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 257)
+DEFINES = -DHAVE_SWAPCONTEXT -DXMLPARSER=$(XMLPARSER) -DPREFER_QTENV -DWITH_QTENV -DWITH_PARSIM -DWITH_NETBUILDER -DWITH_OSG -DWITH_OSGEARTH
+# environment
+VSCODE_CODE_CACHE_PATH = /home/usuario/.config/Code/CachedData/c3511e6c69bb39013c4a4b7b9566ec1ca73fc4d5
+# environment
+LOGNAME = usuario
+# environment
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 135)
+RANLIB = ranlib
+# environment
+ELECTRON_NO_ATTACH_CONSOLE = 1
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 134)
+ARFLAG_OUT = 
+# environment
+VSCODE_HANDLES_UNCAUGHT_ERRORS = true
+# automatic
+^D = $(patsubst %/,%,$(dir $^))
+# environment
+XDG_VTNR = 7
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 140)
+MAKEDEPEND = opp_makedep -Y --objdirtree
+# environment
+MAKELEVEL := 0
+# makefile (from 'Makefile', line 62)
+OMNETPP_LIBS = $(OPPMAIN_LIB) $(USERIF_LIBS) $(KERNEL_LIBS) $(SYS_LIBS)
+ 
+# environment
+COLORTERM = truecolor
+# default
+MAKE = $(MAKE_COMMAND)
+# default
+MAKECMDGOALS := all
+# environment
+SHLVL = 1
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 125)
+WHOLE_ARCHIVE_OFF = -Wl,--no-whole-archive
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 111)
+CC = gcc
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 16)
+WITH_OSGEARTH = yes
+# makefile (from 'Makefile', line 65)
+MSGCOPTS = $(INCLUDE_PATH)
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 129)
+MSGC = opp_msgc
+# environment
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-f8b91738-7d42-40e3-9aa6-da08d8570338.sock
+# environment
+XDG_SESSION_ID = c1
+# environment
+USER = usuario
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 113)
+TOOLCHAIN_NAME = gcc
+# makefile
+.DEFAULT_GOAL := all
+# environment
+XDG_CURRENT_DESKTOP = LXDE
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 84)
+CONFIGNAME = $(TOOLCHAIN_NAME)-$(MODE)
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 45)
+OMNETPP_DOC_DIR = $(OMNETPP_ROOT)/doc
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 116)
+CFLAGS_RELEASE = -O3 -DNDEBUG=1
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 38)
+OMNETPP_INCL_DIR = $(OMNETPP_ROOT)/include
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 122)
+LDFLAG_IMPLIB = -Wl,--out-implib,
+# automatic
+%D = $(patsubst %/,%,$(dir $%))
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 276)
+LIB_SUFFIX = $(SHARED_LIB_SUFFIX)
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 192)
+QTENV_LIBS = $(LDFLAG_INCLUDE)_qtenv_lib $(AS_NEEDED_OFF) $(QTENV_LDFLAGS) -loppqtenv$D -loppenvir$D -lopplayout$D
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 115)
+CFLAGS_DEBUG = -g -Wall
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 131)
+NEDTOOL = opp_nedtool
+# makefile (from 'Makefile', line 66)
+SMCOPTS = 
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 28)
+SHARED_LIBS = yes
+# default
+MAKE_COMMAND := make
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 14)
+WITH_QTENV = yes
+# environment
+OLDPWD = /home/usuario
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 146)
+MOC = /usr/bin/moc
+# default
+.VARIABLES := 
+# automatic
+*F = $(notdir $*)
+# environment
+LANGUAGE = es_AR
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 120)
+LDFLAG_INCLUDE = -Wl,-u,
+# environment
+XDG_SEAT_PATH = /org/freedesktop/DisplayManager/Seat0
+# environment
+VSCODE_IPC_HOOK = /run/user/1000/vscode-e886e8dc-1.67.2-main.sock
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 15)
+WITH_OSG = yes
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 17)
+WITH_NETBUILDER = yes
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 110)
+LEX = flex
+# makefile
+MAKEFLAGS = pqrR
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 159)
+OSGEARTH_CFLAGS = 
+# environment
+MFLAGS = -pqrR
+# automatic
+*D = $(patsubst %/,%,$(dir $*))
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 218)
+ALL_ENV_LIBS = $(CMDENV_LIBS) $(QTENV_LIBS)
+# automatic
++D = $(patsubst %/,%,$(dir $+))
+# environment
+GDK_BACKEND = x11
+# environment
+QT_PLATFORM_PLUGIN = lxqt
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 21)
+EMBED_TCL_CODE = yes
+# makefile (from 'Makefile', line 71)
+COPTS_FILE = $O/.last-copts
+# automatic
++F = $(notdir $+)
+# environment
+NO_AT_BRIDGE = 1
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 160)
+OSGEARTH_LIBS = -losgEarth -losgEarthUtil
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 127)
+AS_NEEDED_OFF = -Wl,--no-as-needed
+# makefile (from 'Makefile', line 28)
+PROJECT_OUTPUT_DIR = out
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 162)
+ZLIB_LIBS = -lz
+# makefile (from 'Makefile', line 19)
+INCLUDE_PATH = -I.
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 138)
+STRIP = strip
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 7)
+OMNETPP_VERSION = 5.3
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 49)
+PLATFORM = linux.x86_64
+# default
+MAKEFILES := 
+# makefile (from 'Makefile', line 39)
+SMFILES = 
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 144)
+SWIG = not found
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 39)
+OMNETPP_LIB_DIR = $(OMNETPP_ROOT)/lib$(OUTPUT_PREFIX)
+# automatic
+<F = $(notdir $<)
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 151)
+SYS_LIBS = -ldl -lstdc++ 
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 157)
+OSG_CFLAGS = 
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 112)
+CXX = g++
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 152)
+TK_CFLAGS = 
+# environment
+XDG_CONFIG_HOME = /home/usuario/.config
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 108)
+PERL = perl
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 169)
+XML_LIBS = -lxml2
+# makefile (from 'Makefile', line 29)
+PROJECTRELATIVE_PATH = 
+# environment
+LC_ALL = C
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 158)
+OSG_LIBS = -losg -losgDB -losgGA -losgViewer -losgUtil -lOpenThreads
+# makefile (from 'Makefile', line 51)
+CONFIGFILE = $(shell opp_configfilepath)
+# makefile (from 'Makefile', line 25)
+LIBS = 
+# automatic
+^F = $(notdir $^)
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 139)
+WISH = 
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 37)
+OMNETPP_BIN_DIR = $(OMNETPP_ROOT)/bin
+# default
+SUFFIXES := 
+# environment
+CHROME_DESKTOP = code-url-handler.desktop
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 163)
+MPI_CFLAGS = 
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 148)
+RCC = /usr/bin/rcc
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 130)
+SMC = opp_smc
+# default
+.INCLUDE_DIRS = /usr/include /usr/local/include /usr/include
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 195)
+KERNEL_LIBS = -loppsim$D
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 143)
+SHLIB_POSTPROCESS = opp_shlib_postprocess
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 9)
+OMNETPP_EDITION = Academic Public License -- NOT FOR COMMERCIAL USE
+# default
+.RECIPEPREFIX := 
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 164)
+MPI_LIBS = 
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 193)
+CMDENV_LIBS = $(LDFLAG_INCLUDE)_cmdenv_lib $(AS_NEEDED_OFF) -loppcmdenv$D -loppenvir$D
+# environment
+LANG = C
+# environment
+TERM = xterm-256color
+# makefile (from 'Makefile', line 13)
+USERIF_LIBS = $(ALL_ENV_LIBS) 
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 153)
+TK_LIBS = 
+# environment
+VSCODE_PID = 5547
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 44)
+OMNETPP_UI_DIR = $(OMNETPP_ROOT)/ui
+# makefile (from '/home/usuario/omnetpp-5.3/bin/../Makefile.inc', line 5)
+OMNETPP_PRODUCT = OMNeT++
+# variable set hash-table stats:
+# Load=232/1024=23%, Rehash=0, Collisions=67/431=16%
+
+# Pattern-specific Variable Values
+
+# No pattern-specific variable values.
+
+# Directories
+
+# . (device 2049, inode 556181): 25 files, no impossibilities.
+# out/gcc-release/ (device 2049, inode 13476): 16 files, no impossibilities so far.
+
+# 41 files, no impossibilities in 2 directories.
+
+# Implicit Rules
+
+out/gcc-release//%.o: %.cc out/gcc-release//.last-copts | msgheaders smheaders
+#  recipe to execute (from 'Makefile', line 99):
+	@$(MKPATH) $(dir $@)
+	$(qecho) "$<"
+	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) -o $@ $<
+
+%_m.cc %_m.h: %.msg
+#  recipe to execute (from 'Makefile', line 104):
+	$(qecho) MSGC: $<
+	$(Q)$(MSGC) -s _m.cc $(MSGCOPTS) $?
+
+%_sm.cc %_sm.h: %.sm
+#  recipe to execute (from 'Makefile', line 108):
+	$(qecho) SMC: $<
+	$(Q)$(SMC) -c++ -suffix cc $(SMCOPTS) $?
+
+%.cc:
+
+# 4 implicit rules, 0 (0.0%) terminal.
+
+# Files
+
+# Not a target:
+/home/usuario/omnetpp-5.3/bin/../Makefile.inc:
+#  Implicit rule search has been done.
+#  Last modified 2018-05-17 12:19:17.984534999
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+out/gcc-release//Sink.d:
+#  Implicit rule search has been done.
+#  Last modified 2022-05-22 21:14:04.571109414
+#  File has been updated.
+#  Successfully updated.
+
+all: out/gcc-release//lab3-net
+#  Phony target (prerequisite of .PHONY).
+#  Command line target.
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has been updated.
+#  Needs to be updated (-q is set).
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/17=0%
+#  recipe to execute (from 'Makefile', line 84):
+	$(Q)$(LN) $O/$(TARGET) .
+
+.PHONY: all clean cleanall depend msgheaders smheaders
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+.cc:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+.SUFFIXES: .cc
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+/home/usuario/omnetpp-5.3/include/omnetpp.h:
+#  Implicit rule search has been done.
+ 
+#  Last modified 2018-04-11 09:13:48
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+Makefile:
+#  Implicit rule search has been done.
+#  Last modified 2022-05-26 14:09:22.799
+#  File has been updated.
+#  Successfully updated.
+
+Volt.h:
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+out/gcc-release//Queue.d:
+#  Implicit rule search has been done.
+#  Last modified 2022-05-22 21:14:03.855109414
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+out/gcc-release//Generator.d:
+#  Implicit rule search has been done.
+#  Last modified 2022-05-22 21:14:03.095109414
+#  File has been updated.
+#  Successfully updated.
+
+out/gcc-release//Sink.o: Sink.cc /home/usuario/omnetpp-5.3/include/omnetpp.h
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+out/gcc-release//.last-copts:
+#  Implicit rule search has been done.
+#  Last modified 2022-05-22 21:14:02.327109414
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+Generator.cc:
+#  Implicit rule search has been done.
+#  Last modified 2022-05-26 13:18:14.495
+#  File has been updated.
+#  Successfully updated.
+
+msgheaders:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has been updated.
+#  Successfully updated.
+
+depend:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+
+# Not a target:
+.DEFAULT:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+out/gcc-release//Queue.o: Queue.cc /home/usuario/omnetpp-5.3/include/omnetpp.h
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+out/gcc-release//Generator.o: Generator.cc out/gcc-release//.last-copts Generator.cc /home/usuario/omnetpp-5.3/include/omnetpp.h Volt.h | msgheaders smheaders
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'Generator'
+#  Last modified 2022-05-22 21:14:03.107109414
+#  File has been updated.
+#  Needs to be updated (-q is set).
+# automatic
+# @ := out/gcc-release//Generator.o
+# automatic
+# % := 
+# automatic
+# * := Generator
+# automatic
+# + := Generator.cc out/gcc-release//.last-copts Generator.cc /home/usuario/omnetpp-5.3/include/omnetpp.h Volt.h
+# automatic
+# | := msgheaders smheaders
+# automatic
+# < := Generator.cc
+# automatic
+# ^ := Generator.cc out/gcc-release//.last-copts /home/usuario/omnetpp-5.3/include/omnetpp.h Volt.h
+# automatic
+# ? := Generator.cc Volt.h
+# variable set hash-table stats:
+# Load=8/32=25%, Rehash=0, Collisions=3/30=10%
+#  recipe to execute (from 'Makefile', line 99):
+	@$(MKPATH) $(dir $@)
+	$(qecho) "$<"
+	$(Q)$(CXX) -c $(CXXFLAGS) $(COPTS) -o $@ $<
+
+run: all
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 87):
+	./$(TARGET)
+
+clean:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 116):
+	$(qecho) Cleaning...
+	$(Q)-rm -rf $O
+	$(Q)-rm -f $(TARGET)
+	$(Q)-rm -f $(call opp_rwildcard, . , *_m.cc *_m.h *_sm.cc *_sm.h)
+
+# Not a target:
+Sink.cc:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+smheaders:
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+Queue.cc:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+cleanall: clean
+#  Phony target (prerequisite of .PHONY).
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 122):
+	$(Q)-rm -rf $(PROJECT_OUTPUT_DIR)
+
+out/gcc-release//lab3-net: out/gcc-release//Generator.o out/gcc-release//Queue.o out/gcc-release//Sink.o Makefile /home/usuario/omnetpp-5.3/bin/../Makefile.inc
+#  Implicit rule search has not been done.
+#  Last modified 2022-05-22 21:14:09.447109414
+#  File has been updated.
+#  Needs to be updated (-q is set).
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/17=0%
+#  recipe to execute (from 'Makefile', line 90):
+	@$(MKPATH) $O
+	@echo Creating executable: $@
+	$(Q)$(CXX) $(LDFLAGS) -o $O/$(TARGET) $(OBJS) $(EXTRA_OBJS) $(AS_NEEDED_OFF) $(WHOLE_ARCHIVE_ON) $(LIBS) $(WHOLE_ARCHIVE_OFF) $(OMNETPP_LIBS)
+
+# files hash-table stats:
+# Load=26/1024=3%, Rehash=0, Collisions=2/84=2%
+# VPATH Search Paths
+
+# No 'vpath' search paths.
+
+# No general ('VPATH' variable) search path.
+
+# strcache buffers: 1 (0) / strings = 73 / storage = 936 B / avg = 12 B
+# current buf: size = 8162 B / used = 936 B / count = 73 / avg = 12 B
+
+# strcache performance: lookups = 134 / hit rate = 45%
+# hash-table stats:
+# Load=73/8192=1%, Rehash=0, Collisions=5/134=4%
+# Finished Make data base on Thu May 26 15:02:04 2022
+
+ 

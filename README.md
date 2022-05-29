@@ -2,10 +2,18 @@
 
 Redes y Sistemas Distribuidos - Primer cuatrimestre, FAMAF - 2022.
 
+> Redes y Sistemas Distribuidos 2022 - FAMaF, UNC.
+
 # Integrantes
 - Carrizo, Ernesto.
 - Domínguez, Agustín.
 - Vispo, Valentina.
+
+---
+
+**[ENUNCIADO](Enunciado.md) | [ANÁLISIS](Analysis.md) | [DISEÑO](Design.md)**
+
+---
 
 # Objetivos
 
@@ -13,34 +21,8 @@ Redes y Sistemas Distribuidos - Primer cuatrimestre, FAMAF - 2022.
 - Analizar tráfico de red bajo tasas de datos acotadas y tamaño de buffers limitados.
 - Diseñar y proponer soluciones de control de congestión y flujo.
 
-# Enunciado
 
-El enunciado completo en Markdown se encuentra en [Enunciado.md](Enunciado.md).
-
-# Simulación
-
-# Experimentos y preguntas: análisis
-
-Se deberá correr simulaciones paramétricas para cada caso de estudio, variando el intervalo de
-generación de paquetes (`generationInterval`) entre 0.1 y 1 en los pasos que el grupo crea
-adecuado para responder las preguntas planteadas.
-Se deberá generar algunas gráficas representativas de la utilización de cada una de las 3
-queue para los caso de estudios planteados.
-Se sugiere crear una gráfica de carga transmitida (eje x) vs. carga recibida (eje y), ambas
-expresadas en paquetes por segundo (ver Figura 6-19 del libro Tanenbaum). En caso de que
-haya pérdidas de paquetes también se sugiere medir y comparar estadísticas de ese
-fenómeno.
-
-## Responda y justifique
-
-1. ¿Qué diferencia observa entre el caso de estudio 1 y 2? ¿Cuál es la fuente limitante en
-cada uno? Investigue sobre la diferencia entre control de flujo y control de congestión
-(ver Figura 6-22 del libro Tanenbaum).
-
-# Experimentos y preguntas: diseño
-Utilice los mismos parámetros de los experimentos de la tarea 1, genere las curvas necesarias,
-y responda:
-
+FIXTHIS
 1. ¿Cómo cree que se comporta su algoritmo de control de flujo y congestión ? ¿Funciona para el caso de estudio 1 y 2 por igual? ¿Por qué?
 
 # Primer Diseño
@@ -110,18 +92,39 @@ Se asume que la cola del Sender es arbitrariamente grande, por lo que no nos con
 - setear un tamaño fijo en la cola para los paquetes de retransmisión. Este espacio no puede ser ocupado por lo paquetes normales.
 
 
-# OMNet++
+# Cómo correrlo
 
-https://doc.omnetpp.org/omnetpp/manual/
+Se necesita la herramienta de simulación discreta **OMNET++**.
 
-https://stackoverflow.com/questions/52445993/omnet-on-windows-or-linux
-https://stackoverflow.com/questions/7020069/make-library-not-found
+## Descarga de Omnet
 
-## Imagen de docker con Omnet++ (opcional)
+* [Imagen de Lubuntu con Omnet instalada](https://mega.nz/file/eaJUGIQQ#3h_VvTJlkmK3KHGZPiLd6EubADPxfze2JNRtHfcc3A4)
+* [Imagen de docker con Omnet++](https://github.com/mmodenesi/omnetpy)
+* [Guia para ejecutar Omnet en Windows](documents/Guia_para_ejecutar_Omnet++_en_Windows.pdf)
 
-Instrucciones para descargar y ejecutar Omnet++ usando Docker.
+### Documentación de OMNet++
 
-https://github.com/mmodenesi/omnetpy
+* https://doc.omnetpp.org/omnetpp/manual/
+* https://stackoverflow.com/questions/52445993/omnet-on-windows-or-linux
+* https://stackoverflow.com/questions/7020069/make-library-not-found
+
+## Como importarlo en Omnet
+
+<p align="center">
+<img src="documents/assets/guide_import_project_0.png" width="1500" title="Omnet Guide 0">
+</p>
+
+<p align="center">
+<img src="documents/assets/guide_import_project_1.png" width="1500" title="Omnet Guide 1">
+</p>
+
+<p align="center">
+<img src="documents/assets/guide_import_project_2.png" width="1500" title="Omnet Guide 2">
+</p>
+
+## Correr una simulación
+
+Tenemos un makefile que compila el codigo fuente y lanza la simulación:
 
 ## cPacket
 https://doc.omnetpp.org/omnetpp/api/classomnetpp_1_1cPacket.html
@@ -158,3 +161,12 @@ bool arrivedOn()
 ---
 
 **[Enunciado.md](Enunciado.md)**
+```bash
+make clean && make run
+```
+
+---
+
+**[ENUNCIADO](Enunciado.md) | [ANÁLISIS](Analysis.md) | [DISEÑO](Design.md)**
+
+---

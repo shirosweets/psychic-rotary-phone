@@ -24,7 +24,7 @@ En este laboratorio se estudió el comportamiento de las redes frente a problema
 
 # Análisis de la red sin control de congestión ni flujo
 
-## Introducción a la red
+## Introducción a la red básica
 
 La red simplificada tiene un `sender` y un `receiver`, y un nodo intermedio `queue` que simboliza la subred entre el transmisor y receptor.
 
@@ -41,38 +41,34 @@ Por razones de conveniencia con respecto a la segunda parte de este análisis, s
  * El largo de la simulación se aumentó de **200 segundos** a **300 segundos**
     > Esto para normalizar aun más los datos estadísticos provenientes de la generación azarosa de paquetes.
 
-### Caso I
+## Introducción a la red con TLCP
+
+La implementación de nuestro algoritmo requiere un canal de vuelta entre el receptor y emisor, por lo que se agregó ese canal con las mismas características (datarate y delay) del nodo intermedio. También en cada caso los parámetros de los enlaces de envío al receptor son los mismos que en la red básica para que sus mediciones sean comparables.
+
+## Presentación del Caso I
 
 | Conexión | Datarase |
 | - | - |
 | entre `emisor` y `nodo intermedio` | **`1.0Mbps`**
 | entre `TransRx` y `RecAppLayer` | **`0.5Mbps`**
 
-> TransRx : Capa de transporte del Receptor
->
-> RecAppLayer: Capa de aplicación del receptor
-
-### Caso II
+## Presentación del Caso II
 
 | Conexión | Datarase |
 | - | - |
 | entre `emisor` y `nodo intermedio` | **`0.5Mbps`**
 | entre `TransRx` y `RecAppLayer` | **`1.0Mbps`**
 
-> TransRx : Capa de transporte del Receptor
+---
+> `TransRx` : Capa de transporte del Receptor
 >
-> RecAppLayer: Capa de aplicación del receptor
+> `RecAppLayer`: Capa de aplicación del receptor
 
 ---
 
-## Análisis Caso I
+## Análisis del Caso I
 
 ### Hipótesis
-
-| Conexión | Datarase |
-| - | - |
-| entre `emisor` y `nodo intermedio` | **`1.0Mbps`**
-| entre `TransRx` y `RecAppLayer` | **`0.5Mbps`**
 
 Con esos datos podemos ver a simple vista que existe un cuello de botella entre las dos capas de aplicación que se encuentra en el receptor mismo.
 
@@ -80,34 +76,31 @@ El receptor va a recibir mensajes más rápidos de lo que puede procesarlos, eve
 
 Esto es un ejemplo de problemas de *Flujo*
 
+### Mediciones
+
 Primero se tomó un intervalo de generación relativamente grande (**`T = 2s`**). Si bien el análisis teórico del problema dice que el receptor tiene un problema de flujo, 
 si se ocupa poco la red no debería haber pédida de paquetes o una mínima pérdida.
 
-### Mediciones
+| Itv | Gen | Del | Drop Q | Drop R | AvDel [s] |
+| - | - | - | - | - | - |
+| 2.0 | 144 | 144 | 0 | 0 | 0.40 |
+| 0.8 | 367 | 367 | 0 | 0 | 0.43 |
+| 0.4 | 754 | 754 | 0 | 0 | 0.49 |
+| 0.3 | 989 | 989 | 0 | 0 | 0.58 |
+| 0.25 | 1190 | 1187 | 0 | 0 | 0.72 |
+| 0.23 | 1280 | 1279 | 0 | 0 | 0.94 |
+| 0.22 | 1344 | 1344 | 0 | 0 | 1.11 |
+| 0.21 | 1418 | 1401 | 0 | 0 | 1.49 |
+| 0.2 | 1494 | 1469 | 0 | 0 | 2.41 |
+| 0.18 | 1664 | 1494 | 0 | 0 | 14.52 |
+| 0.175 | 1710 | 1496 | 0 | 15 | 18.07 |
+| 0.17 | 1763 | 1497 | 0 | 65 | 21.54 |
+| 0.16 | 1867 | 1497 | 0 | 166 | 26.45 |
+| 0.15 | 1979 | 1498 | 0 | 278 | 29.16 |
+| 0.14 | 2136 | 1498 | 0 | 438 | 30.99 |
+| 0.1 | 2933 | 1498 | 0 | 1231 | 35.83 |
 
-TODO:: Ver si la unidad de AvDelay es efectivamente segundos
-
-| Itv | Gen | Del | Drop | AvDel |
-| - | - | - | - | - |
-| 2.0 | 144 | 144 | 0 | 0.40 |
-| 0.8 | 367 | 367 | 0 | 0.43 |
-| 0.4 | 754 | 754 | 0 | 0.49 |
-| 0.3 | 989 | 989 | 0 | 0.58 |
-| 0.25 | 1190 | 1187 | 0 | 0.72 |
-| 0.23 | 1280 | 1279 | 0 | 0.94 |
-| 0.22 | 1344 | 1344 | 0 | 1.11 |
-| 0.21 | 1418 | 1401 | 0 | 1.49 |
-| 0.2 | 1494 | 1469 | 0 | 2.41 |
-| 0.18 | 1664 | 1494 | 0 | 14.52 |
-| 0.175 | 1710 | 1496 | 15 | 18.07 |
-| 0.17 | 1763 | 1497 | 65 | 21.54 |
-| 0.16 | 1867 | 1497 | 166 | 26.45 |
-| 0.15 | 1979 | 1498 | 278 | 29.16 |
-| 0.14 | 2136 | 1498 | 438 | 30.99 |
-| 0.1 | 2933 | 1498 | 1231 | 35.83 |
-
-
-### Análisis y Conclusión
+### Análisis
 
 * Se puede notar que hasta el rango de aproximadamente 0.25 de intervalo la red no tiene ningún tipo de retraso. Las colas están prácticamente todo el tiempo vacías
 * Luego de eso hasta el rango 0.18 las colas comienzan a llenarse pero todavía no se pierden paquetes. El problema comienza a vislumbrarse, lo cual se manifiesta en que retraso promedio que suba en 2 órdenes de magnitud (de 0.4 -> 14.52).
@@ -122,43 +115,38 @@ Con estos datos: Se realizaron los siguientes grafos
 
 ### Hipótesis
 
-| Conexión | Datarase |
-| - | - |
-| entre `emisor` y `nodo intermedio` | **`1Mbps`**
-| entre `TransRx` y `RecAppLayer` | **`0.5Mbps`**
-
 En este caso se percive que la velocidad de generacion es mas rapida que la velocidad de las cola en recibir y enviar al paquete al sink.
 
 De esta manera la cola paulatinamente se llenara y empezara a dropear paquetes.
 
- Este es un claro problema de congestion, la interred no puede manejar la velocidad del generador y al no haber caminos alternativos siempre habra problemas de congestion.
+Este es un claro problema de congestion, la interred no puede manejar la velocidad del generador y al no haber caminos alternativos siempre habra problemas de congestion.
 
 ### Mediciones
 
-| Itv | Gen | Del | Drop | AvDel |
-| - | - | - | - | - |
-| 2.0 | 99 | 99 | 0 | 0.40 |
-| 0.8 | 241 | 241 | 0 | 0.42 |
-| 0.4 | 496 | 493 | 0 | 0.45 |
-| 0.3 | 659 | 655 | 0 | 0.57 |
-| 0.25 | 799 | 793 | 0 | 0.72 |
-| 0.23 | 874 | 871 | 0 | 1.02 |
-| 0.22 | 902 | 901 | 0 | 1.22 |
-| 0.21 | 948 | 944 | 0 | 1.66 |
-| 0.2 | 989 | 976 | 0 | 2.39 |
-| 0.18 | 1104 | 994 | 0 | 10.06 |
-| 0.175 | 1129 | 996 | 0 | 12.34 |
-| 0.17 | 1162 | 997 | 0 | 14.69 |
-| 0.16 | 1238 | 997 | 40 | 19.63 |
-| 0.15 | 1307 | 998 | 108 | 23.62 |
-| 0.14 | 1418 | 998 | 207 | 26.33 |
-| 0.1 | 1979 | 998 | 771 | 32.87 |
+| Itv | Gen | Del | Drop Q | Drop R | AvDel [s] |
+| - | - | - | - | - | - |
+| 2.0 | 144 | 144 | 0 | 0 | 0.40 |
+| 0.8 | 367 | 367 | 0 | 0 | 0.43 |
+| 0.4 | 754 | 754 | 0 | 0 | 0.49 |
+| 0.3 | 989 | 989 | 0 | 0 | 0.58 |
+| 0.25 | 1190 | 1187 | 0 | 0 | 0.72 |
+| 0.23 | 1280 | 1279 | 0 | 0 | 0.94 |
+| 0.22 | 1344 | 1334 | 0 | 0 | 1.11 |
+| 0.21 | 1418 | 1401 | 0 | 0 | 1.49 |
+| 0.2 | 1494 | 1469 | 0 | 0 | 2.41 |
+| 0.18 | 1664 | 1494 | 67 | 0 | 13.25 |
+| 0.175 | 1710 | 1496 | 115 | 0 | 14.41 |
+| 0.17 | 1763 | 1497 | 165 | 0 | 15.25 |
+| 0.16 | 1867 | 1497 | 266 | 0 | 16.59 |
+| 0.15 | 1979 | 1498 | 379 | 0 | 17.40 |
+| 0.14 | 2136 | 1498 | 538 | 0 | 17.96 |
+| 0.1 | 2933 | 1498 | 1332 | 0 | 19.98 |
 
 ### Análisis y Conclusión
 
-*Notar que a partir del rango 0.17 se dejan de perder paquetes si bien la cola esta bastante llena no se pierde ninguno.
-*La carga efectiva no sobrepasa los 998, evidente debido al recorte de velocidad del canal de la cola intermedia al sink;
-*Las colas comienzan a trabajar bacias aproximadamente en el rango 0.2 con solo unos cuantos paquetes dentro de la cola intermedia.
+* Comparando con el caso 1 vemos 2 cambios significativos:
+* Capa de receiver: En este caso no hay dropeo en la cola del receiver debido a que el datarate es el doble de rapida por el mismo motivo el delay baja
+* Drop Q: En este caso el datarate entre la cola intermedia y la capa del receiver de divide a la mitad (de 1Mbps a 0.5Mbps), se mantiene el datarate del generador con la cola intermedia (1Mbps) esto provoca el llenado de la cola intermedia generando paquetes dropeados.
 
 > **Notas:**
 >
