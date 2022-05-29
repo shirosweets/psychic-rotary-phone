@@ -1,0 +1,50 @@
+file 528324 1653786726                                          
+version 2
+run General-0-20220528-22:11:31-2744
+attr configname General
+attr datetime 20220528-22:11:31
+attr experiment General
+attr inifile omnetpp.ini
+attr iterationvars ""
+attr iterationvarsf ""
+attr measurement ""
+attr network Network
+attr processid 2744
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+param Network.sender.senderAppLayer.generationInterval exponential(0.05)
+param Network.**.maxSeqNum 2147483647
+param Network.**.packetByteSize 12500
+param Network.dataQueue.bufferSize 100
+param Network.ackQueue.bufferSize 100
+param Network.sender.transpSend.bufferSize 2000000
+param Network.sender.transpSend.rtt 1s
+param Network.sender.transpSend.timeout 3s
+param Network.rec.transpRec.bufferSize 200
+
+vector 0 Network.sender.transpSend packetDropSend ETV
+vector 1 Network.dataQueue packetDropQueue ETV
+vector 2 Network.ackQueue packetDropQueue ETV
+vector 3 Network.rec.transpRec packetDropRec ETV
+vector 4 Network.sender.transpSend bufferSizeSend ETV
+vector 5 Network.dataQueue bufferSizeQueue ETV
+vector 6 Network.rec.transpRec bufferSizeRec ETV
+vector 7 Network.ackQueue bufferSizeQueue ETV
+vector 8 Network.sender.transpSend ackTime ETV
+vector 9 Network.sender.transpSend rttTime ETV
+vector 10 Network.rec.recAppLayer Delay ETV
+0	1284 8 0 0 0 0 1 0 0 0 0
+1	1292 8 0 0 0 0 1 0 0 0 0
+2	1300 8 0 0 0 0 1 0 0 0 0
+3	1308 8 0 0 0 0 1 0 0 0 0
+4	1316 212237 2 32574 0.039793725228 299.97965892921 7342 0 4352 16100933 46918821143
+5	213553 39738 7 32514 0.139893725228 299.457351665407 1495 1 16 12642 133746
+6	253291 77454 19 32561 0.339993725228 299.956907665407 2962 0 1 1481 1481
+7	330745 38727 21 32562 0.340165725228 299.957079665407 1481 1 1 1481 1481
+8	369472 49095 24 32565 0.340337725228 299.957251665407 1481 0.000344 0.000344 0.50946400000001 0.000175255616
+9	418567 49095 24 32565 0.340337725228 299.957251665407 1481 0.000172 0.000172 0.25473200000001 4.3813904e-05
+10	467662 60661 30 32555 0.439993725228 299.856907665407 1480 0.4002 225.66940960013 169081.97152192 25449434.020807
+
