@@ -28,8 +28,8 @@ int RenoManager::getSize() {
 
 void RenoManager::logAvailableWin() {
 	std::cout << "RM :: Current Available Window: " << getAvailableWin();
-	std::cout << "/" << size << " bytes\t";
-	std::cout << "(map size = " << window.size() << ")\n";
+	std::cout << "/" << size << " bytes\t\t(";
+	std::cout << window.size() << " timeouts active)\n";
 }
 
 int RenoManager::getAvailableWin(){
@@ -55,8 +55,7 @@ void RenoManager::addTimeoutMsg(EventTimeout * event){
 		int seqN = event->getSeqN();
 		window[seqN] = event;
 		logAvailableWin();
-		std::cout << "RM :: Adding seqN " << seqN << " to the window.";
-		std::cout << "\t\t(map size = " << window.size() << ")\n";
+		std::cout << "RM :: Adding Timeout for Volt " << seqN << "\n";
 		msgSendingAmount += event->getPacketSize();
 		logAvailableWin();
 	} else {

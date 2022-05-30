@@ -145,7 +145,7 @@ void TransportSender::handleSelfMsg(cMessage * msg) {
 			std::cout << "Sender :: currentControlWindowSize " << currentControlWindowSize << " bytes\n";
 			bool hasControlWinEnoughSpace = currentControlWindowSize - bytesInFlight >= packetSize;
 			std::cout << "Sender :: Enough Congestion Window: " << hasCongestionWinEnoughSpace;
-			std::cout << " Enough Control Window: " << hasControlWinEnoughSpace << "\n";
+			std::cout << "\tEnough Control Window: " << hasControlWinEnoughSpace << "\n";
 
 			if (hasCongestionWinEnoughSpace && hasControlWinEnoughSpace) {
 				// Enviamos el Volt que está al frente de la lista
@@ -192,7 +192,7 @@ void TransportSender::handleStartNextTransmission() {
 		slidingWindow.addSendTime(voltToSend->getSeqNumber(), simTime().dbl());
 	}
 
-	std::cout << "Sender :: Current buffer has " << buffer.getLength() << " elements\n";
+	std::cout << "Sender :: SENDING :: Volt " << voltToSend->getSeqNumber() << "\n";
 
 	bufferSizeStdSend.collect(buffer.getLength());
 	bufferSizeSend.record(buffer.getLength());
@@ -232,9 +232,6 @@ void TransportSender::handleAck(Volt * volt) {
 //	    ackTime.record(volt->getDuration());  // Revisar
 	int seqN = volt->getSeqNumber();
 	std::cout << "Sender :: handling ACK of Volt " << seqN << "\n";
-
-	std::cout << "Sender :: Current Control WindowSize = " << volt->getWindowSize() << "\n";
-	std::cout << "MIRROR :: Check Volt " << volt << "\n";  // FIXME
 
 	/* ----------------------- CANCEL TIMEOUT ----------------------- */
 	scheduleServiceIfIdle();

@@ -37,7 +37,7 @@ void SlidingWindow::addAck(int seqN) {
 
 void SlidingWindow::addVolt(Volt * volt) {
 	int seqN = volt->getSeqNumber();
-	std::cout << "SW :: Adding Volt " << seqN << " to congestion controller\n";
+	std::cout << "SW :: Adding Volt " << seqN << " to Sliding Window\n";
 	pairPacketData newPair = new _pairPacketData();
 	newPair->ackCounter = 0;
 	newPair->volt = volt;
@@ -46,7 +46,6 @@ void SlidingWindow::addVolt(Volt * volt) {
 	}
 	slidingWindow[seqN] = newPair;
 	bytesInFlight += volt->getByteLength();
-	std::cout << "SW :: !bytesInFlight " << bytesInFlight << "\n";  // FIXME
 	std::cout << "SW :: Volt " << seqN << " added successfully\n";
 }
 
@@ -54,12 +53,11 @@ Volt * SlidingWindow::popVolt(int seqN) {
 	Volt * volt = NULL;
 	windowIterator pairIterator = slidingWindow.find(seqN);
 	if (pairIterator != slidingWindow.end()) {
-		std::cout << "SW :: Removing Volt " << seqN << " from congestion controller\n";
+		std::cout << "SW :: Removing Volt " << seqN << " from Sliding Window\n";
 		volt = pairIterator->second->volt;
 		delete(pairIterator->second);
 		slidingWindow.erase(pairIterator);
 		bytesInFlight -= volt->getByteLength();
-		std::cout << "SW :: !bytesInFlight " << bytesInFlight << "\n";  // FIXME
 	} else {
 		std::cout << "SW :: WARNING :: popVolt could not find Volt " << seqN << "\n";
 	};

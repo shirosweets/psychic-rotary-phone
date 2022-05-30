@@ -21,30 +21,28 @@ RTTManager::~RTTManager() {
 }
 
 double RTTManager::getCurrentRTo(){
-	std::cout << "\nRTTManager :: Current RTO = " << rto << "\n";
+	std::cout << "RTT :: Current RTO = " << rto << "\n";
 	return rto;
 }
 
 void RTTManager::updateTimeoutRTo(){
 	rto = getCurrentRTo() * 2;
-	std::cout << "\nRTTManager :: New RTO = " << rto << "\n";
+	std::cout << "RTT TIMEOUT RTO = " << rto << "\n";
 }
 
 void RTTManager::updateSmoothRTT(double rtMeasurement) {
 	double alpha = 0.875;
 	double beta = 0.75;
-	std::cout << "\nRTTManager :: updateEstimation(" << rtMeasurement << ") \n";
-
-	std::cout << "\nRTTManager :: rtt " << rtt << "\n";
 	double absolute = std::abs(rtt - rtMeasurement);
+
 	absolute = std::max(absolute, MIN_ABSOLUTE_DIFFERENCE);
-	std::cout << "\nRTTManager :: absolute " << absolute << "\n";
-
 	stdDesviation = beta * stdDesviation + (1-beta) * absolute;
-	std::cout << "\nRTTManager :: stdDesviation " << stdDesviation << "\n";
-
 	rtt = alpha * rtt + (1-alpha) * rtMeasurement;
 	rto = rtt + (4 * stdDesviation);
+
+	std::cout << "RTT :: updateEstimation(" << rtMeasurement << ")";
+	std::cout << " : rtt: " << rtt << " s. stdDesviation: " << stdDesviation;
+	std::cout << " s. absolute diff: " << absolute << ". rto: " << rto << " s\n";
 }
 
 void RTTManager::updateEstimation(double rtMeasurement) {
