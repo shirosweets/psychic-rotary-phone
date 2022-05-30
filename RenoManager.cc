@@ -75,7 +75,7 @@ EventTimeout * RenoManager::popTimeoutMsg(int seqN){
 	msgSendingAmount -= event->getPacketSize();
 	logAvailableWin();
 	window.erase(timeoutIterator);
-	std::cout << "RM :: Removed seqN " << seqN << " from window.";
+	std::cout << "RM :: Removed Timeout for Volt " << seqN;
 	std::cout << "\t\t(map size = " << window.size() << ")\n";
 	return event;
 }

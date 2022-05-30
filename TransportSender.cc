@@ -129,7 +129,7 @@ void TransportSender::handleSelfMsg(cMessage * msg) {
 		if(!buffer.isEmpty() || !retransmissionQueue.empty()) {
 			// Chequeamos el tamaño del packet sin quitarlo de la cola
 			int packetSize;
-			
+
 			if (buffer.isEmpty()) {
 				int retSeqN = retransmissionQueue.front();
 				Volt * auxVolt = slidingWindow.dupVolt(retSeqN);
@@ -182,6 +182,7 @@ void TransportSender::handleStartNextTransmission() {
 		retransmissionQueue.pop_front();
 
 		voltToSend = slidingWindow.dupVolt(retSeqN);
+		std::cout << "Sender :: Sending Volt from retransmission Queue\n";
 	} else {
 		// No hay que retransmitir mensajes
 		voltToSend = (Volt*) buffer.pop();
@@ -240,6 +241,7 @@ void TransportSender::handleAck(Volt * volt) {
 		std::cout << "Sender :: Timeout cancelled due to ACK\n";
 		cancelEvent(timeout);
 		delete(timeout);
+		timeout = NULL;
 	}
 
 	/* ------------------- UPDATE CONTROL WINDOW --------------------- */
@@ -259,11 +261,11 @@ void TransportSender::handleAck(Volt * volt) {
 
 
 	/* --------------- UPDATE RTT IF NOT RETRANSMITTED --------------*/
-	double sendTime = slidingWindow.getSendTime(seqN);  // ?
+	double sendTime = slidingWindow.getSendTime(seqN);
 
 	Volt * auxVolt = slidingWindow.dupVolt(seqN);
 
-	if (!auxVolt->getRetFlag()) {
+	if (auxVolt != NULL && !auxVolt->getRetFlag()) {
 		// Actualizamos la estimación de RTT
 		double newRtt = (simTime().dbl() - sendTime);
 		rttManager.updateEstimation(newRtt);
@@ -277,7 +279,7 @@ void TransportSender::handleAck(Volt * volt) {
 		int currentBaseOfSlidingWindow = slidingWindow.getBaseWindow();
 		Volt * savedPkt = slidingWindow.popVolt(currentBaseOfSlidingWindow);
 		delete(savedPkt);
-		
+
 		// Movemos la SW
 		slidingWindow.setBaseWindow((currentBaseOfSlidingWindow + 1) % 1000);  // FIXME 1000
 	}

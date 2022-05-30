@@ -19,7 +19,6 @@ int SlidingWindow::getAck(int seqN) {
 	windowIterator pairIterator = slidingWindow.find(seqN);
 	if (pairIterator == slidingWindow.end()) {
 		// No existe en el diccionario
-		std::cout << "SW :: WARNING :: getAck(" << seqN << ") didn't found any pairPacketData\n";
 		return -1;
 	}
 	return pairIterator->second->ackCounter;
