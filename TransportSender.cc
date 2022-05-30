@@ -182,6 +182,7 @@ void TransportSender::handleStartNextTransmission() {
 		retransmissionQueue.pop_front();
 
 		voltToSend = slidingWindow.dupVolt(retSeqN);
+		voltToSend->setRetFlag(true);
 		std::cout << "Sender :: Sending Volt from retransmission Queue\n";
 	} else {
 		// No hay que retransmitir mensajes
