@@ -7,7 +7,7 @@
 
 using namespace omnetpp;
 
-typedef std::map<int,pairPacketData>::iterator windowIterator;
+typedef std::map<int,packetMetadata>::iterator windowIterator;
 
 SlidingWindow::SlidingWindow() {
 }
@@ -27,7 +27,7 @@ int SlidingWindow::getAck(int seqN) {
 void SlidingWindow::addAck(int seqN) {
 	windowIterator pairIterator = slidingWindow.find(seqN);
 	if (pairIterator != slidingWindow.end()) {
-		pairPacketData pair = pairIterator->second;
+		packetMetadata pair = pairIterator->second;
 		(pair->ackCounter)++;
 		std::cout << "SW :: ackCounter[" << seqN << "]++ " << pair->ackCounter << "\n";
 		slidingWindow[seqN] = pair;
@@ -37,7 +37,7 @@ void SlidingWindow::addAck(int seqN) {
 void SlidingWindow::addVolt(Volt * volt) {
 	int seqN = volt->getSeqNumber();
 	std::cout << "SW :: Adding Volt " << seqN << " to Sliding Window\n";
-	pairPacketData newPair = new _pairPacketData();
+	packetMetadata newPair = new _packetMetadata();
 	newPair->ackCounter = 0;
 	newPair->volt = volt;
 	if(slidingWindow.find(seqN) != slidingWindow.end()) {
@@ -83,7 +83,7 @@ bool SlidingWindow::isVoltInWindow(int seqN){
 double SlidingWindow::getSendTime(int seqN){
     windowIterator pairIterator = slidingWindow.find(seqN);
     if (pairIterator == slidingWindow.end()) {
-        std::cout << "SW :: WARNING :: getSendTime(" << seqN << ") didn't found any pairPacketData\n";
+        std::cout << "SW :: WARNING :: getSendTime(" << seqN << ") didn't found any packetMetadata\n";
         return -1;
     }
     return pairIterator->second->sendTime;
@@ -92,7 +92,7 @@ double SlidingWindow::getSendTime(int seqN){
 void SlidingWindow::addSendTime(int seqN, double time){
     windowIterator pairIterator = slidingWindow.find(seqN);
     if (pairIterator != slidingWindow.end()) {
-        pairPacketData pair = pairIterator->second;
+        packetMetadata pair = pairIterator->second;
         pair->sendTime = time;
         slidingWindow[seqN] = pair;
     }
