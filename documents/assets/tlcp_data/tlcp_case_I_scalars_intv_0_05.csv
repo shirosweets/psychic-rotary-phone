@@ -1,0 +1,29 @@
+run,type,module,name,attrname,attrvalue,value
+General-0-20220529-23:23:36-1901,runattr,,,configname,General,
+General-0-20220529-23:23:36-1901,runattr,,,datetime,20220529-23:23:36,
+General-0-20220529-23:23:36-1901,runattr,,,experiment,General,
+General-0-20220529-23:23:36-1901,runattr,,,inifile,omnetpp.ini,
+General-0-20220529-23:23:36-1901,runattr,,,iterationvars,,
+General-0-20220529-23:23:36-1901,runattr,,,iterationvarsf,,
+General-0-20220529-23:23:36-1901,runattr,,,measurement,,
+General-0-20220529-23:23:36-1901,runattr,,,network,Network,
+General-0-20220529-23:23:36-1901,runattr,,,processid,1901,
+General-0-20220529-23:23:36-1901,runattr,,,repetition,0,
+General-0-20220529-23:23:36-1901,runattr,,,replication,#0,
+General-0-20220529-23:23:36-1901,runattr,,,resultdir,results,
+General-0-20220529-23:23:36-1901,runattr,,,runnumber,0,
+General-0-20220529-23:23:36-1901,runattr,,,seedset,0,
+General-0-20220529-23:23:36-1901,param,,,Network.sender.senderAppLayer.generationInterval,exponential(0.05),
+General-0-20220529-23:23:36-1901,param,,,Network.**.maxSeqNum,2147483647,
+General-0-20220529-23:23:36-1901,param,,,Network.**.packetByteSize,12500,
+General-0-20220529-23:23:36-1901,param,,,Network.dataQueue.bufferSize,100,
+General-0-20220529-23:23:36-1901,param,,,Network.ackQueue.bufferSize,100,
+General-0-20220529-23:23:36-1901,param,,,Network.sender.transpSend.bufferSize,2000000,
+General-0-20220529-23:23:36-1901,param,,,Network.sender.transpSend.rtt,1s,
+General-0-20220529-23:23:36-1901,param,,,Network.sender.transpSend.timeout,3s,
+General-0-20220529-23:23:36-1901,param,,,Network.rec.transpRec.bufferSize,200,
+General-0-20220529-23:23:36-1901,scalar,Network.sender.senderAppLayer,Number of packets generated,,,5847
+General-0-20220529-23:23:36-1901,scalar,Network.sender.transpSend,Avg Buffer Size Send,,,1949.3225977469
+General-0-20220529-23:23:36-1901,scalar,Network.rec.recAppLayer,Avg delay,,,112.27113619542
+General-0-20220529-23:23:36-1901,scalar,Network.rec.recAppLayer,Number of packets,,,1498
+General-0-20220529-23:23:36-1901,scalar,Network.rec.transpRec,Avg Buffer Size Rec,,,178.97371714643
