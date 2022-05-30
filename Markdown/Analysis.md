@@ -20,8 +20,19 @@
     - [Hipótesis](#hipótesis-1)
     - [Mediciones](#mediciones-1)
     - [Análisis](#análisis-1)
+  - [Conclusión parcial](#conclusión-parcial)
 - [Análisis de la red con *TLCP*](#análisis-de-la-red-con-tlcp)
   - [Pantallazo a *Transport Limited Control Protocol*](#pantallazo-a-transport-limited-control-protocol)
+  - [Caso I](#caso-i)
+    - [Hipótesis](#hipótesis-2)
+    - [Mediciones](#mediciones-2)
+    - [Análisis](#análisis-2)
+  - [Caso II](#caso-ii)
+    - [Hipótesis](#hipótesis-3)
+    - [Mediciciones](#mediciciones)
+    - [Análisis](#análisis-3)
+  - [Comparación con la red previa](#comparación-con-la-red-previa)
+- [Conclusión](#conclusión)
 
 ## Abstract
 
@@ -33,7 +44,7 @@ En este laboratorio se estudió el comportamiento de las redes frente a problema
 
 La red simplificada tiene un `sender` y un `receiver`, y un nodo intermedio `queue` que simboliza la subred entre el transmisor y receptor.
 
-![Red Básica](documents/assets/case_1_network.png)
+![Red Básica](../documents/assets/case_1_network.png)
 
 El emisor genera paquetes de *12500 bytes* bajo una distribucción exponencial centrada en un tiempo **`T`** y tanto la `queue` intermedia como el receptor tienen un buffer interno para manejar paquetes entrantes.
 
@@ -49,6 +60,8 @@ Por razones de conveniencia con respecto a la segunda parte de este análisis, s
 ### Introducción a la red con TLCP
 
 La implementación de nuestro algoritmo requiere un canal de vuelta entre el receptor y emisor, por lo que se agregó ese canal con las mismas características (`datarate` y `delay`) del **nodo intermedio**. También en cada caso los parámetros de los enlaces de envío al receptor son los mismos que en la red básica para que sus mediciones sean comparables.
+
+![TLCP Red Básica](../documents/assets/TLCP_basic_network.png)
 
 ## Presentación del Caso I
 
@@ -173,14 +186,35 @@ Comparando con el caso 1 vemos 2 cambios significativos:
 * **Capa de receiver**: En este caso no hay dropeo en la cola del receptor debido a que el datarate es el doble de rápido y por este mismo motivo el delay baja.
 * **Drop Q**: En este caso el datarate entre la cola intermedia y la capa del deceptor se divide a la mitad (de 1Mbps a 0.5Mbps), se mantiene el datarate del generador con la cola intermedia (1Mbps) lo que provoca el llenado de la cola intermedia, generando paquetes dropeados.
 
-###
+## Conclusión parcial
 
-![](/documents/assets/util_vs_ofrecida.png)
+/* TODO */
 
+----
 # Análisis de la red con *TLCP*
 > **TLCP** : **Trasport *Limited* Control Protocol**
 
 ## Pantallazo a *Transport Limited Control Protocol*
+
+TLCP implementa *Control de Flujo* y *Control de Congestion*, con un receptor manteniendo un feedback constante al emisor mediante paquetes de confirmacion (ACK).
+
+El tamaño del header de cada paquete, llamado `Volt`, tiene tan solo **9** bytes, lo cual agrega muy poco overhead a cada paquetess.
+
+Para una explicación de las especificaciones e implementación de TLCP referirse a [**DISEÑO**](Design.md)
+
+Los detalles de la simulación son identicos para cada caso de la red anterior sin control de flujo ni control, por lo que saltaremos directamente al análisis
+
+## Caso I
+
+/* TODO */
+
+### Hipótesis
+
+/* TODO */
+
+### Mediciones
+
+/* TODO */
 
 Caso I Tabla
 
@@ -203,3 +237,31 @@ Caso I Tabla
 | 0.14  | 2136 | 1498 | 0      | 0      | 44.17     | 0.2 |
 | 0.1   | 2933 | 1498 | 0      | 0      | 74.44     | 0.2 |
 | 0.05  | 5847 | 1498 | 0      | 0      | 112.24    | 0.2 |
+
+### Análisis
+
+/* TODO */
+
+## Caso II
+
+/* TODO */
+
+### Hipótesis
+
+/* TODO */
+
+### Mediciciones
+
+/* TODO */
+
+### Análisis
+
+/* TODO */
+
+## Comparación con la red previa
+
+/* TODO */
+
+# Conclusión
+
+/* TODO */

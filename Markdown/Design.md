@@ -1,6 +1,34 @@
-# Diseño
+# Diseño de capa de transporte con Control de Flujo y Congestion
 
-## Introducción a TLCP
+Se presenta en detalle la especificación e implementación (en Omnet) de nuestra solución para los problemas de control y flujo en la capa de transporte.
+
+## Indice
+
+- [Diseño de capa de transporte con Control de Flujo y Congestion](#diseño-de-capa-de-transporte-con-control-de-flujo-y-congestion)
+  - [Indice](#indice)
+- [Introducción a TLCP](#introducción-a-tlcp)
+- [Iteraciones de diseño](#iteraciones-de-diseño)
+  - [Ideas Preliminares](#ideas-preliminares)
+  - [Evolución del modelo base](#evolución-del-modelo-base)
+- [Ventana de congestión](#ventana-de-congestión)
+- [Controlador de congestión](#controlador-de-congestión)
+- [](#)
+- [Primera versión](#primera-versión)
+- [Iteración de implemenación TEMPLATE](#iteración-de-implemenación-template)
+- [Estructura final de TLCP](#estructura-final-de-tlcp)
+  - [`Volt`](#volt)
+    - [seqNumber](#seqnumber)
+    - [Flags](#flags)
+    - [windowSize](#windowsize)
+- [Control de Flujo](#control-de-flujo)
+- [Control de Congestion](#control-de-congestion)
+  - [Karn](#karn)
+- [RTT](#rtt)
+- [Cosas no implementadas de TCP o TCP-Reno](#cosas-no-implementadas-de-tcp-o-tcp-reno)
+  - [Reordenamiento de paquetes](#reordenamiento-de-paquetes)
+  - [ACK duplicados](#ack-duplicados)
+
+# Introducción a TLCP
 
 **Transport Limited Control Protocol**
 
@@ -47,19 +75,19 @@ La primera adición a nuestro modelo fue `RenoManager.h` (originalmente llamado 
 ```C++
 class RenoManager {
 private:
-	int maxSize; // INT_MAX
-	int size;
-	int msgSendingAmount;
-	bool isSlowStartStage;
-	std::map<int, EventTimeout*> window;
-	void logAvailableWin();
+  int maxSize;
+  int size;
+  int msgSendingAmount;
+  bool isSlowStartStage;
+  std::map<int, EventTimeout*> window;
+  void logAvailableWin();
 public:
   int getMaxSize();
   int getSize();
-	int getAvailableWin();
-	void setSize(int newSize);
-	void addTimeoutMsg(EventTimeout * msg);
-	EventTimeout * popTimeoutMsg(int seqN);
+  int getAvailableWin();
+  void setSize(int newSize);
+  void addTimeoutMsg(EventTimeout * msg);
+  EventTimeout * popTimeoutMsg(int seqN);
   bool getSlowStart();
   void setSlowStart(bool state);
 }
@@ -89,31 +117,47 @@ Slow start
 Retransmission
 RTT Dynamic
 
-# Estructura final de la capa de transporte
+# Estructura final de TLCP
 
 ## `Volt`
 
 El paquete que se intercambian los hosts se llama *Volt*, y fue generado con la herramienta de template que ofrece omnet (`opp_msgc`) con el siguiente template:
 
 ```C++
-packet Volt
-{
-     bool ackFlag = false;
-     int seqNumber;
-     int windowSize;
+packet Volt {
+  bool flags = false;
+  int seqNumber;
+  int windowSize;
 };
 ```
 
-POR LO QUE 
+### seqNumber
 
-El número de secuencia sigue el mismo uso que TCP, donde indica el byte inicial de la tranmisión y el siguiente byte esperado en el ack.
+El número de secuencia indica el orden de los paquetes. A diferencia de TCP, no implementamos números de secuencia por posición de byte, por lo que los números de secuencia simplemente **enumeran cada paquete**, y todos los paquetes tienen tamaño fijo (de *12500 b*).
+
+Por cuestión de tiempo, simplemente seteamos el `MAX_SEQ_N = 1000`
+
+> *Nota:* Planeabamos hacer el cambio a la implementación por bytes, y en gran parte la estructura actual del Sender ya permite eso, por lo que la transición no sería tan costosa. Se puede ver [**TODO.md**](TODO.md) para ver las posibles mejoras respecto a esto
 
 ### Flags
 
-Existen las siguientes flags:
+Implementamos dos FLAGS actualmente. *ACK* y *RET*. Ambas encodeadas en el byte de flags. Para setear y obtener esos valores, hacemos operaciones bitwise y uso de máscara de bits.
 
- * 
-*ACK*:
+**`ACK`** : Indica que el Volt actual es un volt de tipo ACK, no de datos.
 
- * **RET**:
+**`RET`** : Indica que el Volt actual fue retransmitido. En caso de un Volt de tipo ACK, indica que es un ACK de un paquete que fue retransmitido. Esta información nos sirve para actualizar acordemente el RTT dinámico. (Ver seccion [*Karn*](#karn))
 
+### windowSize
+
+Por último este dato nos sirve para comunicar al emisor el tamaño de la ventana actual del receptor. (Ver sección [*Control de Flujo*](#control-de-flujo))
+
+El windowSize máximo permitido es `2147483640`, lo cual es muy cercano al MAX_INT que se puede tener en **C**.
+
+# Control de Flujo
+# Control de Congestion
+## Karn
+
+# RTT
+# Cosas no implementadas de TCP o TCP-Reno
+## Reordenamiento de paquetes
+## ACK duplicados
