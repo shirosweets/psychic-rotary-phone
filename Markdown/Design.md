@@ -22,8 +22,8 @@ Se presenta en detalle la especificación e implementación (en Omnet) de nuestr
     - [windowSize](#windowsize)
 - [Control de Flujo](#control-de-flujo)
 - [Control de Congestion](#control-de-congestion)
-  - [Karn](#karn)
 - [RTT](#rtt)
+  - [Karn](#karn)
 - [Cosas no implementadas de TCP o TCP-Reno](#cosas-no-implementadas-de-tcp-o-tcp-reno)
   - [Reordenamiento de paquetes](#reordenamiento-de-paquetes)
   - [ACK duplicados](#ack-duplicados)
@@ -155,9 +155,20 @@ El windowSize máximo permitido es `2147483640`, lo cual es muy cercano al MAX_I
 
 # Control de Flujo
 # Control de Congestion
+# RTT
+
 ## Karn
 
-# RTT
+Si bien nuestra intención original era seguir el algoritmo de Karn en nuestra implementación, por cuestiones de arquitectura accidentalmente caímos en un protocol que no lo hace *completamente*.
+
+> Nota: Inicialmente cuando un paquete se asumía perdido, lo quitábamos de la **SW** (Sliding Window) temporalmente, y lo poníamos en la punta de la cola común de transmisión. De esa manera nos conservar la función de envio exactamente igual, lo cual simplificaba las cosas. Esta implementación terminó abandonandose ya que se descubrió un caso donde esto genera problemas.
+>
+> Si uno estaba justo transmitiendo un paquete cuando ocurría el timeout, debía esperar un tiempo no trivial hasta poder hacer la retransmisión. Entonces entre ese tiempo, podría llegar un ACK del paquete por retransmitir, Y como todavía no estaba de nuevo en la SW, generaba toda clase de problemas con la estimación de paquetes en vuelo, lo cual generaba un **deathlock**.
+>
+> Como inicialmente se quitaba de la ventana corrediza, no teníamos forma de saber si un paquete entrante era retransmitido o no, y necesitabamos actualizar el SRTT. La solución fue que el volt mismo llevara esa información en sigo mismo y que el receptor se encargue de agregar esa flag acorde al volt que recibió.
+
+Karn es necesario porque no sabemos si un ACK entrante de un paquete que fue retransmitido pertenece al paquete original o al retransmitido, y cualquiera de esas dos asunciones llevaría a ensuciar la estimación de SRTT. Pero en nuestro caso, como tenemos la RET flag, podemos saber cuales ACK provienen del paquete original y cuales no. Por lo que podemos **solo ignorar los ACKs siguientes al original**
+
 # Cosas no implementadas de TCP o TCP-Reno
 ## Reordenamiento de paquetes
 ## ACK duplicados
