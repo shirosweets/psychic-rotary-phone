@@ -1,11 +1,17 @@
 # Laboratorio N°3: Capa de Transporte
 
-Redes y Sistemas Distribuidos - Primer cuatrimestre, FAMAF - 2022.
+Redes y Sistemas Distribuidos - Primer cuatrimestre, FAMaF - 2022.
 
 # Integrantes
 - Carrizo, Ernesto.
 - Domínguez, Agustín.
 - Vispo, Valentina.
+
+---
+
+**[ENUNCIADO](Enunciado.md) | [ANÁLISIS](Analysis.md) | [DISEÑO](Design.md)**
+
+---
 
 # Objetivos
 
@@ -13,148 +19,60 @@ Redes y Sistemas Distribuidos - Primer cuatrimestre, FAMAF - 2022.
 - Analizar tráfico de red bajo tasas de datos acotadas y tamaño de buffers limitados.
 - Diseñar y proponer soluciones de control de congestión y flujo.
 
-# Enunciado
+# Cómo correrlo
 
-El enunciado completo en Markdown se encuentra en [Enunciado.md](Enunciado.md).
+Se necesita la herramienta de simulación discreta **OMNET++**, [¿cómo descargar Omnet?](#descarga-de-omnet)
 
-# Simulación
+Luego se debe importar el proyecto. En [esta sección](#como-importarlo-en-omnet) está paso a paso cómo hacerlo.
 
-# Experimentos y preguntas: análisis
+## Correr una simulación
 
-Se deberá correr simulaciones paramétricas para cada caso de estudio, variando el intervalo de
-generación de paquetes (`generationInterval`) entre 0.1 y 1 en los pasos que el grupo crea
-adecuado para responder las preguntas planteadas.
-Se deberá generar algunas gráficas representativas de la utilización de cada una de las 3
-queue para los caso de estudios planteados.
-Se sugiere crear una gráfica de carga transmitida (eje x) vs. carga recibida (eje y), ambas
-expresadas en paquetes por segundo (ver Figura 6-19 del libro Tanenbaum). En caso de que
-haya pérdidas de paquetes también se sugiere medir y comparar estadísticas de ese
-fenómeno.
-
-## Responda y justifique
-
-1. ¿Qué diferencia observa entre el caso de estudio 1 y 2? ¿Cuál es la fuente limitante en
-cada uno? Investigue sobre la diferencia entre control de flujo y control de congestión
-(ver Figura 6-22 del libro Tanenbaum).
-
-# Experimentos y preguntas: diseño
-Utilice los mismos parámetros de los experimentos de la tarea 1, genere las curvas necesarias,
-y responda:
-
-1. ¿Cómo cree que se comporta su algoritmo de control de flujo y congestión ? ¿Funciona para el caso de estudio 1 y 2 por igual? ¿Por qué?
-
-# Primer Diseño
-
-- [x] Mensajes para ambos tipos de mensajes (datos y acks).
-- [/] Parada y espera. *(Descartado)*
-- [x] N° de seq.
-- [x] ACK flag.
-- [x] BufferSize.
-- [x] Ventana de congestión v1.
-
-# Segundo diseño
-
-- [x] Ventana corrediza.
-- [ ] Ventana de congestión v2.
-- [x] Arranque lento.
-- [/] Threshold. *(Descartado)*
-- [ ] Retransmisión.
-- [ ] Arranque lento al inicio y luego recuperación rápido.
-- [x] Timer -> Timeout.
-
-# Tercer diseño
-
-- [ ] Control de flujo.
-
-# Modificaciones
-
-La ventana de congestión mide su disponibilidad en cantidad de bytes (no en cantidad de segmentos).
-
-> .ini
-
-
-Network.sender.senderAppLayer.packetByteSize = 12500
-
-** nos dice que forma parte de todos como "global"
-Network.**.packetByteSize = 12500
-
-Reno Controller
-
-- ~umbral~
-- packetDropped
-- stage
-
-Congestion Window
-- Que el emisor sepa distinguir [(state, timer), etc , ]
-
-- seqNumber
-- acks
-
----
-
-# Realizar
-
-Generar el evento rtt cuando se inicializa
-
-Re sched del rtt cuando se recibe
-
-Hacer el schedAt del timeout en la función handleSelfMsg
-
-Arreglar el simtime_t del rtt
-
-Implementar los métodos del CongestionController
-
-# Mejoras posibles
-
-Se asume que la cola del Sender es arbitrariamente grande, por lo que no nos concierne su espacio para las retransmisiones. Sino fuese el caso se podría hacer lo siguiente para reducirlo:
-- setear un tamaño fijo en la cola para los paquetes de retransmisión. Este espacio no puede ser ocupado por lo paquetes normales.
-
-
-# OMNet++
-
-https://doc.omnetpp.org/omnetpp/manual/
-
-https://stackoverflow.com/questions/52445993/omnet-on-windows-or-linux
-https://stackoverflow.com/questions/7020069/make-library-not-found
-
-## Imagen de docker con Omnet++ (opcional)
-
-Instrucciones para descargar y ejecutar Omnet++ usando Docker.
-
-https://github.com/mmodenesi/omnetpy
-
-## cPacket
-https://doc.omnetpp.org/omnetpp/api/classomnetpp_1_1cPacket.html
-
-### Cómo crear class template de packet
-
-1) Crear el archivo `testPacket.msg`
-
-```cpp
-packet testPacket
-{
-     int srcAddress;
-     int destAddress;
-     int remainingHops = 32;
-};
-```
-
-2) Correr el comando
+Tenemos un makefile que compila el codigo fuente y lanza la simulación:
 
 ```bash
-opp_msgc testPacket.msg
+make clean && make run > /dev/null
 ```
 
-3) Se habrán generado los archivos `testPacket_m.h` y `testPacket_m.cc`
+# Descarga de Omnet
 
-### Cómo saber de qué gate viene un mensaje
+* [Imagen de Lubuntu con Omnet instalada](https://mega.nz/file/eaJUGIQQ#3h_VvTJlkmK3KHGZPiLd6EubADPxfze2JNRtHfcc3A4)
+* [Imagen de docker con Omnet++](https://github.com/mmodenesi/omnetpy)
+* [Guia para ejecutar Omnet en Windows](documents/Guia_para_ejecutar_Omnet++_en_Windows.pdf)
 
-bool arrivedOn()
+### Documentación de OMNet++
 
-## 
+* https://doc.omnetpp.org/omnetpp/manual/
+* https://stackoverflow.com/questions/52445993/omnet-on-windows-or-linux
+* https://stackoverflow.com/questions/7020069/make-library-not-found
 
-`cancelEvent()`
+## Como importarlo en Omnet
+
+**File > Import**
+<p align="center">
+<img src="documents/assets/guide_import_project/guide_import_project_0.png" width="300" title="Omnet Guide 0">
+</p>
+
+**General > Projects from Folder or Archivr**
+<p align="center">
+<img src="documents/assets/guide_import_project/guide_import_project_1.png" width="600" title="Omnet Guide 1">
+</p>
+
+**Path del repositorio y le damos aceptar**
+<p align="center">
+<img src="documents/assets/guide_import_project/guide_import_project_2.png" width="600" title="Omnet Guide 2">
+</p>
+
+<p align="center">
+<img src="documents/assets/guide_import_project/guide_import_project_3.png" width="600" title="Omnet Guide 3">
+</p>
+
+**En caso de que nos aparezca un mensaje emergente, le daremo a YES**
+<p align="center">
+<img src="documents/assets/guide_import_project/guide_import_project_4.png" width="500" title="Omnet Guide 4">
+</p>
 
 ---
 
-**[Enunciado.md](Enunciado.md)**
+**[ENUNCIADO](Enunciado.md) | [ANÁLISIS](Analysis.md) | [DISEÑO](Design.md)**
+
+---

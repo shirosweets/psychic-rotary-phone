@@ -82,4 +82,8 @@ void Queue::handleMessage(cMessage *msg) {
     }
 }
 
+class Transport: public Queue {
+
+};
+
 #endif /* QUEUE */

@@ -84,6 +84,7 @@ void TransportReceiver::handleSelfMessage(cMessage * msg){
 
 void TransportReceiver::handleVolt(Volt * volt){
 	if(buffer.getLength() < par("bufferSize").longValue()){
+		std::cout << "Receiver :: Received Volt " << volt->getSeqNumber() << "\n";
 		Volt *ackVolt = new Volt("packet");
 		ackVolt->setByteLength(9);
 		ackVolt->setAckFlag(true);
@@ -114,8 +115,10 @@ void TransportReceiver::handleVolt(Volt * volt){
 int TransportReceiver::getCurrentWindowSize() {
 	int remainingBuffer = par("bufferSize").intValue() - buffer.getLength() - 2;
 	remainingBuffer = remainingBuffer >= 0 ? remainingBuffer : 0;
-	std::cout << "Receiver :: Remaining space in buffer " << remainingBuffer << "\n";
-	return par("packetByteSize").intValue() * remainingBuffer;
+	int windowSize = par("packetByteSize").intValue() * remainingBuffer;
+	std::cout << "Receiver :: Remaining space in buffer: " << windowSize << " bytes.\t";
+	std::cout << "(" << remainingBuffer << " Volts)\n";
+	return windowSize;
 }
 
 #endif /* TRANSPORTRECEIVER */
