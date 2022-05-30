@@ -70,7 +70,9 @@ Si bien resuelve el problema de flujo e indirectamente el problema de congestió
 ## Evolución del modelo base
 
 # Ventana de congestión
-La primera adición a nuestro modelo fue `RenoManager.h` (originalmente llamado *CongestionWindow.h*) esta nos permite organizar cuales son los paquetes que estan en la red en todo momento. Un detalle de la implementación es que cuando un paquete es agregado a la ventana inicia el temporizador de un evento del `timeout` de ese paquete, el cual nos sirve para retransmitir paquetes, este modulo es utilizado por la capa del transmisor. Otra característica es la posibilidad de recibir `feedback` de la capa de receptor a través de ACKs.
+La primera adición a nuestro modelo fue `RenoManager.h` (originalmente llamado *CongestionWindow.h*) esta nos permite organizar cuales son los paquetes que estan en la red en todo momento.
+Un detalle de la implementación es que cuando un paquete es agregado a la ventana inicia el temporizador de un evento del `timeout` de ese paquete, el cual nos sirve como un valor "time-to-live" para saber cuando retransmitir paquetes, este modulo es utilizado por la capa del transmisor. 
+Otra característica es la posibilidad de recibir `feedback` de la capa de receptor a través de ACKs.
 
 ```C++
 class RenoManager {
@@ -104,14 +106,17 @@ public:
 
 # Primera versión
 
-Lo primero que apuntamos
+Lo primero que apuntamos fue tener registro de los paquetes de la red eso dio lugar a la implementacion de `CongestionWindow` que luego paso a tener mas funcionalidades por lo que paso a llamarse `RenoController`.
+De la mano creamos nuestro tipo de paquete `Volt`el cual solo consistia del mensaje y numero de secuencia, posteriormente se agregraron las flags.
+Con las adiciones de estos modulos y logica del lado del emisor conseguimos retransmitir los paquetes perdidos pero no aun el control de congestion. Esas fueron agregados posteriores cuando implementamos arranque lento.
+
 
 ----
 
 # Iteración de implemenación TEMPLATE
 
 Volt
-CongestionWindow
+RenoController
 CongestionController
 Slow start
 Retransmission
