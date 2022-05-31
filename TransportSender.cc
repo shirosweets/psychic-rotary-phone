@@ -16,6 +16,7 @@ class TransportSender : public cSimpleModule {
 private:
 	// Stats
 	cStdDev bufferSizeStdSend;
+	cStdDev packetRetransmitted;
 	cOutVector bufferSizeSend;
 	cOutVector packetDropSend;
 	cOutVector ackTime;
@@ -68,6 +69,8 @@ void TransportSender::initialize(){
 	bufferSizeStdSend.setName("bufferSizeStdSend");
 	packetDropSend.setName("packetDropSend");
 	packetDropSend.record(0);
+	packetRetransmitted.setName("packetRetransmittedSend")
+	packetRetransmitted.collect(0);
 	ackTime.setName("ackTime");
 
 	buffer.setName("Buffer");
@@ -87,6 +90,7 @@ void TransportSender::initialize(){
 void TransportSender::finish(){
 	// Stats record at the end of simulation
 	recordScalar("Avg Buffer Size Send", bufferSizeStdSend.getMean());
+	recordScalar("Amount of packets retransmitted", packetRetransmitted.getCount() - 1)
 }
 
 /* Handler general que OMNET llama para manejar todos los eventos del modulo */
@@ -184,6 +188,7 @@ void TransportSender::handleStartNextTransmission() {
 		voltToSend = slidingWindow.dupVolt(retSeqN);
 		voltToSend->setRetFlag(true);
 		std::cout << "Sender :: Sending Volt from retransmission Queue\n";
+		packetRetransmitted.collect(1);
 	} else {
 		// No hay que retransmitir mensajes
 		voltToSend = (Volt*) buffer.pop();
