@@ -190,6 +190,16 @@ Comparando con el caso 1 vemos 2 cambios significativos:
 
 /* TODO */
 
+- El principal problema que tiene la red es que en ambos casos existe un cuello de botella:
+- El primero es la linea interna de la capa del receptor que conecta el sink con su cola.
+- El segundo es la linea que conecta la capa del receptor con la cola intermeedia.
+Respectivamente las colas dropean paquetes en el momento que se llenan.
+
+Posibles soluciones para dejr de perder paquetes:
+- Una solucion seria poder aumentar el data rate de dichos canales en cada caso.
+- Poder retransmitir los paquetes que se pierden.
+- Implementar control de congestion para evitar perder paquetes.
+
 ----
 # Análisis de la red con *TLCP*
 > **TLCP** : **Trasport *Limited* Control Protocol**
@@ -206,11 +216,26 @@ Los detalles de la simulación son identicos para cada caso de la red anterior s
 
 ## Caso I
 
-/* TODO */
+| Conexión                           | Datarase      |
+| ---------------------------------- | ------------- |
+| entre `TransRx` y `RecAppLayer`    | **`0.5Mbps`** |
+| entre `emisor` y `nodo intermedio` | **`1.0Mbps`** |
 
 ### Hipótesis
 
 /* TODO */
+
+Con esos datos podemos ver a simple vista que existe un **cuello de botella** entre las dos capas de aplicación que se encuentra en el receptor mismo.
+
+El *receptor* va a recibir mensajes más rápidos de lo que puede procesarlos, eventualmente generando **droppeos** de paquetes.
+
+Esto es un ejemplo de problemas de *flujo*.
+
+Con TCLP los paquetes que se hayan perdido en la cola del receptor se retransmitiran.
+
+Se agregan 2 nuevas metricas:
+- La medicion del RTT (Round-trip-time) tiempo de la salida del paquete del generador y la llegada de su ACK.
+- acktime el cual es el timpo de creacion del paquete hasta que llega su ACK.
 
 ### Mediciones
 
@@ -218,29 +243,29 @@ Los detalles de la simulación son identicos para cada caso de la red anterior s
 
 Caso I Tabla
 
-| Itv   | Gen  | Del  | Drop Q | Drop R | AvDel [s] | RTT |
-|-------|------|------|--------|--------|-----------|-----|
-| 2.0   | 144  | 144  | 0      | 0      | 0.40      | 0.2 |
-| 0.8   | 367  | 367  | 0      | 0      | 0.43      | 0.2 |
-| 0.4   | 754  | 754  | 0      | 0      | 0.49      | 0.2 |
-| 0.3   | 989  | 989  | 0      | 0      | 0.58      | 0.2 |
-| 0.25  | 1190 | 1187 | 0      | 0      | 0.72      | 0.2 |
-| 0.23  | 1280 | 1279 | 0      | 0      | 0.94      | 0.2 |
-| 0.22  | 1344 | 1334 | 0      | 0      | 1.11      | 0.2 |
-| 0.21  | 1418 | 1401 | 0      | 0      | 1.49      | 0.2 |
-| 0.2   | 1494 | 1469 | 0      | 0      | 2.41      | 0.2 |
-| 0.18  | 1664 | 1494 | 0      | 0      | 14.52     | 0.2 |
-| 0.175 | 1710 | 1496 | 0      | 0      | 18.07     | 0.2 |
-| 0.17  | 1763 | 1497 | 0      | 0      | 21.68     | 0.2 |
-| 0.16  | 1867 | 1497 | 0      | 0      | 29.15     | 0.2 |
-| 0.15  | 1979 | 1498 | 0      | 0      | 36.64     | 0.2 |
-| 0.14  | 2136 | 1498 | 0      | 0      | 44.17     | 0.2 |
-| 0.1   | 2933 | 1498 | 0      | 0      | 74.44     | 0.2 |
-| 0.05  | 5847 | 1498 | 0      | 0      | 112.24    | 0.2 |
+| Itv | Gen | Del | Drop Q | Drop R | AvDel [s] | RTT Time medio | acktime |
+| - | - | - | - | - | - | - | - |
+| 2.0 | 144 | 144 | 0 | 0 | 0.40 | 1.72 | 3.44 |
+| 0.8 | 367 | 367 | 0 | 0 | 0.43 | 1.72 | 3.44 |
+| 0.4 | 754 | 754 | 0 | 0 | 0.49 | 1.72 | 3.44 |
+| 0.3 | 989 | 989 | 0 | 0 | 0.58 | 1.72 | 3.44 |
+| 0.25 | 1190 | 1187 | 0 | 0 | 0.72 | 1.72 | 3.44 |
+| 0.23 | 1280 | 1279 | 0 | 0 | 0.94 | 1.72 | 3.44 |
+| 0.22 | 1344 | 1334 | 0 | 0 | 1.11 | 1.72 | 3.44 |
+| 0.21 | 1418 | 1401 | 0 | 0 | 1.49 | 1.72 | 3.44 |
+| 0.2 | 1494 | 1469 | 0 | 0 | 2.41 | 1.72 | 3.44 |
+| 0.18 | 1664 | 1494 | 0 | 0 | 14.52 | 1.72 | 3.44 |
+| 0.175 | 1710 | 1496 | 0 | 0 | 18.07 | 1.72 | 3.44 |
+| 0.17 | 1763 | 1497 | 0 | 0 | 21.68 | 1.72 | 3.44 |
+| 0.16 | 1867 | 1497 | 0 | 0 | 29.15 | 1.72 | 3.44 |
+| 0.15 | 1979 | 1498 | 0 | 0 | 36.64 | 1.72 | 3.44 |
+| 0.14 | 2136 | 1498 | 0 | 0 | 44.17 | 1.72 | 3.44 |
+| 0.1 | 2933 | 1498 | 0 | 0 | 74.41 | 1.72 | 3.44 |
 
 ### Análisis
 
 /* TODO */
+
 
 ## Caso II
 
