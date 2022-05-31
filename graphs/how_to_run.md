@@ -1,5 +1,5 @@
 
-# Como correr el graficador:
+# Como correr el graficador
 
 ## Dependencias
 
@@ -15,10 +15,13 @@ source graph_venv/bin/activate
 Instalar los requisitos
 
 ```sh
-pip install -r requirements.txt
+pip install -r requirements.txt && sudo apt-get install python3-tk
 ```
+# Como obtener los datos
 
-## Archivos de datos
+Cambiar en el `.ini` el intervalo, correr la simulación y anotar los datos de la siguiente manera:
+
+**Archivos de datos**
 
 Los datos deben estar **estrictamente** en el siguiente formato:
 
@@ -39,7 +42,7 @@ Donde las columnas son respectivamente:
  * Paquetes droppeados en el receptor
  * Retraso promedio de llegada
 
-## Creación de gráficos:
+# Creación de gráficos
 
 Correr el comando `python main.py` y pasar como argumento los archivos de los casos de estudio. Si se pasa más de uno, entonces se graficarán ambos en la misma imagen, separados por caso. El nombre del caso es el nombre del archivo pasado. Archivos separados implican casos separados
 
