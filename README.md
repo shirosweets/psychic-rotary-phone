@@ -13,13 +13,11 @@ Redes y Sistemas Distribuidos - Primer cuatrimestre, FAMaF - 2022.
 
 ---
 
-- [Laboratorio N°3: Capa de Transporte](#laboratorio-n3-capa-de-transporte)
-- [Integrantes](#integrantes)
 - [Objetivos](#objetivos)
 - [Como correr las simulaciones](#como-correr-las-simulaciones)
   - [Descarga de Omnet](#descarga-de-omnet)
   - [Documentación de OMNet++](#documentación-de-omnet)
-  - [Como importarlo en Omnet](#como-importarlo-en-omnet)
+  - [Como importar el proyecto en Omnet](#como-importar-el-proyecto-en-omnet)
 
 # Objetivos
 
@@ -32,7 +30,7 @@ Redes y Sistemas Distribuidos - Primer cuatrimestre, FAMaF - 2022.
 
 Se necesita la herramienta de simulación discreta **OMNET++**, [¿cómo descargar Omnet?](#descarga-de-omnet)
 
-Luego se debe importar el proyecto. En [esta sección](#como-importarlo-en-omnet) está paso a paso cómo hacerlo.
+Luego se debe importar el proyecto. En [esta sección](#como-importar-el-proyecto-en-omnet) está paso a paso cómo hacerlo.
 
 
 Tenemos un makefile que compila el codigo fuente y lanza la simulación:
@@ -60,7 +58,7 @@ opp_msgc testPacket.msg
 * https://stackoverflow.com/questions/52445993/omnet-on-windows-or-linux
 * https://stackoverflow.com/questions/7020069/make-library-not-found
 
-## Como importarlo en Omnet
+## Como importar el proyecto en Omnet
 
 **File > Import**
 <p align="center">
@@ -69,22 +67,27 @@ opp_msgc testPacket.msg
 
 **General > Projects from Folder or Archive**
 <p align="center">
-<img src="documents/assets/guide_import_project/guide_import_project_1.png" width="600" title="Omnet Guide 1">
+<img src="documents/assets/guide_import_project/guide_import_project_1.png" width="500" title="Omnet Guide 1">
 </p>
 
 **Path del repositorio y le damos aceptar**
 <p align="center">
-<img src="documents/assets/guide_import_project/guide_import_project_2.png" width="600" title="Omnet Guide 2">
+<img src="documents/assets/guide_import_project/guide_import_project_2.png" width="500" title="Omnet Guide 2">
 </p>
 
 <p align="center">
-<img src="documents/assets/guide_import_project/guide_import_project_3.png" width="600" title="Omnet Guide 3">
+<img src="documents/assets/guide_import_project/guide_import_project_3.png" width="500" title="Omnet Guide 3">
 </p>
 
 **En caso de que nos aparezca un mensaje emergente cuando seleccionamos el archivo `network.ned`, le daremo a YES**
 <p align="center">
 <img src="documents/assets/guide_import_project/guide_import_project_4.png" width="500" title="Omnet Guide 4">
 </p>
+
+# Como generar los gráficos
+
+- [Generar gráfico carga útil vs ofrecida](graphs/how_to_run.md)
+- Importar el proyecto de JupyterLab: [graphs/jupyterlab/MyJupyOmnet_v2.ipynb](graphs/jupyterlab/MyJupyOmnet_v2.ipynb)
 
 ---
 
