@@ -1,15 +1,19 @@
 # Control de Congestión y Flujo en la Capa de Transporte con OMNET++
 
-> Informe de la tarea de Análisis del laboratorio 3 de Redes y Sistemas Distribuidos (1C 2022)
+Informe de la tarea de análisis del laboratorio 3 de Redes y Sistemas Distribuidos - Primer cuatrimestre, FAMaF 2022.
 
-## Index
+---
 
-- [Control de Congestión y Flujo en la Capa de Transporte con OMNET++](#control-de-congestión-y-flujo-en-la-capa-de-transporte-con-omnet)
-  - [Index](#index)
-  - [Abstract](#abstract)
+**[ENUNCIADO](../Markdown/Assignment.md) | [README](../README.md) | [DISEÑO](../Markdown/Design.md)**
+
+---
+
+## Contenido
+
+- [Abstract](#abstract)
 - [Análisis de la red sin control de congestión ni flujo](#análisis-de-la-red-sin-control-de-congestión-ni-flujo)
   - [Introducción a la red básica](#introducción-a-la-red-básica)
-    - [Introducción a la red con TLCP](#introducción-a-la-red-con-tlcp)
+  - [Introducción a la red con TLCP](#introducción-a-la-red-con-tlcp)
   - [Presentación del Caso I](#presentación-del-caso-i)
   - [Presentación del Caso II](#presentación-del-caso-ii)
   - [Análisis del Caso I](#análisis-del-caso-i)
@@ -19,22 +23,26 @@
   - [Análisis Caso II](#análisis-caso-ii)
     - [Hipótesis](#hipótesis-1)
     - [Mediciones](#mediciones-1)
-    - [Análisis](#análisis-1)
+    - [Análisis Caso II](#análisis-caso-ii-1)
   - [Conclusión parcial](#conclusión-parcial)
 - [Análisis de la red con *TLCP*](#análisis-de-la-red-con-tlcp)
   - [Pantallazo a *Transport Limited Control Protocol*](#pantallazo-a-transport-limited-control-protocol)
-  - [Caso I](#caso-i)
+  - [**TLCP Caso I**](#tlcp-caso-i)
     - [Hipótesis](#hipótesis-2)
     - [Mediciones](#mediciones-2)
-    - [Análisis](#análisis-2)
-  - [Caso II](#caso-ii)
+    - [Análisis](#análisis-1)
+  - [**Caso II**](#caso-ii)
     - [Hipótesis](#hipótesis-3)
     - [Mediciciones](#mediciciones)
-    - [Análisis](#análisis-3)
+    - [Análisis TLCP Caso II](#análisis-tlcp-caso-ii)
   - [Comparación con la red previa](#comparación-con-la-red-previa)
+    - [**¿Cómo creen que se comporta su algoritmo de control de flujo y congestión?**](#cómo-creen-que-se-comporta-su-algoritmo-de-control-de-flujo-y-congestión)
+    - [**¿Funciona para el caso de estudio I y II por igual? ¿Por qué?**](#funciona-para-el-caso-de-estudio-i-y-ii-por-igual-por-qué)
 - [Conclusión](#conclusión)
+- [Mejoras posibles](#mejoras-posibles)
+- [Referencias](#referencias)
 
-## Abstract
+# Abstract
 
 En este laboratorio se estudió el comportamiento de las redes frente a problemas de congestión y flujo con la herramienta de simulación por eventos discretos *OMNETT++*. Se tomó una red simplificada y se hizo un análisis sobre un escenario con problemas por congestión, otro por problemas de flujo, y luego se estudió la efectividad en ambos casos de nuestra implementación de control de ambos problemas.
 
@@ -341,6 +349,6 @@ TLCP Caso I Tabla
 
 ---
 
-**[ENUNCIADO](../Markdown/Assignment.md) | [README](README.md) | [DISEÑO](../Markdown/Design.md)**
+**[ENUNCIADO](../Markdown/Assignment.md) | [README](../README.md) | [DISEÑO](../Markdown/Design.md)**
 
 ---

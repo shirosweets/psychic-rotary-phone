@@ -1,6 +1,6 @@
 # Diseño de capa de transporte con control de flujo y congestión
 
-Se presenta en detalle la especificación e implementación (en Omnet) de nuestra solución para los problemas de control y flujo en la capa de transporte.
+Se presenta en detalle la especificación e implementación (en Omnet++) de nuestra solución para los problemas de control y flujo en la capa de transporte.
 
 ---
 
@@ -8,14 +8,18 @@ Se presenta en detalle la especificación e implementación (en Omnet) de nuestr
 
 ---
 
-## Indice
+## Contenido
 
-- [Diseño de capa de transporte con Control de Flujo y Congestion](#diseño-de-capa-de-transporte-con-control-de-flujo-y-congestion)
-  - [Indice](#indice)
 - [Introducción a TLCP](#introducción-a-tlcp)
+  - [¿Qué es TLCP?](#qué-es-tlcp)
+  - [Arquitectura TLCP](#arquitectura-tlcp)
 - [Iteraciones de diseño](#iteraciones-de-diseño)
   - [Ideas Preliminares](#ideas-preliminares)
   - [Evolución del modelo base](#evolución-del-modelo-base)
+    - [Primera iteración o etapa del diseño](#primera-iteración-o-etapa-del-diseño)
+    - [Segundo iteración o etapa del diseño](#segundo-iteración-o-etapa-del-diseño)
+    - [Tercer iteración o etapa del diseño](#tercer-iteración-o-etapa-del-diseño)
+    - [Cuarta iteración o etapa del diseño](#cuarta-iteración-o-etapa-del-diseño)
 - [Ventana de congestión](#ventana-de-congestión)
 - [Controlador de congestión](#controlador-de-congestión)
 - [](#)
@@ -33,6 +37,10 @@ Se presenta en detalle la especificación e implementación (en Omnet) de nuestr
 - [Cosas no implementadas de TCP o TCP-Reno](#cosas-no-implementadas-de-tcp-o-tcp-reno)
   - [Reordenamiento de paquetes](#reordenamiento-de-paquetes)
   - [ACK duplicados](#ack-duplicados)
+- [Problemas que surgieron](#problemas-que-surgieron)
+  - [IDE](#ide)
+  - [Omnet y sus librerías](#omnet-y-sus-librerías)
+  - [simtime_t](#simtime_t)
 
 # Introducción a TLCP
 
@@ -192,7 +200,7 @@ El número de secuencia indica el orden de los paquetes. A diferencia de TCP, no
 
 Por cuestión de tiempo, simplemente seteamos el `MAX_SEQ_N = 1000`
 
-> *Nota:* Planeabamos hacer el cambio a la implementación por bytes, y en gran parte la estructura actual del Sender ya permite eso, por lo que la transición no sería tan costosa. Se puede ver en [**mejoras posibles**](Markdown/Analysis.md/#mejoras-posibles) para ver las posibles mejoras respecto a esto
+> *Nota:* Planeabamos hacer el cambio a la implementación por bytes, y en gran parte la estructura actual del Sender ya permite eso, por lo que la transición no sería tan costosa. Se puede ver en [**mejoras posibles**](../Markdown/Analysis.md/#mejoras-posibles) para ver las posibles mejoras respecto a esto.
 
 ### Flags
 
