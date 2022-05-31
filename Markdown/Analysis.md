@@ -207,13 +207,12 @@ Comparando con el caso 1 vemos 2 cambios significativos:
 
 ![Caso II Buffer Size intv = 0.18](/documents/assets/case_II_intv_018/case_II_intv_018_bufferStacked.png)
 
-**Invervalo de generación de paquetes = 0.18s**
+**Invervalo de generación de paquetes = 2.0s**
 
 ![Caso II Buffer Size intv = 2.0](/documents/assets/case_II_intv_20/case_I_intv_2_0_bufferStacked.png)
 
 ## Conclusión parcial
-
-/* TODO */
+### ¿Qué diferencia observa entre el caso de estudio I y II? ¿Cuál es la fuente limitante en cada uno?
 
 - El principal problema que tiene la red es que en ambos casos es que existe un cuello de botella:
   - En el primer caso es la línea interna de la capa del receptor que conecta el sink con su cola.
@@ -226,13 +225,16 @@ Posibles soluciones para dejar de perder paquetes:
 - Retransmitir los paquetes que se pierden.
 - Implementar control de congestion para evitar perder paquetes.
 
+### Diferencia entre control de flujo y control de congestión
+
+/* TODO */
+
 ----
 # Análisis de la red con *TLCP*
-> **TLCP** : **Trasport *Limited* Control Protocol**
 
 ## Pantallazo a *Transport Limited Control Protocol*
 
-TLCP implementa *control de flujo* y *control de congestión*, con un receptor manteniendo un feedback constante al emisor mediante paquetes de confirmación (ACK).
+**Transport Limited Control Protocol** (TLCP) implementa *control de flujo* y *control de congestión*, con un receptor manteniendo un feedback constante al emisor mediante paquetes de confirmación (ACK).
 
 El tamaño del header de cada paquete, llamado `Volt`, tiene tan solo **9** bytes, lo cual agrega muy poco overhead a cada paquete.
 
@@ -249,8 +251,6 @@ Los detalles de la simulación son idénticos para cada caso de la red anterior 
 
 ### Hipótesis
 
-/* TODO */
-
 Con esos datos podemos ver a simple vista que existe un **cuello de botella** entre las dos capas de aplicación que se encuentra en el receptor mismo.
 
 El *receptor* va a recibir mensajes más rápidos de lo que puede procesarlos, eventualmente generando **droppeos** de paquetes.
@@ -260,8 +260,8 @@ Esto es un ejemplo de problemas de *flujo*.
 Con TCLP los paquetes que se hayan perdido en la cola del receptor se retransmitiran.
 
 Se agregan 2 nuevas metricas:
-- La medicion del RTT (Round-trip-time) tiempo de la salida del paquete del generador y la llegada de su ACK.
-- acktime el cual es el timpo de creacion del paquete hasta que llega su ACK.
+- La medición del RTT (Round-trip-time) es el tiempo de la salida del paquete del generador hasta la llegada de su ACK.
+- acktime es el timpo de creación del paquete hasta la llegada de su ACK.
 
 ### Mediciones
 
@@ -290,6 +290,22 @@ TLCP Caso I Tabla
 
 /* TODO */
 
+**Invervalo de generación de paquetes = 0.1s**
+
+![TLCP Caso I Buffer Size intv = 0.05](/documents/assets/tlcp_case_I_intv_005/tlcp_case_I_intv_0_05_bufferSize_Stacked.png)
+
+**Invervalo de generación de paquetes = 0.1s**
+
+![TLCP Caso I Buffer Size intv = 0.1](/documents/assets/tlcp_case_I_intv_01/tlcp_case_I_intv_0_1_bufferSize_Stacked.png)
+
+**Invervalo de generación de paquetes = 0.18s**
+
+![TLCP Caso I Buffer Size intv = 0.18](/documents/assets/tlcp_case_I_intv_018/tlcp_case_I_intv_0_18_bufferSize_Stacked.png)
+
+**Invervalo de generación de paquetes = 2.0s**
+
+![TLCP Caso I Buffer Size intv = 2.0](/documents/assets/tlcp_case_I_intv_02/tlcp_case_I_intv_2_0_bufferSize_Stacked.png)
+
 
 ## **TLCP Caso II**
 
@@ -307,19 +323,40 @@ TLCP Caso I Tabla
 
 /* TODO */
 
+**Invervalo de generación de paquetes = 0.1s**
+
+![TLCP Caso II Buffer Size intv = 0.05](/documents/assets/tlcp_case_II_intv_005/tlcp_case_II_intv_0_05_bufferSize_Stacked.png)
+
+**Invervalo de generación de paquetes = 0.1s**
+
+![TLCP Caso II Buffer Size intv = 0.1](/documents/assets/tlcp_case_II_intv_01/tlcp_case_II_intv_0_1_bufferSize_Stacked.png)
+
+**Invervalo de generación de paquetes = 0.18s**
+
+![TLCP Caso II Buffer Size intv = 0.18](/documents/assets/tlcp_case_II_intv_018/tlcp_case_II_intv_0_18_bufferSize_Stacked.png)
+
+**Invervalo de generación de paquetes = 2.0s**
+
+![TLCP Caso II Buffer Size intv = 2.0](/documents/assets/tlcp_case_II_intv_20/tlcp_case_II_intv_2_0_bufferSize_Stacked.png)
+
+
 ## Comparación con la red previa
 
 /* TODO */
 
 ### **¿Cómo creen que se comporta su algoritmo de control de flujo y congestión?**
 
+/* TODO */
+
 ### **¿Funciona para el caso de estudio I y II por igual? ¿Por qué?**
+
+/* TODO */
 
 ![Carga ofrecida vs Carga útil](/documents/assets/util_vs_ofrecida.png)
 
 # Conclusión
 
-
+/* TODO */
 
 # Mejoras posibles
 
