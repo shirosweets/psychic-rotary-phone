@@ -20,6 +20,7 @@ private:
 	cOutVector bufferSizeSend;
 	cOutVector packetDropSend;
 	cOutVector ackTime;
+	cOutVector rtt;
 
 	// Events
 	cMessage *rttEvent;
@@ -69,9 +70,10 @@ void TransportSender::initialize(){
 	bufferSizeStdSend.setName("bufferSizeStdSend");
 	packetDropSend.setName("packetDropSend");
 	packetDropSend.record(0);
-	packetRetransmitted.setName("packetRetransmittedSend")
+	packetRetransmitted.setName("packetRetransmittedSend");
 	packetRetransmitted.collect(0);
 	ackTime.setName("ackTime");
+	rtt.setName("RTTtime");
 
 	buffer.setName("Buffer");
 
@@ -90,7 +92,7 @@ void TransportSender::initialize(){
 void TransportSender::finish(){
 	// Stats record at the end of simulation
 	recordScalar("Avg Buffer Size Send", bufferSizeStdSend.getMean());
-	recordScalar("Amount of packets retransmitted", packetRetransmitted.getCount() - 1)
+	recordScalar("Amount of packets retransmitted", packetRetransmitted.getCount() - 1);
 }
 
 /* Handler general que OMNET llama para manejar todos los eventos del modulo */
@@ -237,6 +239,11 @@ void TransportSender::handleVoltReceived(Volt * volt) {
  */
 void TransportSender::handleAck(Volt * volt) {
 //	    ackTime.record(volt->getDuration());  // Revisar
+	simtime_t ack_time = simTime() - volt->getCreationTime();
+	ackTime.record(ack_time);
+	simtime_t rtt_time = simTime() - volt->getSendingTime();
+	rtt.record(rtt_time);
+
 	int seqN = volt->getSeqNumber();
 	std::cout << "Sender :: handling ACK of Volt " << seqN << "\n";
 
