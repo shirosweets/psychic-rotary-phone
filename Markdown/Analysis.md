@@ -341,6 +341,6 @@ TLCP Caso I Tabla
 
 ---
 
-**[ENUNCIADO](Markdown/Assignment.md) | [README](README.md) | [DISEÑO](Markdown/Design.md)**
+**[ENUNCIADO](../Markdown/Assignment.md) | [README](README.md) | [DISEÑO](../Markdown/Design.md)**
 
 ---
