@@ -57,7 +57,7 @@ Por razones de conveniencia con respecto a la segunda parte de este análisis, s
  * El largo de la simulación se aumentó de **200 segundos** a **300 segundos**
     > Esto para normalizar aun más los datos estadísticos provenientes de la generación azarosa de paquetes.
 
-### Introducción a la red con TLCP
+## Introducción a la red con TLCP
 
 La implementación de nuestro algoritmo requiere un canal de vuelta entre el receptor y emisor, por lo que se agregó ese canal con las mismas características (`datarate` y `delay`) del **nodo intermedio**. También en cada caso los parámetros de los enlaces de envío al receptor son los mismos que en la red básica para que sus mediciones sean comparables.
 
@@ -131,9 +131,6 @@ Caso I tabla
 >
 > *AvDel:* Retraso de entrega promedio
 
-### Caso I Intervalo de generación de paquetes = 0.1s
-![Caso I Buffer Size](/documents/assets/case_I/case_I_bufferStacked.png)
-
 ### Análisis
 
 * Se puede notar que hasta el rango de aproximadamente 0.25 de intervalo la red no tiene ningún tipo de retraso. Las colas están prácticamente todo el tiempo vacías
@@ -152,7 +149,7 @@ Con estos datos, se realizaron los siguientes gráficos:
 ![Caso I Buffer Size intv = 0.18](/documents/assets/case_I_intv_018/case_I_intv_018_bufferStacked.png)
 
 **Invervalo de generación de paquetes = 2.0s**
-![Caso I Buffer Size intv = 2.0](/documents/assets/case_I_intv_20/)
+![Caso I Buffer Size intv = 2.0](/documents/assets/case_I_intv_20/case_I_intv_2_0_bufferStacked.png)
 
 ---
 
@@ -189,7 +186,7 @@ Caso II tabla
 | 0.14  | 2136 | 1498 | 538    | 0      | 17.96     |
 | 0.1   | 2933 | 1498 | 1332   | 0      | 19.98     |
 
-### Análisis
+### Análisis Caso II
 
 Comparando con el caso 1 vemos 2 cambios significativos:
 * **Capa de receiver**: En este caso no hay dropeo en la cola del receptor debido a que el datarate es el doble de rápido y por este mismo motivo el delay baja.
@@ -201,24 +198,25 @@ Comparando con el caso 1 vemos 2 cambios significativos:
 
 **Invervalo de generación de paquetes = 0.18s**
 
-![Caso II Buffer Size intv = 0.18](/documents/assets/case_II/)
+![Caso II Buffer Size intv = 0.18](/documents/assets/case_II_intv_018/case_II_intv_018_bufferStacked.png)
 
 **Invervalo de generación de paquetes = 0.18s**
 
-![Caso II Buffer Size intv = 2.0](/documents/assets/case_II/)
+![Caso II Buffer Size intv = 2.0](/documents/assets/case_II_intv_20/case_I_intv_2_0_bufferStacked.png)
 
 ## Conclusión parcial
 
 /* TODO */
 
-- El principal problema que tiene la red es que en ambos casos existe un cuello de botella:
-- El primero es la linea interna de la capa del receptor que conecta el sink con su cola.
-- El segundo es la linea que conecta la capa del receptor con la cola intermeedia.
+- El principal problema que tiene la red es que en ambos casos es que existe un cuello de botella:
+  - En el primer caso es la línea interna de la capa del receptor que conecta el sink con su cola.
+  - En el segundo caso es la línea que conecta la capa del receptor con la cola intermeedia.
+
 Respectivamente las colas dropean paquetes en el momento que se llenan.
 
-Posibles soluciones para dejr de perder paquetes:
-- Una solucion seria poder aumentar el data rate de dichos canales en cada caso.
-- Poder retransmitir los paquetes que se pierden.
+Posibles soluciones para dejar de perder paquetes:
+- Aumentar el data rate de dichos canales en cada caso.
+- Retransmitir los paquetes que se pierden.
 - Implementar control de congestion para evitar perder paquetes.
 
 ----
@@ -260,7 +258,7 @@ Se agregan 2 nuevas metricas:
 
 ### Mediciones
 
-**TLCP Caso I Tabla**
+TLCP Caso I Tabla
 
 | Itv   | Gen  | Del  | Drop Q | Drop R | AvDel [s] | RTT Time medio | acktime |
 |-------|------|------|--------|--------|-----------|----------------|---------|
@@ -298,7 +296,7 @@ Se agregan 2 nuevas metricas:
 
 /* TODO */
 
-### Análisis
+### Análisis TLCP Caso II
 
 /* TODO */
 
@@ -329,7 +327,7 @@ Se agregan 2 nuevas metricas:
 
 - Reducir los llamados innecesarios a `dupVolt()` ya que este genera una copia del Volt.
 
-- Modificar el `1000` del siguiente código a un valor "dinámico":
+- Modificar el `1000` del siguiente código de manera dinámica:
   ```cpp
   congestionController.setBaseWindow((currentBaseOfSlidingWindow + 1) % 1000);
   ```

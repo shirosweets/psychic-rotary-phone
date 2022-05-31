@@ -2,6 +2,12 @@
 
 Se presenta en detalle la especificación e implementación (en Omnet) de nuestra solución para los problemas de control y flujo en la capa de transporte.
 
+---
+
+**[ENUNCIADO](Markdown/Assignment.md) | [README](README.md) | [ANÁLISIS](Markdown/Analysis.md)**
+
+---
+
 ## Indice
 
 - [Diseño de capa de transporte con Control de Flujo y Congestion](#diseño-de-capa-de-transporte-con-control-de-flujo-y-congestion)
@@ -186,7 +192,7 @@ El número de secuencia indica el orden de los paquetes. A diferencia de TCP, no
 
 Por cuestión de tiempo, simplemente seteamos el `MAX_SEQ_N = 1000`
 
-> *Nota:* Planeabamos hacer el cambio a la implementación por bytes, y en gran parte la estructura actual del Sender ya permite eso, por lo que la transición no sería tan costosa. Se puede ver [**TODO.md**](TODO.md) para ver las posibles mejoras respecto a esto
+> *Nota:* Planeabamos hacer el cambio a la implementación por bytes, y en gran parte la estructura actual del Sender ya permite eso, por lo que la transición no sería tan costosa. Se puede ver en [**mejoras posibles**](Markdown/Analysis.md/#mejoras-posibles) para ver las posibles mejoras respecto a esto
 
 ### Flags
 
@@ -227,12 +233,32 @@ Karn es necesario porque no sabemos si un ACK entrante de un paquete que fue ret
 # Problemas que surgieron
 
 ## IDE
-El principal incoveniente que nos surgió fue que nunca logramos que el IDE lance la simulación con el botón correspondiente, tuvimos que realizarlo a través del Makefile, pero de esta forma lanza la simulación más rápido.
 
-Un inconveniente que se nos presentó es que no podíamos hacer que el IDE funcionara para pair programming con la extensión Live Share de Visual Studio Code, por lo que al querer realizar múltiples cambios de diferentes personas para probarlos en una única branch teníamos que estar 
+El principal incoveniente que nos surgió fue que nunca logramos que el IDE lance la simulación con el botón correspondiente, tuvimos que realizarlo a través del Makefile, pero descubrimos que de esta forma lanza la simulación más rápido.
 
-[[no podiamos usar un debugger por lo que tuvimos que usar impresiones directas en consola para cada cosa]]
+Por esta misma razón no pudimos utilizar la herramienta de debugeo que nos brinda el IDE, por lo que tuvimos que usar impresiones directas en consola para debugear. También esto explica porqué utilizamos el comando:
 
-## 
+```bash
+make clean && make run > /dev/null
+```
 
-No podíamos abstraer completamente la WC porque no podíamos importar subtipos de omnet++, en nuestro caso los `simtime_t` y los `cMessage`. No podíamos crear ambos de manera interna sin heredarlos.
+Otro inconveniente respecto al IDE es que no podíamos que funcionara con la extensión Live Share de Visual Studio Code para pair programming, por lo que al querer realizar múltiples cambios de diferentes personas para probarlos en una única branch teníamos que estar actualizando cada computadora individualmente, resolviendo conflictos. Sino tenía que uno estar escribiendo mientras comparte pantalla y todos realizan esos cambios localmente sin comitear.
+
+## Omnet y sus librerías
+
+No podíamos abstraer completamente la [WC](#ventana-de-congestión) porque no podíamos importar subtipos de omnet++, a pesar que la misma documentación explicaba cómo hacerlo. En nuestro caso los `simtime_t` y los `cMessage`, no podíamos crear ambos de manera interna sin heredarlos.
+
+## simtime_t
+
+Tuvimos varias dificultades para implementar nuestro propio `simtime_t`, nombrando algunas:
+
+- Al declararlo en el `.ini` no nos reconocía el tipo.
+- Cuando el `.ini` reconocía el tipo, no la unidad.
+- Cuando `.ini` reconocía la unidad el `.ned` y los módulos no lo reconocían.
+- Cuando los módulos lo reconocían, al inicio no funcionaban los operadores para tiempo.
+
+---
+
+**[ENUNCIADO](Markdown/Assignment.md) | [README](README.md) | [ANÁLISIS](Markdown/Analysis.md)**
+
+---
