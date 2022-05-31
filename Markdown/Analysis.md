@@ -98,6 +98,8 @@ Esto es un ejemplo de problemas de *flujo*.
 
 Primero se tomó un intervalo de generación relativamente grande (**`T = 2s`**). Si bien el análisis teórico del problema dice que el receptor tiene un problema de flujo, si se ocupa poco la red no debería haber pédida de paquetes o una mínima pérdida.
 
+Caso I tabla
+
 | Itv   | Gen  | Del  | Drop Q | Drop R | AvDel [s] |
 |-------|------|------|--------|--------|-----------|
 | 2.0   | 144  | 144  | 0      | 0      | 0.40      |
@@ -139,13 +141,18 @@ Primero se tomó un intervalo de generación relativamente grande (**`T = 2s`**)
 * De ahí en más aumentar la generación de paquetes finalmente genera la pérdida de los mismos y no solamente un aumento del retraso.
 * Se puede notar que la carga efectiva que de ahi en más el receptor puede recibir es de 1498 y se mantiene ahí.
 
-Con estos datos: Se realizaron los siguientes grafos
+Con estos datos, se realizaron los siguientes gráficos:
+
+**Invervalo de generación de paquetes = 0.1s**
 
 ![Caso I Buffer Size intv = 0.1](/documents/assets/case_I/case_I_bufferStacked.png)
 
+**Invervalo de generación de paquetes = 0.18s**
+
 ![Caso I Buffer Size intv = 0.18](/documents/assets/case_I_intv_018/case_I_intv_018_bufferStacked.png)
 
-![Caso I Buffer Size intv = 2.0](/docu)
+**Invervalo de generación de paquetes = 2.0s**
+![Caso I Buffer Size intv = 2.0](/documents/assets/case_I_intv_20/)
 
 ---
 
@@ -160,6 +167,8 @@ De esta manera la cola paulativamente se llenará y empezará a dropear paquetes
 Este es un claro problema de congestión, la interred no puede manejar la velocidad del generador y al no haber caminos alternativos siempre habrá problemas de congestión.
 
 ### Mediciones
+
+Caso II tabla
 
 | Itv   | Gen  | Del  | Drop Q | Drop R | AvDel [s] |
 |-------|------|------|--------|--------|-----------|
@@ -180,17 +189,23 @@ Este es un claro problema de congestión, la interred no puede manejar la veloci
 | 0.14  | 2136 | 1498 | 538    | 0      | 17.96     |
 | 0.1   | 2933 | 1498 | 1332   | 0      | 19.98     |
 
-###
-![Caso II Buffer Size](/documents/assets/case_II/case_II_bufferStacked.png)
-
-
-![](/documents/assets/case_II/)
-
 ### Análisis
 
 Comparando con el caso 1 vemos 2 cambios significativos:
 * **Capa de receiver**: En este caso no hay dropeo en la cola del receptor debido a que el datarate es el doble de rápido y por este mismo motivo el delay baja.
 * **Drop Q**: En este caso el datarate entre la cola intermedia y la capa del deceptor se divide a la mitad (de 1Mbps a 0.5Mbps), se mantiene el datarate del generador con la cola intermedia (1Mbps) lo que provoca el llenado de la cola intermedia, generando paquetes dropeados.
+
+**Invervalo de generación de paquetes = 0.1s**
+
+![Caso II Buffer Size intv = 0.1](/documents/assets/case_II/case_II_bufferStacked.png)
+
+**Invervalo de generación de paquetes = 0.18s**
+
+![Caso II Buffer Size intv = 0.18](/documents/assets/case_II/)
+
+**Invervalo de generación de paquetes = 0.18s**
+
+![Caso II Buffer Size intv = 2.0](/documents/assets/case_II/)
 
 ## Conclusión parcial
 
@@ -216,11 +231,11 @@ TLCP implementa *control de flujo* y *control de congestión*, con un receptor m
 
 El tamaño del header de cada paquete, llamado `Volt`, tiene tan solo **9** bytes, lo cual agrega muy poco overhead a cada paquete.
 
-Para una explicación de las especificaciones e implementación de TLCP dirigirse a [**DISEÑO**](Design.md)
+Para una explicación de las especificaciones e implementación de TLCP dirigirse a [**DISEÑO**](Design.md).
 
 Los detalles de la simulación son idénticos para cada caso de la red anterior sin control de flujo ni control, por lo que saltaremos directamente al análisis.
 
-## **Caso I**
+## **TLCP Caso I**
 
 | Conexión                           | Datarase      |
 | ---------------------------------- | ------------- |
@@ -245,28 +260,26 @@ Se agregan 2 nuevas metricas:
 
 ### Mediciones
 
-/* TODO */
+**TLCP Caso I Tabla**
 
-Caso I Tabla
-
-| Itv | Gen | Del | Drop Q | Drop R | AvDel [s] | RTT Time medio | acktime |
-| - | - | - | - | - | - | - | - |
-| 2.0 | 144 | 144 | 0 | 0 | 0.40 | 1.72 | 3.44 |
-| 0.8 | 367 | 367 | 0 | 0 | 0.43 | 1.72 | 3.44 |
-| 0.4 | 754 | 754 | 0 | 0 | 0.49 | 1.72 | 3.44 |
-| 0.3 | 989 | 989 | 0 | 0 | 0.58 | 1.72 | 3.44 |
-| 0.25 | 1190 | 1187 | 0 | 0 | 0.72 | 1.72 | 3.44 |
-| 0.23 | 1280 | 1279 | 0 | 0 | 0.94 | 1.72 | 3.44 |
-| 0.22 | 1344 | 1334 | 0 | 0 | 1.11 | 1.72 | 3.44 |
-| 0.21 | 1418 | 1401 | 0 | 0 | 1.49 | 1.72 | 3.44 |
-| 0.2 | 1494 | 1469 | 0 | 0 | 2.41 | 1.72 | 3.44 |
-| 0.18 | 1664 | 1494 | 0 | 0 | 14.52 | 1.72 | 3.44 |
-| 0.175 | 1710 | 1496 | 0 | 0 | 18.07 | 1.72 | 3.44 |
-| 0.17 | 1763 | 1497 | 0 | 0 | 21.68 | 1.72 | 3.44 |
-| 0.16 | 1867 | 1497 | 0 | 0 | 29.15 | 1.72 | 3.44 |
-| 0.15 | 1979 | 1498 | 0 | 0 | 36.64 | 1.72 | 3.44 |
-| 0.14 | 2136 | 1498 | 0 | 0 | 44.17 | 1.72 | 3.44 |
-| 0.1 | 2933 | 1498 | 0 | 0 | 74.41 | 1.72 | 3.44 |
+| Itv   | Gen  | Del  | Drop Q | Drop R | AvDel [s] | RTT Time medio | acktime |
+|-------|------|------|--------|--------|-----------|----------------|---------|
+| 2.0   | 144  | 144  | 0      | 0      | 0.40      | 1.72           | 3.44    |
+| 0.8   | 367  | 367  | 0      | 0      | 0.43      | 1.72           | 3.44    |
+| 0.4   | 754  | 754  | 0      | 0      | 0.49      | 1.72           | 3.44    |
+| 0.3   | 989  | 989  | 0      | 0      | 0.58      | 1.72           | 3.44    |
+| 0.25  | 1190 | 1187 | 0      | 0      | 0.72      | 1.72           | 3.44    |
+| 0.23  | 1280 | 1279 | 0      | 0      | 0.94      | 1.72           | 3.44    |
+| 0.22  | 1344 | 1334 | 0      | 0      | 1.11      | 1.72           | 3.44    |
+| 0.21  | 1418 | 1401 | 0      | 0      | 1.49      | 1.72           | 3.44    |
+| 0.2   | 1494 | 1469 | 0      | 0      | 2.41      | 1.72           | 3.44    |
+| 0.18  | 1664 | 1494 | 0      | 0      | 14.52     | 1.72           | 3.44    |
+| 0.175 | 1710 | 1496 | 0      | 0      | 18.07     | 1.72           | 3.44    |
+| 0.17  | 1763 | 1497 | 0      | 0      | 21.68     | 1.72           | 3.44    |
+| 0.16  | 1867 | 1497 | 0      | 0      | 29.15     | 1.72           | 3.44    |
+| 0.15  | 1979 | 1498 | 0      | 0      | 36.64     | 1.72           | 3.44    |
+| 0.14  | 2136 | 1498 | 0      | 0      | 44.17     | 1.72           | 3.44    |
+| 0.1   | 2933 | 1498 | 0      | 0      | 74.41     | 1.72           | 3.44    |
 
 ### Análisis
 
@@ -301,16 +314,35 @@ Caso I Tabla
 
 # Conclusión
 
-/* TODO */
+
 
 # Mejoras posibles
 
-Se asume que la cola del Sender es arbitrariamente grande, por lo que no nos concierne su espacio para las retransmisiones. Sino fuese el caso se podría hacer lo siguiente para reducirlo:
-- setear un tamaño fijo en la cola para los paquetes de retransmisión. Este espacio no puede ser ocupado por lo paquetes normales.
+- Se asume que la cola del Sender es arbitrariamente grande, por lo que no nos concierne su espacio para las retransmisiones. Sino fuese el caso se podría hacer lo siguiente para reducirlo:
+   - setear un tamaño fijo en la cola para los paquetes de retransmisión. Este espacio no puede ser ocupado por lo paquetes normales.
+
+- Descartamos **ACKs duplicados** porque dentro de nuestra red no sería algo que ocurra, pero de implementarse se debería:
+  - modificar también del lado del receptor.
+  - modicar `congestionController.addAck(seqN)`, puede flag o bool.
+
+- El **receptor** asume que siempre recibe en orden.
+
+- Reducir los llamados innecesarios a `dupVolt()` ya que este genera una copia del Volt.
+
+- Modificar el `1000` del siguiente código a un valor "dinámico":
+  ```cpp
+  congestionController.setBaseWindow((currentBaseOfSlidingWindow + 1) % 1000);
+  ```
 
 # Referencias
 
 - Tanembaum A. S. (2012). Redes de computadores (5ta ed.) Pearson.
 - Paxson & Allman (2000, Noviembre) Computing TCP's Retransmission Timer - RFC 2988 [https://datatracker.ietf.org/doc/html/rfc2988](https://datatracker.ietf.org/doc/html/rfc2988)
 - OMNeT Simulation Library: OMNeT API Reference, [doc.omnetpp.org/omnetpp/api/index.html](https://doc.omnetpp.org/omnetpp/api/index.html)
-- 
+
+
+---
+
+**[ENUNCIADO](Markdown/Assignment.md) | [README](README.md) | [DISEÑO](Markdown/Design.md)**
+
+---

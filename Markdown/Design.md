@@ -30,9 +30,9 @@ Se presenta en detalle la especificación e implementación (en Omnet) de nuestr
 
 # Introducción a TLCP
 
-**Transport Limited Control Protocol**
+## ¿Qué es TLCP?
 
-**TLCP**, el protocolo de capa de transporte que implementamos, es una aproximación limitada a *TCP-Reno*, por lo que comparte varias de sus características generales. Tiene control de congestión sin tener acceso directo a la subred, y control de flujo mediante una negociación entre hosts.
+**Transport Limited Control Protocol** (o TLCP), es el protocolo de capa de transporte que implementamos, es una aproximación limitada a *TCP-Reno*, por lo que comparte varias de sus características generales. Tiene control de congestión sin tener acceso directo a la subred, y control de flujo mediante una negociación entre hosts.
 
 Las características del algoritmo son las siguientes:
 
@@ -42,11 +42,11 @@ Las características del algoritmo son las siguientes:
  * Ventana de congestión Reno
    * Arranque lento al inicializar
    * Seteo de la *VC* (ventana de congestión) a la mitad luego de un timeout
-   * Aumento linear de la *VC* cada RTT de congestión) luego de un timeout
+   * Aumento linear de la *VC* (cada RTT de congestión) luego de un timeout
  * Temporizador de Retransmisión basado en RTT
  * Estimación suave de RTT basado en tiempo de respuesta.
-   > Se implementó **Algoritmo de Jacobson (1988)** y **Algoritmo de Karn**
- * Tamaño de header del `Volt` de 9 bytes
+   > Se implementó Algoritmo de Jacobson (1988) y Algoritmo de Karn
+ * Tamaño de header del `Volt` de 9 bytes.
    > **flags**: 1 byte (flags: `ACK`, `RET`)
    >
    > **número de secuencia**: 4 bytes
@@ -67,17 +67,56 @@ Desde un principio decidimos que conceptos iba a satisfacer nuestro protocolo:
   - control de congestión,
   - formato de paquetes,
 
-El primer acercamiento a nuestra implementación fue el metodo de parada y espera (*stop-and-wait*). Este metodo asegura que la información no se pierda y que los paquetes se reciban en orden pero dada su metodología, pero el rendimiento era peor que el diseño proporcionado por el kickstart de la cátedra. Por esta razón descartamos esta implementación.concluye con un uso pobre de la red.
-
-Si bien resuelve el problema de flujo e indirectamente el problema de congestión debido al extremo desuso de la red.
+La primera idea a evualuar si implementar o no fue el metodo de parada y espera (*stop-and-wait*), ya que nos aseguraba que la información no se pierda y que los paquetes se reciban en orden, pero dado que tiene un uso pobre de la red y el rendimiento era peor que el diseño proporcionado por el kickstart de la cátedra descartamos esta implementación a pesar de que resolvía el problema de flujo e indirectamente el problema de congestión debido al extremo desuso de la red.
 
 ## Evolución del modelo base
 
+Luego de haber descartado parada y espera, se decidió evaluar cómo dividir las funcionalidades de TCP-Reno en diferentes etapas para su implementación.
+
+### Primera iteración o etapa del diseño
+- Mensajes para ambos tipos de mensajes (datos y acks).
+- `cPacket` propio: `Volt` v1.
+  - `N° de seq`.
+  - `ACK` flag.
+- `BufferSize` en cada cola.
+- Ventana de congestión (`CW`) v1.
+  - `maxSize`.
+  - `size`
+
+### Segundo iteración o etapa del diseño
+- Timer -> Timeout.
+  - Evento.
+- Volt v2
+  - RET flag.
+- `RTT` fijo.
+- Retransmisión.
+- Ventana corrediza (`SW`) v1.
+- `CW` v2.
+  - Cantidad de mensajes envíandose.
+  - Stages
+    - arranque lento al inicio, y
+    - luego recuperación rápido.
+
+
+### Tercer iteración o etapa del diseño
+- Control de flujo.
+- `RTT` dinámico v1.
+  - simtime_t en segundos.
+  - RTO.
+  - Desviación estándar.
+  - Misma inicialización siempre.
+
+### Cuarta iteración o etapa del diseño
+- `RTT` dinámico v2.
+  - si es el primer ACK recibo: inicializa `rto = rtt * 3.0`.
+
 # Ventana de congestión
 
-La primera adición a nuestro modelo fue `RenoManager.h` (originalmente llamado *CongestionWindow.h*) esta nos permite organizar cuales son los paquetes que estan en la red en todo momento.
-Un detalle de la implementación es que cuando un paquete es agregado a la ventana inicia el temporizador de un evento del `timeout` de ese paquete, el cual nos sirve como un valor "time-to-live" para saber cuando retransmitir paquetes, este modulo es utilizado por la capa del transmisor.
-Otra característica es la posibilidad de recibir `feedback` de la capa de receptor a través de ACKs.
+La primera adición a nuestro modelo fue `RenoManager.h` (originalmente llamado *CongestionWindow.h*) esta nos permite organizar cuales son los paquetes que estaá en la red en todo momento. Este modulo es utilizado por la capa del transmisor.
+
+Un detalle de la implementación es que cuando un paquete es agregado a la ventana inicia el temporizador de un evento del `timeout` de ese paquete, el cual nos sirve como un valor "time-to-live" para saber cuando retransmitir paquetes. Otra característica es la posibilidad de recibir `feedback` de la capa de receptor a través de ACKs.
+
+**RenoManager.h**
 
 ```C++
 class RenoManager {
@@ -112,7 +151,7 @@ public:
 # Primera versión
 
 Lo primero que apuntamos fue tener registro de los paquetes de la red eso dio lugar a la implementacion de `CongestionWindow` que luego paso a tener mas funcionalidades por lo que paso a llamarse `RenoController`.
-De la mano creamos nuestro tipo de paquete `Volt`el cual solo consistia del mensaje y numero de secuencia, posteriormente se agregraron las flags.
+De la mano creamos nuestro tipo de paquete `Volt`el cual solo consistía del mensaje y numero de secuencia, posteriormente se agregraron las flags.
 Con las adiciones de estos modulos y logica del lado del emisor conseguimos retransmitir los paquetes perdidos pero no aun el control de congestion. Esas fueron agregados posteriores cuando implementamos arranque lento.
 
 
@@ -184,3 +223,16 @@ Karn es necesario porque no sabemos si un ACK entrante de un paquete que fue ret
 ## Reordenamiento de paquetes
 
 ## ACK duplicados
+
+# Problemas que surgieron
+
+## IDE
+El principal incoveniente que nos surgió fue que nunca logramos que el IDE lance la simulación con el botón correspondiente, tuvimos que realizarlo a través del Makefile, pero de esta forma lanza la simulación más rápido.
+
+Un inconveniente que se nos presentó es que no podíamos hacer que el IDE funcionara para pair programming con la extensión Live Share de Visual Studio Code, por lo que al querer realizar múltiples cambios de diferentes personas para probarlos en una única branch teníamos que estar 
+
+[[no podiamos usar un debugger por lo que tuvimos que usar impresiones directas en consola para cada cosa]]
+
+## 
+
+No podíamos abstraer completamente la WC porque no podíamos importar subtipos de omnet++, en nuestro caso los `simtime_t` y los `cMessage`. No podíamos crear ambos de manera interna sin heredarlos.
