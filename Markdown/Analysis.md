@@ -33,7 +33,7 @@ Informe de la tarea de análisis del laboratorio 3 de Redes y Sistemas Distribui
     - [Análisis](#análisis-1)
   - [**Caso II**](#caso-ii)
     - [Hipótesis](#hipótesis-3)
-    - [Mediciciones](#mediciciones)
+    - [Mediciones](#mediciones)
     - [Análisis TLCP Caso II](#análisis-tlcp-caso-ii)
   - [Comparación con la red previa](#comparación-con-la-red-previa)
     - [**¿Cómo creen que se comporta su algoritmo de control de flujo y congestión?**](#cómo-creen-que-se-comporta-su-algoritmo-de-control-de-flujo-y-congestión)
@@ -89,7 +89,6 @@ La implementación de nuestro algoritmo requiere un canal de vuelta entre el rec
 > `TransRx` : Capa de transporte del Receptor
 >
 > `RecAppLayer`: Capa de aplicación del receptor
-
 ---
 
 ## Análisis del Caso I
@@ -287,12 +286,12 @@ TLCP Caso I Tabla
 | 0.14  | 2136 | 1498 | 0      | 0      | 44.17     | 1.72           | 3.44    |
 | 0.1   | 2933 | 1498 | 0      | 0      | 74.41     | 1.72           | 3.44    |
 
-### Análisis
+### Análisis TLCP Caso I
 
 /* TODO */
 
 
-## **Caso II**
+## **TLCP Caso II**
 
 /* TODO */
 
@@ -300,7 +299,7 @@ TLCP Caso I Tabla
 
 /* TODO */
 
-### Mediciciones
+### Mediciones
 
 /* TODO */
 

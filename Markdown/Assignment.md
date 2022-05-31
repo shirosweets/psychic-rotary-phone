@@ -1,5 +1,11 @@
 # **Enunciado**
 
+---
+
+**[README](../README.md) | [ANÁLISIS](../Markdown/Analysis.md) | [DISEÑO](../Markdown/Design.md)**
+
+---
+
 # Laboratorio 3: Transporte
 
 ## Tabla de Contenidos
@@ -240,4 +246,6 @@ Recuerde que el resultado de la parte de diseño no es tan importante, o sea si 
 
 ---
 
-**[README.md](README.md)**
+**[README](../README.md) | [ANÁLISIS](../Markdown/Analysis.md) | [DISEÑO](../Markdown/Design.md)**
+
+---

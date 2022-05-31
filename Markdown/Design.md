@@ -4,7 +4,7 @@ Se presenta en detalle la especificación e implementación (en Omnet++) de nues
 
 ---
 
-**[ENUNCIADO](../Markdown/Assignment.md) | [README](README.md) | [ANÁLISIS](../Markdown/Analysis.md)**
+**[ENUNCIADO](../Markdown/Assignment.md) | [README](../README.md) | [ANÁLISIS](../Markdown/Analysis.md)**
 
 ---
 
@@ -267,6 +267,6 @@ Tuvimos varias dificultades para implementar nuestro propio `simtime_t`, nombran
 
 ---
 
-**[ENUNCIADO](../Markdown/Assignment.md) | [README](README.md) | [ANÁLISIS](../Markdown/Analysis.md)**
+**[ENUNCIADO](../Markdown/Assignment.md) | [README](../README.md) | [ANÁLISIS](../Markdown/Analysis.md)**
 
 ---
