@@ -46,9 +46,9 @@ La red simplificada tiene un `sender` y un `receiver`, y un nodo intermedio `que
 
 ![Red Básica](../documents/assets/case_1_network.png)
 
-El emisor genera paquetes de *12500 bytes* bajo una distribucción exponencial centrada en un tiempo **`T`** y tanto la `queue` intermedia como el receptor tienen un buffer interno para manejar paquetes entrantes.
+- El **emisor** genera paquetes de *12500 bytes* bajo una distribucción exponencial centrada en un tiempo **`T`** (s) y tanto la `queue` intermedia como el receptor tienen un buffer interno para manejar paquetes entrantes.
 
-El receptor tiene un *datarate* interno para su `Sink`. El Sink modela lo que sería la capa de aplicación del lado del receptor, y este datarate existe para simular problemas de flujo propios del receptor.
+- El **receptor** tiene un *datarate* interno para su `Sink`. El Sink modela lo que sería la capa de aplicación del lado del receptor, y este datarate existe para simular problemas de flujo propios del receptor.
 
 Por razones de conveniencia con respecto a la segunda parte de este análisis, se modificó la simulación original en los siguientes aspectos:
 
@@ -129,7 +129,7 @@ Primero se tomó un intervalo de generación relativamente grande (**`T = 2s`**)
 >
 > *AvDel:* Retraso de entrega promedio
 
-###
+### Caso I Intervalo de generación de paquetes = 0.1s
 ![Caso I Buffer Size](/documents/assets/case_I/case_I_bufferStacked.png)
 
 ### Análisis
@@ -140,6 +140,12 @@ Primero se tomó un intervalo de generación relativamente grande (**`T = 2s`**)
 * Se puede notar que la carga efectiva que de ahi en más el receptor puede recibir es de 1498 y se mantiene ahí.
 
 Con estos datos: Se realizaron los siguientes grafos
+
+![Caso I Buffer Size intv = 0.1](/documents/assets/case_I/case_I_bufferStacked.png)
+
+![Caso I Buffer Size intv = 0.18](/documents/assets/case_I_intv_018/case_I_intv_018_bufferStacked.png)
+
+![Caso I Buffer Size intv = 2.0](/docu)
 
 ---
 
@@ -206,15 +212,15 @@ Posibles soluciones para dejr de perder paquetes:
 
 ## Pantallazo a *Transport Limited Control Protocol*
 
-TLCP implementa *Control de Flujo* y *Control de Congestion*, con un receptor manteniendo un feedback constante al emisor mediante paquetes de confirmacion (ACK).
+TLCP implementa *control de flujo* y *control de congestión*, con un receptor manteniendo un feedback constante al emisor mediante paquetes de confirmación (ACK).
 
-El tamaño del header de cada paquete, llamado `Volt`, tiene tan solo **9** bytes, lo cual agrega muy poco overhead a cada paquetess.
+El tamaño del header de cada paquete, llamado `Volt`, tiene tan solo **9** bytes, lo cual agrega muy poco overhead a cada paquete.
 
-Para una explicación de las especificaciones e implementación de TLCP referirse a [**DISEÑO**](Design.md)
+Para una explicación de las especificaciones e implementación de TLCP dirigirse a [**DISEÑO**](Design.md)
 
-Los detalles de la simulación son identicos para cada caso de la red anterior sin control de flujo ni control, por lo que saltaremos directamente al análisis
+Los detalles de la simulación son idénticos para cada caso de la red anterior sin control de flujo ni control, por lo que saltaremos directamente al análisis.
 
-## Caso I
+## **Caso I**
 
 | Conexión                           | Datarase      |
 | ---------------------------------- | ------------- |
@@ -267,7 +273,7 @@ Caso I Tabla
 /* TODO */
 
 
-## Caso II
+## **Caso II**
 
 /* TODO */
 
@@ -287,6 +293,24 @@ Caso I Tabla
 
 /* TODO */
 
+### **¿Cómo creen que se comporta su algoritmo de control de flujo y congestión?**
+
+### **¿Funciona para el caso de estudio I y II por igual? ¿Por qué?**
+
+![Carga ofrecida vs Carga útil](/documents/assets/util_vs_ofrecida.png)
+
 # Conclusión
 
 /* TODO */
+
+# Mejoras posibles
+
+Se asume que la cola del Sender es arbitrariamente grande, por lo que no nos concierne su espacio para las retransmisiones. Sino fuese el caso se podría hacer lo siguiente para reducirlo:
+- setear un tamaño fijo en la cola para los paquetes de retransmisión. Este espacio no puede ser ocupado por lo paquetes normales.
+
+# Referencias
+
+- Tanembaum A. S. (2012). Redes de computadores (5ta ed.) Pearson.
+- Paxson & Allman (2000, Noviembre) Computing TCP's Retransmission Timer - RFC 2988 [https://datatracker.ietf.org/doc/html/rfc2988](https://datatracker.ietf.org/doc/html/rfc2988)
+- OMNeT Simulation Library: OMNeT API Reference, [doc.omnetpp.org/omnetpp/api/index.html](https://doc.omnetpp.org/omnetpp/api/index.html)
+- 

@@ -1,4 +1,4 @@
-# Diseño de capa de transporte con Control de Flujo y Congestion
+# Diseño de capa de transporte con control de flujo y congestión
 
 Se presenta en detalle la especificación e implementación (en Omnet) de nuestra solución para los problemas de control y flujo en la capa de transporte.
 
@@ -53,6 +53,10 @@ Las características del algoritmo son las siguientes:
    >
    > **tamaño de ventana de control**: 4 bytes
 
+## Arquitectura TLCP
+
+![Arquitectura TLCP](/documents/assets/TLCP_Architecture.png)
+
 # Iteraciones de diseño
 
 ## Ideas Preliminares
@@ -61,7 +65,7 @@ Desde un principio decidimos que conceptos iba a satisfacer nuestro protocolo:
   - retransmisión,
   - control de flujo,
   - control de congestión,
-  - formato de paquetes, 
+  - formato de paquetes,
 
 El primer acercamiento a nuestra implementación fue el metodo de parada y espera (*stop-and-wait*). Este metodo asegura que la información no se pierda y que los paquetes se reciban en orden pero dada su metodología, pero el rendimiento era peor que el diseño proporcionado por el kickstart de la cátedra. Por esta razón descartamos esta implementación.concluye con un uso pobre de la red.
 
@@ -70,8 +74,9 @@ Si bien resuelve el problema de flujo e indirectamente el problema de congestió
 ## Evolución del modelo base
 
 # Ventana de congestión
+
 La primera adición a nuestro modelo fue `RenoManager.h` (originalmente llamado *CongestionWindow.h*) esta nos permite organizar cuales son los paquetes que estan en la red en todo momento.
-Un detalle de la implementación es que cuando un paquete es agregado a la ventana inicia el temporizador de un evento del `timeout` de ese paquete, el cual nos sirve como un valor "time-to-live" para saber cuando retransmitir paquetes, este modulo es utilizado por la capa del transmisor. 
+Un detalle de la implementación es que cuando un paquete es agregado a la ventana inicia el temporizador de un evento del `timeout` de ese paquete, el cual nos sirve como un valor "time-to-live" para saber cuando retransmitir paquetes, este modulo es utilizado por la capa del transmisor.
 Otra característica es la posibilidad de recibir `feedback` de la capa de receptor a través de ACKs.
 
 ```C++
@@ -164,16 +169,18 @@ El windowSize máximo permitido es `2147483640`, lo cual es muy cercano al MAX_I
 
 ## Karn
 
-Si bien nuestra intención original era seguir el algoritmo de Karn en nuestra implementación, por cuestiones de arquitectura accidentalmente caímos en un protocol que no lo hace *completamente*.
+Si bien nuestra intención original era seguir el algoritmo de Karn, por cuestiones de arquitectura accidentalmente caímos en un protocol que no lo hace *completamente*.
 
-> Nota: Inicialmente cuando un paquete se asumía perdido, lo quitábamos de la **SW** (Sliding Window) temporalmente, y lo poníamos en la punta de la cola común de transmisión. De esa manera nos conservar la función de envio exactamente igual, lo cual simplificaba las cosas. Esta implementación terminó abandonandose ya que se descubrió un caso donde esto genera problemas.
+> Nota: Inicialmente cuando un paquete se asumía perdido, lo quitábamos de la **SW** (Sliding Window) temporalmente, y lo poníamos en la punta de la cola común de transmisión. De esa manera nos conservar la función de envio exactamente igual, lo cual simplificaba las cosas. Esta implementación terminó abandonandose ya que se descubrió un caso donde esto generaba problemas.
 >
-> Si uno estaba justo transmitiendo un paquete cuando ocurría el timeout, debía esperar un tiempo no trivial hasta poder hacer la retransmisión. Entonces entre ese tiempo, podría llegar un ACK del paquete por retransmitir, Y como todavía no estaba de nuevo en la SW, generaba toda clase de problemas con la estimación de paquetes en vuelo, lo cual generaba un **deathlock**.
+> Si uno estaba justo transmitiendo un paquete cuando ocurría el timeout, debía esperar un tiempo no trivial hasta poder hacer la retransmisión. Entonces entre ese tiempo, podría llegar un ACK del paquete por retransmitir, y como todavía no estaba de nuevo en la SW, generaba toda clase de problemas con la estimación de paquetes en vuelo, lo cual generaba un **deathlock**.
 >
-> Como inicialmente se quitaba de la ventana corrediza, no teníamos forma de saber si un paquete entrante era retransmitido o no, y necesitabamos actualizar el SRTT. La solución fue que el volt mismo llevara esa información en sigo mismo y que el receptor se encargue de agregar esa flag acorde al volt que recibió.
+> Como inicialmente se quitaba de la ventana corrediza, no teníamos forma de saber si un paquete entrante era retransmitido o no, y necesitabamos actualizar el SRTT. La solución fue que el volt llevara esa información en sigo mismo y que el receptor se encargue de agregar esa flag acorde al volt que recibió.
 
-Karn es necesario porque no sabemos si un ACK entrante de un paquete que fue retransmitido pertenece al paquete original o al retransmitido, y cualquiera de esas dos asunciones llevaría a ensuciar la estimación de SRTT. Pero en nuestro caso, como tenemos la RET flag, podemos saber cuales ACK provienen del paquete original y cuales no. Por lo que podemos **solo ignorar los ACKs siguientes al original**
+Karn es necesario porque no sabemos si un ACK entrante de un paquete que fue retransmitido pertenece al paquete original o al retransmitido, y cualquiera de esas dos asunciones llevaría a ensuciar la estimación de SRTT. Pero en nuestro caso, como tenemos la **RET flag**, podemos saber cuales ACK provienen del paquete original y cuales no. Por lo que podemos **solo ignorar los ACKs siguientes al original**.
 
 # Cosas no implementadas de TCP o TCP-Reno
+
 ## Reordenamiento de paquetes
+
 ## ACK duplicados
