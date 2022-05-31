@@ -1,0 +1,31 @@
+run,type,module,name,attrname,attrvalue,value
+General-0-20220529-18:57:24-3808,runattr,,,configname,General,
+General-0-20220529-18:57:24-3808,runattr,,,datetime,20220529-18:57:24,
+General-0-20220529-18:57:24-3808,runattr,,,experiment,General,
+General-0-20220529-18:57:24-3808,runattr,,,inifile,omnetpp.ini,
+General-0-20220529-18:57:24-3808,runattr,,,iterationvars,,
+General-0-20220529-18:57:24-3808,runattr,,,iterationvarsf,,
+General-0-20220529-18:57:24-3808,runattr,,,measurement,,
+General-0-20220529-18:57:24-3808,runattr,,,network,Network,
+General-0-20220529-18:57:24-3808,runattr,,,processid,3808,
+General-0-20220529-18:57:24-3808,runattr,,,repetition,0,
+General-0-20220529-18:57:24-3808,runattr,,,replication,#0,
+General-0-20220529-18:57:24-3808,runattr,,,resultdir,results,
+General-0-20220529-18:57:24-3808,runattr,,,runnumber,0,
+General-0-20220529-18:57:24-3808,runattr,,,seedset,0,
+General-0-20220529-18:57:24-3808,param,,,Network.sender.gen.generationInterval,exponential(2.0),
+General-0-20220529-18:57:24-3808,param,,,Network.sender.gen.packetByteSize,12500,
+General-0-20220529-18:57:24-3808,param,,,Network.queue.bufferSize,100,
+General-0-20220529-18:57:24-3808,param,,,Network.rec.queue.bufferSize,200,
+General-0-20220529-18:57:24-3808,param,,,Network.sender.queue.bufferSize,2000000,
+General-0-20220529-18:57:24-3808,param,,,Network.sender.gen.generationInterval,exponential(2.0),
+General-0-20220529-18:57:24-3808,param,,,Network.sender.gen.packetByteSize,12500,
+General-0-20220529-18:57:24-3808,param,,,Network.queue.bufferSize,100,
+General-0-20220529-18:57:24-3808,param,,,Network.rec.queue.bufferSize,200,
+General-0-20220529-18:57:24-3808,param,,,Network.sender.queue.bufferSize,2000000,
+General-0-20220529-18:57:24-3808,scalar,Network.sender.gen,Number of packets generated,,,144
+General-0-20220529-18:57:24-3808,scalar,Network.sender.queue,Dropped Packets,,,0
+General-0-20220529-18:57:24-3808,scalar,Network.queue,Dropped Packets,,,0
+General-0-20220529-18:57:24-3808,scalar,Network.rec.sink,Avg delay,,,0.40723614314515
+General-0-20220529-18:57:24-3808,scalar,Network.rec.sink,Number of packets,,,144
+General-0-20220529-18:57:24-3808,scalar,Network.rec.queue,Dropped Packets,,,0
