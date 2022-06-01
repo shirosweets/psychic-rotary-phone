@@ -12,7 +12,6 @@ class Measurement:
     AVDEL_TAG = "Average Delay"
     GENRATE_TAG = "Generation Rate"
     RECRATE_TAG = "Reception Rate"
-    DROPRATE_TAG = "Drop Rate"
     RTT_TAG = "RTT"
     ACKT_TAG = "ACK Time"
     RET_TAG = "Amount Retransmitted"
@@ -28,7 +27,6 @@ class Measurement:
         self.avdel = float(avdel)
         self.gen_per_second = self.gen / TOTAL_SIMULATION_TIME
         self.rec_per_second = self.delivered / TOTAL_SIMULATION_TIME
-        self.drop_rate = 1 - self.delivered/self.gen
         self.rtt = rtt
         self.ackt = ackt
         self.ret = ret
@@ -44,13 +42,13 @@ class Measurement:
             self.DELIVERED_TAG: self.delivered,
             self.DROPQ_TAG: self.dropQ,
             self.DROPR_TAG: self.dropR,
+            self.TOTALDROP_TAG: self.total_drop,
             self.AVDEL_TAG: self.avdel,
             self.GENRATE_TAG: self.gen_per_second,
             self.RECRATE_TAG: self.rec_per_second,
-            self.DROPRATE_TAG: self.drop_rate,
-            self.RTT_TAG: self.rtt,
-            self.ACKT_TAG: self.ackt,
-            self.RET_TAG: self.ret
+            self.RTT_TAG: float(self.rtt),
+            self.ACKT_TAG: float(self.ackt),
+            self.RET_TAG: int(self.ret)
         }
 
     @staticmethod

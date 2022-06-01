@@ -35,7 +35,7 @@ def graph(
     )
     fig, ax = plt.subplots()
     for case in axis:
-        print(axis[case]["y_points"])
+        print(f"y points for case {case}: {axis[case]['y_points']}")
         x_points = axis[case]["x_points"]
         y_points = axis[case]["y_points"]
 
@@ -67,21 +67,18 @@ def graph_useful_load_curve(measurements: list[Measurement]):
     x_tag = Measurement.GENRATE_TAG
     y_tag = Measurement.RECRATE_TAG
     x_label = "Carga ofrecida [pkt/seg]"
-    y_label = "Carga util [pkt/seg]"
-    title = "Carga Util vs Ofrecida"
+    y_label = "Carga útil [pkt/seg]"
+    title = "Carga Útil vs Ofrecida"
     graph(measurements, x_tag, y_tag, x_label, y_label, title)
 
 
 def graph_network_overload(measurements):
     x_tag = Measurement.GENRATE_TAG
-    y_tag = Measurement.DROPRATE_TAG
+    y_tag = Measurement.TOTALDROP_TAG
     x_label = "Paquetes generados [pkt/seg]"
-    y_label = "Pérdida de paquetes [%]"
-    title = "Indice de pérdida de paquetes"
-    def ylambda(x): return x * 100
-    graph(
-        measurements, x_tag, y_tag, x_label, y_label, title, ylambda=ylambda
-    )
+    y_label = "Pérdida de paquetes"
+    title = "Índice de pérdida de paquetes"
+    graph(measurements, x_tag, y_tag, x_label, y_label, title)
 
 
 def graph_delay_curve(measurements: list[Measurement]):
@@ -116,5 +113,5 @@ def graph_ack(measurements: list[Measurement]):
     y_tag = Measurement.ACKT_TAG
     x_label = "Carga ofrecida [pkt/seg]"
     y_label = "Tiempo de ACK promedio"
-    title = "Retraso"
+    title = "ACK Time"
     graph(measurements, x_tag, y_tag, x_label, y_label, title)
