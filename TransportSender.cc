@@ -238,11 +238,6 @@ void TransportSender::handleVoltReceived(Volt * volt) {
 	- Si el ACK es el de la base de la SW, la movemos
  */
 void TransportSender::handleAck(Volt * volt) {
-//	    ackTime.record(volt->getDuration());  // Revisar
-	simtime_t ack_time = simTime() - volt->getCreationTime();
-	ackTime.record(ack_time);
-	simtime_t rtt_time = simTime() - volt->getSendingTime();
-	rtt.record(rtt_time);
 
 	int seqN = volt->getSeqNumber();
 	std::cout << "Sender :: handling ACK of Volt " << seqN << "\n";
@@ -277,6 +272,12 @@ void TransportSender::handleAck(Volt * volt) {
 	double sendTime = slidingWindow.getSendTime(seqN);
 
 	Volt * auxVolt = slidingWindow.dupVolt(seqN);
+	if(auxVolt != NULL) {
+		simtime_t ack_time = simTime() - auxVolt->getCreationTime();
+		ackTime.record(ack_time);
+		simtime_t rtt_time = simTime() - slidingWindow.getSendTime(seqN);
+		rtt.record(rtt_time);
+	}
 
 	if (auxVolt != NULL && !auxVolt->getRetFlag()) {
 		// Actualizamos la estimación de RTT
