@@ -10,36 +10,40 @@ Informe de la tarea de análisis del laboratorio 3 de Redes y Sistemas Distribui
 
 ## Contenido
 
-- [Abstract](#abstract)
 - [Análisis de la red sin control de congestión ni flujo](#análisis-de-la-red-sin-control-de-congestión-ni-flujo)
   - [Introducción a la red básica](#introducción-a-la-red-básica)
   - [Introducción a la red con TLCP](#introducción-a-la-red-con-tlcp)
   - [Presentación del Caso I](#presentación-del-caso-i)
   - [Presentación del Caso II](#presentación-del-caso-ii)
-  - [Análisis del Caso I](#análisis-del-caso-i)
+  - [> `RecAppLayer`: Capa de aplicación del receptor](#-recapplayer-capa-de-aplicación-del-receptor)
+  - [Caso I](#caso-i)
     - [Hipótesis](#hipótesis)
     - [Mediciones](#mediciones)
-    - [Análisis](#análisis)
-  - [Análisis Caso II](#análisis-caso-ii)
+    - [Análisis de los resultados Caso I](#análisis-de-los-resultados-caso-i)
+  - [Caso II](#caso-ii)
     - [Hipótesis](#hipótesis-1)
     - [Mediciones](#mediciones-1)
-    - [Análisis Caso II](#análisis-caso-ii-1)
+    - [Análisis de los resultados Caso II](#análisis-de-los-resultados-caso-ii)
   - [Conclusión parcial](#conclusión-parcial)
+    - [¿Qué diferencia observa entre el caso de estudio I y II? ¿Cuál es la fuente limitante en cada uno?](#qué-diferencia-observa-entre-el-caso-de-estudio-i-y-ii-cuál-es-la-fuente-limitante-en-cada-uno)
+    - [General](#general)
+    - [Diferencia entre control de flujo y control de congestión](#diferencia-entre-control-de-flujo-y-control-de-congestión)
 - [Análisis de la red con *TLCP*](#análisis-de-la-red-con-tlcp)
   - [Pantallazo a *Transport Limited Control Protocol*](#pantallazo-a-transport-limited-control-protocol)
-  - [**TLCP Caso I**](#tlcp-caso-i)
+  - [TLCP Caso I](#tlcp-caso-i)
     - [Hipótesis](#hipótesis-2)
     - [Mediciones](#mediciones-2)
-    - [Análisis](#análisis-1)
-  - [**Caso II**](#caso-ii)
+    - [Análisis de los resultados TLCP Caso I](#análisis-de-los-resultados-tlcp-caso-i)
+  - [TLCP Caso II](#tlcp-caso-ii)
     - [Hipótesis](#hipótesis-3)
-    - [Mediciones](#mediciones)
-    - [Análisis TLCP Caso II](#análisis-tlcp-caso-ii)
+    - [Mediciones](#mediciones-3)
+    - [Análisis de los resultados TLCP Caso II](#análisis-de-los-resultados-tlcp-caso-ii)
   - [Comparación con la red previa](#comparación-con-la-red-previa)
     - [**¿Cómo creen que se comporta su algoritmo de control de flujo y congestión?**](#cómo-creen-que-se-comporta-su-algoritmo-de-control-de-flujo-y-congestión)
     - [**¿Funciona para el caso de estudio I y II por igual? ¿Por qué?**](#funciona-para-el-caso-de-estudio-i-y-ii-por-igual-por-qué)
 - [Conclusión](#conclusión)
 - [Mejoras posibles](#mejoras-posibles)
+  - [TCP VEGAS](#tcp-vegas)
 - [Referencias](#referencias)
 
 # Abstract
@@ -91,7 +95,7 @@ La implementación de nuestro algoritmo requiere un canal de vuelta entre el rec
 > `RecAppLayer`: Capa de aplicación del receptor
 ---
 
-## Análisis del Caso I
+## Caso I
 
 ### Hipótesis
 
@@ -147,7 +151,9 @@ Caso I tabla
 
 Con estos datos, se realizaron los siguientes gráficos:
 
-**Invervalo de generación de paquetes = 0.1s**
+**Generación de paquetes con distribución exponencial de media = 0.1s**
+
+<!-- - 1 paquete cada 10pps -->
 
 ![Caso I Buffer Size intv = 0.1](/documents/assets/case_I/case_I_bufferStacked.png)
 
@@ -157,7 +163,7 @@ Con estos datos, se realizaron los siguientes gráficos:
 
 ![Caso I Delay intv = 0.1]()
 
-**Invervalo de generación de paquetes = 0.18s**
+**Generación de paquetes con distribución exponencial de media = 0.18s**
 
 ![Caso I Buffer Size intv = 0.18](/documents/assets/case_I_intv_018/case_I_intv_018_bufferStacked.png)
 
@@ -167,7 +173,7 @@ Con estos datos, se realizaron los siguientes gráficos:
 
 ![Caso I Delay intv = 0.18]()
 
-**Invervalo de generación de paquetes = 2.0s**
+**Generación de paquetes con distribución exponencial de media = 2.0s**
 ![Caso I Buffer Size intv = 2.0](/documents/assets/case_I_intv_20/case_I_intv_2_0_bufferStacked.png)
 
 - Total de paquetes generados y almacenados en el buffer del emisor: `144` (`14.4 Mb`)
@@ -178,7 +184,7 @@ Con estos datos, se realizaron los siguientes gráficos:
 
 ---
 
-## Análisis del Caso II
+## Caso II
 
 ### Hipótesis
 
@@ -213,7 +219,9 @@ Caso II tabla
 
 ### Análisis de los resultados Caso II
 
-**Invervalo de generación de paquetes = 0.1s**
+**Generación de paquetes con distribución exponencial de media = 0.1s**
+
+En el siguiente gráfico podemos apreciar
 
 ![Caso II Buffer Size intv = 0.1](/documents/assets/case_II/case_II_bufferStacked.png)
 
@@ -223,7 +231,7 @@ Caso II tabla
 
 ![Caso II Delay intv = 0.1]()
 
-**Invervalo de generación de paquetes = 0.18s**
+**Generación de paquetes con distribución exponencial de media = 0.18s**
 
 ![Caso II Buffer Size intv = 0.18](/documents/assets/case_II_intv_018/case_II_intv_018_bufferStacked.png)
 
@@ -233,7 +241,7 @@ Caso II tabla
 
 ![Caso II Delay intv = 0.18]()
 
-**Invervalo de generación de paquetes = 2.0s**
+**Generación de paquetes con distribución exponencial de media = 2.0s**
 
 ![Caso II Buffer Size intv = 2.0](/documents/assets/case_II_intv_20/case_I_intv_2_0_bufferStacked.png)
 
@@ -267,10 +275,10 @@ Posibles soluciones para dejar de perder paquetes:
 ### Diferencia entre control de flujo y control de congestión
 
 /* TODO */
-| Nombre                | Ubicación del problema                                 | Impide
-|-----------------------|------------------------------------------------|------|
-| Control de Congestión | red entre medio del emisor y receptor (subred) |  Que un conjunto de transmisiones sobrecarguen la red|
-| Control de Flujo      | entre emisor y receptor                              | Que un transmisor rápido sobrecargue a un receptor lento
+| Nombre                | Ubicación del problema                         | Impide                                                   |
+|-----------------------|------------------------------------------------|----------------------------------------------------------|
+| Control de Congestión | red entre medio del emisor y receptor (subred) | Que un conjunto de transmisiones sobrecarguen la red     |
+| Control de Flujo      | entre emisor y receptor                        | Que un transmisor rápido sobrecargue a un receptor lento |
 
 ----
 # Análisis de la red con *TLCP*
@@ -285,7 +293,7 @@ Para una explicación de las especificaciones e implementación de TLCP dirigirs
 
 Los detalles de la simulación son idénticos para cada caso de la red anterior sin control de flujo ni control, por lo que saltaremos directamente al análisis.
 
-## **TLCP Caso I**
+## TLCP Caso I
 
 | Conexión                           | Datarase      |
 | ---------------------------------- | ------------- |
@@ -333,7 +341,7 @@ TLCP Caso I Tabla
 
 /* TODO */
 
-**Invervalo de generación de paquetes = 0.1s**
+**Generación de paquetes con distribución exponencial de media = 0.1s**
 
 ![TLCP Caso I Buffer Size intv = 0.05](/documents/assets/tlcp_case_I_intv_005/tlcp_case_I_intv_0_05_bufferSize_Stacked.png)
 
@@ -343,7 +351,7 @@ TLCP Caso I Tabla
 
 ![TLCP Caso I Delay intv = 0.05]()
 
-**Invervalo de generación de paquetes = 0.1s**
+**Generación de paquetes con distribución exponencial de media = 0.1s**
 
 ![TLCP Caso I Buffer Size intv = 0.1](/documents/assets/tlcp_case_I_intv_01/tlcp_case_I_intv_0_1_bufferSize_Stacked.png)
 
@@ -353,7 +361,7 @@ TLCP Caso I Tabla
 
 ![TLCP Caso I Delay intv = 0.1]()
 
-**Invervalo de generación de paquetes = 0.18s**
+**Generación de paquetes con distribución exponencial de media = 0.18s**
 
 ![TLCP Caso I Buffer Size intv = 0.18](/documents/assets/tlcp_case_I_intv_018/tlcp_case_I_intv_0_18_bufferSize_Stacked.png)
 
@@ -363,7 +371,7 @@ TLCP Caso I Tabla
 
 ![TLCP Caso I Delay intv = 0.18]()
 
-**Invervalo de generación de paquetes = 2.0s**
+**Generación de paquetes con distribución exponencial de media = 2.0s**
 
 ![TLCP Caso I Buffer Size intv = 2.0](/documents/assets/tlcp_case_I_intv_02/tlcp_case_I_intv_2_0_bufferSize_Stacked.png)
 
@@ -373,7 +381,7 @@ TLCP Caso I Tabla
 
 ![TLCP Caso I Delay intv = 2.0]()
 
-## **TLCP Caso II**
+## TLCP Caso II
 
 /* TODO */
 
@@ -389,7 +397,7 @@ TLCP Caso I Tabla
 
 /* TODO */
 
-**Invervalo de generación de paquetes = 0.1s**
+**Generación de paquetes con distribución exponencial de media = 0.1s**
 
 ![TLCP Caso II Buffer Size intv = 0.05](/documents/assets/tlcp_case_II_intv_005/tlcp_case_II_intv_0_05_bufferSize_Stacked.png)
 
@@ -399,7 +407,7 @@ TLCP Caso I Tabla
 
 ![TLCP Caso I Delay intv = 2.0]()
 
-**Invervalo de generación de paquetes = 0.1s**
+**Generación de paquetes con distribución exponencial de media = 0.1s**
 
 ![TLCP Caso II Buffer Size intv = 0.1](/documents/assets/tlcp_case_II_intv_01/tlcp_case_II_intv_0_1_bufferSize_Stacked.png)
 
@@ -409,7 +417,7 @@ TLCP Caso I Tabla
 
 ![TLCP Caso I Delay intv = 2.0]()
 
-**Invervalo de generación de paquetes = 0.18s**
+**Generación de paquetes con distribución exponencial de media = 0.18s**
 
 ![TLCP Caso II Buffer Size intv = 0.18](/documents/assets/tlcp_case_II_intv_018/tlcp_case_II_intv_0_18_bufferSize_Stacked.png)
 
@@ -419,7 +427,7 @@ TLCP Caso I Tabla
 
 ![TLCP Caso I Delay intv = 2.0]()
 
-**Invervalo de generación de paquetes = 2.0s**
+**Generación de paquetes con distribución exponencial de media = 2.0s**
 
 ![TLCP Caso II Buffer Size intv = 2.0](/documents/assets/tlcp_case_II_intv_20/tlcp_case_II_intv_2_0_bufferSize_Stacked.png)
 
@@ -457,7 +465,7 @@ TLCP Caso I Tabla
   - modificar también del lado del receptor.
   - modicar `congestionController.addAck(seqN)`, puede flag o bool.
 
-- El **receptor** asume que siempre recibe en orden.
+- Reordenamiento.
 
 - Reducir los llamados innecesarios a `dupVolt()` ya que este genera una copia del Volt.
 
@@ -493,7 +501,7 @@ El objetivo del algoritmo de control de congestión de VEGAS es mantener a diff 
 
 # Referencias
 
-- [1] Tanembaum A. S. (2012). Redes de computadores (5ta ed.) Pearson.
+- [1] Tanenbaum A. S. (2012). Redes de computadores (5ta ed.) Pearson.
 - [2] Paxson & Allman (2000, Noviembre) Computing TCP's Retransmission Timer - RFC 2988 [https://datatracker.ietf.org/doc/html/rfc2988](https://datatracker.ietf.org/doc/html/rfc2988)
 - [3] A. Wierman, T. Osogami, J. Olsén; A unified framework for modeling TCP-Vegas, TCP-SACK, and TCP-Reno. s.l. : School of Computer Science Carnegie Mellon University Pittsburgh, PA 15213,2003.
 - [4] OMNeT Simulation Library: OMNeT API Reference, [doc.omnetpp.org/omnetpp/api/index.html](https://doc.omnetpp.org/omnetpp/api/index.html)

@@ -24,14 +24,13 @@ Se presenta en detalle la especificación e implementación (en Omnet++) de nues
 - [Controlador de congestión](#controlador-de-congestión)
 - [](#)
 - [Primera versión](#primera-versión)
-- [Iteración de implemenación TEMPLATE](#iteración-de-implemenación-template)
 - [Estructura final de TLCP](#estructura-final-de-tlcp)
   - [`Volt`](#volt)
     - [seqNumber](#seqnumber)
     - [Flags](#flags)
     - [windowSize](#windowsize)
-- [Control de Flujo](#control-de-flujo)
-- [Control de Congestion](#control-de-congestion)
+- [Control de flujo](#control-de-flujo)
+- [Control de congestión](#control-de-congestión)
 - [RTT](#rtt)
   - [Karn](#karn)
 - [Cosas no implementadas de TCP o TCP-Reno](#cosas-no-implementadas-de-tcp-o-tcp-reno)
@@ -81,7 +80,8 @@ Desde un principio decidimos que conceptos iba a satisfacer nuestro protocolo:
   - control de congestión,
   - formato de paquetes,
 
-La primera idea a evualuar si implementar o no fue el metodo de parada y espera (*stop-and-wait*), ya que nos aseguraba que la información no se pierda y que los paquetes se reciban en orden, pero dado que tiene un uso pobre de la red y el rendimiento era peor que el diseño proporcionado por el kickstart de la cátedra descartamos esta implementación a pesar de que resolvía el problema de flujo e indirectamente el problema de congestión debido al extremo desuso de la red.
+La primera idea fue el metodo de parada y espera (*stop-and-wait*), ya que nos aseguraba que la información no se pierda y que los paquetes se reciban en orden, pero dado que tiene un uso pobre de la red y el rendimiento era peor que el diseño proporcionado por el [kickstart](../documents/lab3-kickstarter.tar.gz) de la cátedra descartamos esta implementación a pesar de que resolvía el problema de flujo e indirectamente el problema de congestión debido al extremo desuso de la red.
+Además no nos servía para continuar nuestro camino a las funcionalidades de TCP-Reno.
 
 ## Evolución del modelo base
 
@@ -124,9 +124,14 @@ Luego de haber descartado parada y espera, se decidió evaluar cómo dividir las
 - `RTT` dinámico v2.
   - si es el primer ACK recibo: inicializa `rto = rtt * 3.0`.
 
+**Decisiones de diseño**
+
+- Solo actualizamos el RTT cuando no sean acks duplicados ni retransmitidos.
+- Nunca vamos a tener acks duplicados que no seas paquetes retransmitidos.
+
 # Ventana de congestión
 
-La primera adición a nuestro modelo fue `RenoManager.h` (originalmente llamado *CongestionWindow.h*) esta nos permite organizar cuales son los paquetes que estaá en la red en todo momento. Este modulo es utilizado por la capa del transmisor.
+La primera adición a nuestro modelo fue [`RenoManager.h`](../RenoManager.h) (originalmente llamado *CongestionWindow.h*) esta nos permite organizar cuales son los paquetes que estaá en la red en todo momento. Este modulo es utilizado por la capa del transmisor.
 
 Un detalle de la implementación es que cuando un paquete es agregado a la ventana inicia el temporizador de un evento del `timeout` de ese paquete, el cual nos sirve como un valor "time-to-live" para saber cuando retransmitir paquetes. Otra característica es la posibilidad de recibir `feedback` de la capa de receptor a través de ACKs.
 
@@ -153,32 +158,15 @@ public:
 }
 ```
 
-# Controlador de congestión
+## Primera versión
 
-**Decisiones de diseño**
+Lo primero que apuntamos fue tener registro de los paquetes de la red eso dio lugar a la implementacion de `CongestionWindow.h` que luego paso a tener mas funcionalidades por lo que paso a llamarse [`RenoManager.h`](../RenoManager.h).
 
-- Solo actualizamos el RTT cuando no sean acks duplicados ni retransmitidos.
-- Nunca vamos a tener acks duplicados que no seas paquetes retransmitidos.
+Con las adiciones de estos modulos y lógica del lado del emisor conseguimos retransmitir los paquetes perdidos pero no aun el control de congestión. Esas fueron agregados posteriores cuando implementamos arranque lento.
 
-# 
-
-# Primera versión
-
-Lo primero que apuntamos fue tener registro de los paquetes de la red eso dio lugar a la implementacion de `CongestionWindow` que luego paso a tener mas funcionalidades por lo que paso a llamarse `RenoController`.
-De la mano creamos nuestro tipo de paquete `Volt`el cual solo consistía del mensaje y numero de secuencia, posteriormente se agregraron las flags.
-Con las adiciones de estos modulos y logica del lado del emisor conseguimos retransmitir los paquetes perdidos pero no aun el control de congestion. Esas fueron agregados posteriores cuando implementamos arranque lento.
-
+## Segunda versión
 
 ----
-
-# Iteración de implemenación TEMPLATE
-
-Volt
-RenoController
-CongestionController
-Slow start
-Retransmission
-RTT Dynamic
 
 # Estructura final de TLCP
 
@@ -186,12 +174,40 @@ RTT Dynamic
 
 El paquete que se intercambian los hosts se llama *Volt*, y fue generado con la herramienta de template que ofrece omnet (`opp_msgc`) con el siguiente template:
 
+[**Volt.msg**](../Volt.msg)
+
 ```C++
 packet Volt {
   bool flags = false;
   int seqNumber;
   int windowSize;
 };
+```
+
+La primer versión del Volt solo consistía del mensaje y número de secuencia, posteriormente se agregraron las flags.
+
+[**Volt.h**](../Volt.h)
+
+```cpp
+class Volt : public ::omnetpp::cPacket
+{
+  protected:
+    bool flags;
+    int seqNumber;
+    int windowSize;
+  public:
+    virtual Volt *dup() const override {return new Volt(*this);}
+    // Nuestros métodos
+    virtual bool getFlags() const;
+    virtual void setFlags(bool flags);
+    bool getAckFlag();
+    void setAckFlag(bool ackFlag);
+    bool getRetFlag();  // Retransmission Flag
+    void setRetFlag(bool retFlag);
+    virtual int getSeqNumber() const;
+    virtual void setSeqNumber(int seqNumber);
+    virtual int getWindowSize() const;
+    virtual void setWindowSize(int windowSize);
 ```
 
 ### seqNumber
@@ -204,7 +220,7 @@ Por cuestión de tiempo, simplemente seteamos el `MAX_SEQ_N = 1000`
 
 ### Flags
 
-Implementamos dos FLAGS actualmente. *ACK* y *RET*. Ambas encodeadas en el byte de flags. Para setear y obtener esos valores, hacemos operaciones bitwise y uso de máscara de bits.
+Implementamos dos **FLAGS** actualmente. `ACK` y `RET`. Ambas encodeadas en el byte de flags. Para setear y obtener esos valores, hacemos *operaciones bitwise* y uso de *máscara de bits*.
 
 **`ACK`** : Indica que el Volt actual es un volt de tipo ACK, no de datos.
 
@@ -292,6 +308,30 @@ Con `size` y `msgSendingAmount` se puede calcular la disponibilidad del dicciona
 
 # RTT
 
+/* TODO */
+
+La implementación del RTT está en el modulo [`RTTManager.h`](../RTTManager.h), este nos permine manejar la inicialización del RTT, RTO y la desviación estándar.
+
+**RTTManager.h**
+
+```cpp
+class RTTManager {
+private:
+	  double stdDesviation;
+	  double rtt;
+    double rto;
+    bool isFirstAckReceived;
+    void updateSmoothRTT(double rtMeasurement);
+public:
+    /* RTo = Retransmission Timeout */
+	  double getCurrentRTo();
+    void updateTimeoutRTo();
+    /* rtMeasurement = Round Trip Measurement */
+    void updateEstimation(double rtMeasurement);
+    /* Retorna el RTT actual */
+    double getCurrentRTT();
+```
+
 ## Karn
 
 Si bien nuestra intención original era seguir el algoritmo de Karn, por cuestiones de arquitectura accidentalmente caímos en un protocol que no lo hace *completamente*.
@@ -308,7 +348,11 @@ Karn es necesario porque no sabemos si un ACK entrante de un paquete que fue ret
 
 ## Reordenamiento de paquetes
 
+El **receptor** asume que siempre recibe en orden.
+
 ## ACK duplicados
+
+Descartamos **ACKs duplicados** porque dentro de nuestra red no sería algo que ocurra.
 
 # Problemas que surgieron
 
