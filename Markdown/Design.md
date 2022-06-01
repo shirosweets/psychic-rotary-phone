@@ -232,18 +232,33 @@ Por último este dato nos sirve para comunicar al emisor el tamaño de la ventan
 
 El windowSize máximo permitido es `2147483640`, lo cual es muy cercano al MAX_INT que se puede tener en **C**.
 
+# EventTimeout
+
+```cpp
+class EventTimeout : public ::omnetpp::cMessage
+{
+  protected:
+    int seqN;
+    int packetSize;
+  public:
+    virtual int getSeqN() const;
+    virtual void setSeqN(int seqN);
+    virtual int getPacketSize() const;
+    virtual void setPacketSize(int packetSize);
+```
+
 # Control de Flujo
 
 ## `SlidingWindow`
 
 TAD Utilizado:
 
-```C++
+```cpp
 struct __packetMetadata {
 	Volt * volt;
 	int ackCounter;
-  double sendTime = 0;
-  bool retransmitted = false;
+    double sendTime = 0;
+    bool retransmitted = false;
 };
 ```
 
@@ -254,8 +269,6 @@ private:
   int bytesInFlight = 0;
 	std::map<int,packetMetadata> slidingWindow;
 public:
-	SlidingWindow();
-    virtual ~SlidingWindow();
     int getAck(int seqN);
     void addAck(int seqN);
     void addVolt(Volt * volt);
@@ -274,9 +287,11 @@ La `SlidingWindow` utiliza principalmente un diccionario de Int (Numeros de secu
 
 Ademas se encarga de la retransmision de paquetes perdidos, utiliza una idea similar a repeticion selectiva usando ACK's duplicados.
 
-# Control de Congestion
+# Control de Congestión
 
-## `RenoController`
+## `RenoManager`
+
+Esta clase se encarga de administrar y almacenar los `timeouts` de los paquetes en la red.
 
 ```C++
 class RenoManager {
@@ -288,8 +303,6 @@ private:
 	std::map<int, EventTimeout*> window;
 	void logAvailableWin();
 public:
-	RenoManager();
-  virtual ~RenoManager();
   int getMaxSize();
   int getSize();
 	int getAvailableWin();
@@ -301,24 +314,22 @@ public:
 };
 ```
 
-Esta clase se encarga de administrar y almacenar los `timeouts` de los paquetes en la red atravez de un diccionario Int (Numero de secuencia) -> EventTimeout, la clase `EventTimeout` como `volt` fueron generados por el template de Omnet++ de `cMessage`.
+Adminsitra los paquetes a través de un diccionario Int (Numero de secuencia) -> EventTimeout, la clase `EventTimeout` como `Volt` fueron generados por el template de Omnet++ de `cMessage`.
 
-En nuesta implementación utilizamos Arranque Lento para control de flujo, representamos esa instancia con la flag `isSlowStartStage`.
+En nuesta implementación utilizamos **arranque lento** para control de flujo, representamos esa instancia con la flag `isSlowStartStage`.
+
 Con `size` y `msgSendingAmount` se puede calcular la disponibilidad del diccionario.
 
 # RTT
 
-/* TODO */
-
 La implementación del RTT está en el modulo [`RTTManager.h`](../RTTManager.h), este nos permine manejar la inicialización del RTT, RTO y la desviación estándar.
 
-**RTTManager.h**
 
 ```cpp
 class RTTManager {
 private:
 	  double stdDesviation;
-	  double rtt;
+	  double rtt;, por ello se
     double rto;
     bool isFirstAckReceived;
     void updateSmoothRTT(double rtMeasurement);
@@ -328,13 +339,18 @@ public:
     void updateTimeoutRTo();
     /* rtMeasurement = Round Trip Measurement */
     void updateEstimation(double rtMeasurement);
-    /* Retorna el RTT actual */
     double getCurrentRTT();
 ```
 
+- `isFirstAckReceived` lo utilizamos para saber si es necesario realizar la primera inicialización o realizar la actualización suavizada.
+-Para calcular el RTT y RTO se utilizo el algoritmo de `Jacobson (1988)`.
+-Se inicializa el RTT en 1 usando como referencia el consejo del estandar `RFC 6298`, la desviacion estandar en 0 y RTO en 1.
+-Se actualiza la estimacion por cada ACK de paquete que no a sido retransmitido.
+-Este modulo se utiliza principalmente para estimar el tiempo dinamico de timeout para los paquetes que se crean.
+
 ## Karn
 
-Si bien nuestra intención original era seguir el algoritmo de Karn, por cuestiones de arquitectura accidentalmente caímos en un protocol que no lo hace *completamente*.
+Para calcular el RTT y RTO se utilizo el algoritmos de Jacobson Si bien`  nuestra intención original era seguir el algoritmo de Karn, por cuestiones de arquitectura accidentalmente caímos en un protocol que no lo hace *completamente*.
 
 > Nota: Inicialmente cuando un paquete se asumía perdido, lo quitábamos de la **SW** (Sliding Window) temporalmente, y lo poníamos en la punta de la cola común de transmisión. De esa manera nos conservar la función de envio exactamente igual, lo cual simplificaba las cosas. Esta implementación terminó abandonandose ya que se descubrió un caso donde esto generaba problemas.
 >
@@ -358,7 +374,7 @@ Descartamos **ACKs duplicados** porque dentro de nuestra red no sería algo que 
 
 ## IDE
 
-El principal incoveniente que nos surgió fue que nunca logramos que el IDE lance la simulación con el botón correspondiente, tuvimos que realizarlo a través del Makefile, pero descubrimos que de esta forma lanza la simulación más rápido.
+El principal incoveniente que nos surgió fue que nunca logramos que el IDE lance la simulación con el botón correspondiente, tuvimos que realizarlo a través del [`Makefile`](../Makefile), pero descubrimos que de esta forma lanza la simulación más rápido.
 
 Por esta misma razón no pudimos utilizar la herramienta de debugeo que nos brinda el IDE, por lo que tuvimos que usar impresiones directas en consola para debugear. También esto explica porqué utilizamos el comando:
 

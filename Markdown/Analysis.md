@@ -77,15 +77,15 @@ La implementación de nuestro algoritmo requiere un canal de vuelta entre el rec
 
 ## Presentación del Caso I
 
-| Conexión                           | Datarase      |
-| ---------------------------------- | ------------- |
+| Conexión                           | Datarate      |
+|------------------------------------|---------------|
 | entre `TransRx` y `RecAppLayer`    | **`0.5Mbps`** |
 | entre `emisor` y `nodo intermedio` | **`1.0Mbps`** |
 
 ## Presentación del Caso II
 
-| Conexión                           | Datarase      |
-| ---------------------------------- | ------------- |
+| Conexión                           | Datarate      |
+|------------------------------------|---------------|
 | entre `TransRx` y `RecAppLayer`    | **`1.0Mbps`** |
 | entre `emisor` y `nodo intermedio` | **`0.5Mbps`** |
 
@@ -144,10 +144,10 @@ Caso I tabla
 
 ### Análisis de los resultados Caso I
 
-* Se puede notar que hasta el rango de aproximadamente 0.25 de intervalo la red no tiene ningún tipo de retraso. Las colas están prácticamente todo el tiempo vacías
-* Luego de eso hasta el rango 0.18 las colas comienzan a llenarse pero todavía no se pierden paquetes. El problema comienza a vislumbrarse, lo cual se manifiesta en que retraso promedio que suba en 2 órdenes de magnitud (de 0.4 -> 14.52).
+* Se puede notar que hasta el rango de aproximadamente `0.25` de intervalo la red no tiene ningún tipo de retraso. Las colas están prácticamente todo el tiempo vacías.
+* Luego de eso hasta el rango `0.18` las colas comienzan a llenarse pero todavía no se pierden paquetes. El problema comienza a vislumbrarse, lo cual se manifiesta en que retraso promedio que suba en 2 órdenes de magnitud (de `0.4` -> `14.52`).
 * De ahí en más aumentar la generación de paquetes finalmente genera la pérdida de los mismos y no solamente un aumento del retraso.
-* Se puede notar que la carga efectiva que de ahi en más el receptor puede recibir es de `1498` y se mantiene ahí.
+* Se puede notar que la carga efectiva que de ahí en más el receptor puede recibir es de `1498` y se mantiene en esa cifra.
 
 Con estos datos, se realizaron los siguientes gráficos:
 
@@ -296,7 +296,7 @@ Los detalles de la simulación son idénticos para cada caso de la red anterior 
 ## TLCP Caso I
 
 | Conexión                           | Datarase      |
-| ---------------------------------- | ------------- |
+|------------------------------------|---------------|
 | entre `TransRx` y `RecAppLayer`    | **`0.5Mbps`** |
 | entre `emisor` y `nodo intermedio` | **`1.0Mbps`** |
 
@@ -316,38 +316,44 @@ Se agregan 2 nuevas metricas:
 
 ### Mediciones
 
+Para TLCP tenemos acceso a más métricas que agregamos al análisis:
+ * **Ret**: Cantidad de paquetes que fueron retransmitidos
+ * **RTT**: Promedio del tiempo que tarda en llegar un ACK para cada paquete
+ * **ACKt**: Promedio del tiempo que tarda en llegar un ACK desde que se creó un paquete
+
 TLCP Caso I Tabla
 
-| Itv      | Gen      | Del      | Drop Q | Drop R | AvDel [s] | RTT Time medio | acktime  |
-|----------|----------|----------|--------|--------|-----------|----------------|----------|
-| **2.0**  | **144**  | **144**  | **0**  | **0**  | **0.40**  | **1.72**       | **3.44** |
-| 0.8      | 367      | 367      | 0      | 0      | 0.43      | 1.72           | 3.44     |
-| 0.4      | 754      | 754      | 0      | 0      | 0.49      | 1.72           | 3.44     |
-| 0.3      | 989      | 989      | 0      | 0      | 0.58      | 1.72           | 3.44     |
-| 0.25     | 1190     | 1187     | 0      | 0      | 0.72      | 1.72           | 3.44     |
-| 0.23     | 1280     | 1279     | 0      | 0      | 0.94      | 1.72           | 3.44     |
-| 0.22     | 1344     | 1334     | 0      | 0      | 1.11      | 1.72           | 3.44     |
-| 0.21     | 1418     | 1401     | 0      | 0      | 1.49      | 1.72           | 3.44     |
-| 0.2      | 1494     | 1469     | 0      | 0      | 2.41      | 1.72           | 3.44     |
-| **0.18** | **1664** | **1494** | **0**  | **0**  | **14.52** | **1.72**       | **3.44** |
-| 0.175    | 1710     | 1496     | 0      | 0      | 18.07     | 1.72           | 3.44     |
-| 0.17     | 1763     | 1497     | 0      | 0      | 21.68     | 1.72           | 3.44     |
-| 0.16     | 1867     | 1497     | 0      | 0      | 29.15     | 1.72           | 3.44     |
-| 0.15     | 1979     | 1498     | 0      | 0      | 36.64     | 1.72           | 3.44     |
-| 0.14     | 2136     | 1498     | 0      | 0      | 44.17     | 1.72           | 3.44     |
-| **0.1**  | **2933** | **1498** | **0**  | **0**  | **74.41** | **1.72**       | **3.44** |
+| Itv      | Gen      | Del      | Drop Q | Drop R | AvDel [s]  | RTT [s]     | ACKt (+-stdev) [s] | Ret   |
+|----------|----------|----------|--------|--------|------------|-------------|--------------------|-------|
+| **2.0**  | **144**  | **144**  | **0**  | **0**  | **0.40**   | **0.2 (0)** | **0.2** (0)        | **0** |
+| 0.8      | 367      | 367      | 0      | 0      | 0.43       | 0.2 (0)     | 0.2  (0)           | 0     |
+| 0.4      | 754      | 754      | 0      | 0      | 0.49       | 0.2 (0)     | 0.21 (0)           | 0     |
+| 0.3      | 989      | 989      | 0      | 0      | 0.58       | 0.2 (0)     | 0.22 (0)           | 0     |
+| 0.25     | 1190     | 1187     | 0      | 0      | 0.72       | 0.2 (0)     | 0.23 (0)           | 0     |
+| 0.23     | 1280     | 1279     | 0      | 0      | 0.94       | 0.2 (0)     | 0.23 (0)           | 0     |
+| 0.22     | 1344     | 1334     | 0      | 0      | 1.11       | 0.2 (0)     | 0.23 (0)           | 0     |
+| 0.21     | 1418     | 1401     | 0      | 0      | 1.49       | 0.2 (0)     | 0.24 (0.05)        | 0     |
+| 0.2      | 1494     | 1469     | 0      | 0      | 2.41       | 0.2 (0)     | 0.25 (0.05)        | 0     |
+| **0.18** | **1664** | **1494** | **0**  | **0**  | **14.52**  | **0.2 (0)** | **0.26 (0.1)**     | **0** |
+| 0.175    | 1710     | 1496     | 0      | 0      | 18.07      | 0.2 (0)     | 0.33 (0.4)         | 0     |
+| 0.17     | 1763     | 1497     | 0      | 0      | 21.68      | 0.2 (0)     | 1.18 (2.3)         | 0     |
+| 0.16     | 1867     | 1497     | 0      | 0      | 29.15      | 0.2 (0)     | 5.35 (8.0)         | 0     |
+| 0.15     | 1979     | 1498     | 0      | 0      | 36.64      | 0.2 (0)     | 11.4 (3.9)         | 0     |
+| 0.14     | 2136     | 1498     | 0      | 0      | 44.17      | 0.2 (0)     | 18 (13.9)          | 0     |
+| **0.1**  | **2933** | **1498** | **0**  | **0**  | **74.41**  | **0.2 (0)** | **49 (19)**        | **0** |
+| **0.05** | **5847** | **1498** | **0**  | **0**  | **112.27** | **0.2 (0)** | **92 (66)**        | **0** |
 
 ### Análisis de los resultados TLCP Caso I
 
-/* TODO */
+
 
 **Generación de paquetes con distribución exponencial de media = 0.1s**
 
 ![TLCP Caso I Buffer Size intv = 0.05](/documents/assets/tlcp_case_I_intv_005/tlcp_case_I_intv_0_05_bufferSize_Stacked.png)
 
-- Total de paquetes generados y almacenados en el buffer del emisor: `` (` Mb`)
-- Total de paquetes recibidos y almacenados en el buffer de la subred: `` (` Mb`)
-- Total de paquetes recibidos y almacenados en el buffer del receptor: `` (` Mb`)
+- Total de paquetes generados y almacenados en el buffer del emisor: `5847` (`149.8 Mb`)
+- Total de paquetes recibidos y almacenados en el buffer de la subred: `1498` (`149.8 Mb`)
+- Total de paquetes recibidos y almacenados en el buffer del receptor: `1498` (`149.8 Mb`)
 
 ![TLCP Caso I Delay intv = 0.05]()
 
@@ -383,27 +389,53 @@ TLCP Caso I Tabla
 
 ## TLCP Caso II
 
-/* TODO */
+| Conexión                           | Datarate      |
+|------------------------------------|---------------|
+| entre `TransRx` y `RecAppLayer`    | **`1.0Mbps`** |
+| entre `emisor` y `nodo intermedio` | **`0.5Mbps`** |
 
 ### Hipótesis
 
-/* TODO */
+-En esta implementacion tenemos control de flujo y control de congestion, entonces a diferencia de la implementacion base no deberia perder paquetes bajo los mismos data rates de las lineas involucradas.
+
+-
 
 ### Mediciones
 
-/* TODO */
+TLCP Caso II Tabla
+
+| Itv      | Gen      | Del      | Drop Q | Drop R | AvDel [s] | RTT (+-stdev) [s] | ACKt (+-stdev) [s] | Ret   |
+|----------|----------|----------|--------|--------|-----------|-------------------|--------------------|-------|
+| **2.0**  | **144**  | **144**  | **0**  | **0**  | **0.42**  | **0.3 (0.02)**    | **0.3 (0.03)**     | **8** |
+| 0.8      | 367      | 367      | 0      | 0      | 0.46      | 0.32 (0.05)       | 0.33 (0.08)        | 20    |
+| 0.4      | 754      | 754      | 0      | 0      | 0.55      | 0.39 (0.15)       | 0.41 (0.1 41)       | 7    |
+| 0.3      | 989      | 989      | 0      | 0      | 0.67      | 0.48 (0.24)       | 0.53 (0.3)         | 47    |
+| 0.25     | 1190     | 1185     | 0      | 0      | 0.89      | 0.66 (0.3)        | 0.76 (0.4)         | 41    |
+| 0.23     | 1280     | 1277     | 0      | 0      | 1.32      | 0.86 (0.5)        | 1.02 (0.92)        | 33    |
+| 0.22     | 1344     | 1334     | 0      | 0      | 2.0       | 0.94 (0.6)        | 1.28 (0.92)        | 32    |
+| 0.21     | 1418     | 1400     | 0      | 0      | 2.41      | 1.38 (0.84)       | 2.62 (1.76)        | 11    |
+| 0.2      | 1494     | 1463     | 0      | 0      | 3.37      | 1.54 (0.31)       | 3.2 (1.64)         | 3     |
+| **0.18** | **1664** | **1406** | **0**  | **0**  | **23.3**  | **1.89 (0.92)**   | **23.25 (13.63)**  | **2** |
+| 0.175    | 1710     | 1421     | 0      | 0      | 26.14     | 1.85 (0.91)       | 26.0 (14)          | 0     |
+| 0.17     | 1763     | 1438     | 0      | 0      | 26.18     | 1.83 (0.9)        | 26.1 (15)          | 0     |
+| 0.16     | 1867     | 1405     | 0      | 0      | 37.8      | 1.9 (0.93)        | 37 (22)            | 2     |
+| 0.15     | 1979     | 1438     | 0      | 0      | 42.26     | 1.7 (0.8)         | 42 (24)            | 1     |
+| 0.14     | 2136     | 1473     | 0      | 0      | 45.9      | 1.6 (0.8)         | 45 (26)            | 1     |
+| **0.1**  | **2933** | **1457** | **0**  | **0**  | **78.4**  | **1.9 (0.8)**     | **78 (44)**        | **1** |
+| **0.05** | **5847** | **1480** | **0**  | **0**  | **118.3** | **1.88 (0.8)**    | **114 (64)**       | **0** |
 
 ### Análisis de los resultados TLCP Caso II
 
 /* TODO */
+- Se percibe un aumento del delay medio de los diferentes casos de `intervalo de generacion` debido a la implementacion de control de congestion. En donde los paquetes quedan en la red mas tiempo pero en consecuencia no se pierden.
 
 **Generación de paquetes con distribución exponencial de media = 0.1s**
 
 ![TLCP Caso II Buffer Size intv = 0.05](/documents/assets/tlcp_case_II_intv_005/tlcp_case_II_intv_0_05_bufferSize_Stacked.png)
 
-- Total de paquetes generados y almacenados en el buffer del emisor: `` (` Mb`)
-- Total de paquetes recibidos y almacenados en el buffer de la subred: `` (` Mb`)
-- Total de paquetes recibidos y almacenados en el buffer del receptor: `` (` Mb`)
+- Total de paquetes generados y almacenados en el buffer del emisor: `5847` (`584.7 Mb`)
+- Total de paquetes recibidos y almacenados en el buffer de la subred: `1480` (`148.0 Mb`)
+- Total de paquetes recibidos y almacenados en el buffer del receptor: `1480` (`148.0 Mb`)
 
 ![TLCP Caso I Delay intv = 2.0]()
 
@@ -411,8 +443,8 @@ TLCP Caso I Tabla
 
 ![TLCP Caso II Buffer Size intv = 0.1](/documents/assets/tlcp_case_II_intv_01/tlcp_case_II_intv_0_1_bufferSize_Stacked.png)
 
-- Total de paquetes generados y almacenados en el buffer del emisor: `` (` Mb`)
-- Total de paquetes recibidos y almacenados en el buffer de la subred: `` (` Mb`)
+- Total de paquetes generados y almacenados en el buffer del emisor: `2933` (`293.3 Mb`)
+- Total de paquetes recibidos y almacenados en el buffer de la subred: `1457` (`145.7 Mb`)
 - Total de paquetes recibidos y almacenados en el buffer del receptor: `` (` Mb`)
 
 ![TLCP Caso I Delay intv = 2.0]()
@@ -441,6 +473,7 @@ TLCP Caso I Tabla
 ## Comparación con la red previa
 
 /* TODO */
+- Comparando los 2 modelos existe un `trade off` entre 
 
 ### **¿Cómo creen que se comporta su algoritmo de control de flujo y congestión?**
 
@@ -495,7 +528,7 @@ Para que VEGAS detecte congestión, se hace el cálculo de diff (*ecuación (6)*
 
 ![TCP VEGAS - EC 6](/documents/assets/tcp_vegas/ec_1_tcp_vegas.jpg)
 
-El objetivo del algoritmo de control de congestión de VEGAS es mantener a diff dentro de un rango predefinido por dos límites; α y β, de esa maneta cada vez que hay un RTT nuevo y si no está en el modo de inicio lento, VEGAS ajustan el tamaño de su ventana mediante la *ecuación (7)* [*Referencia 20*].
+El objetivo del algoritmo de control de congestión de VEGAS es mantener a diff dentro de un rango predefinido por dos límites; α y β, de esa maneta cada vez que hay un RTT nuevo y si no está en el modo de inicio lento, VEGAS ajustan el tamaño de su ventana mediante la *ecuación (7)* [*Referencia 5*].
 
 ![TCP VEGAS - EC 7](/documents/assets/tcp_vegas/ec_2_tcp_vegas.jpg)
 
@@ -505,9 +538,9 @@ El objetivo del algoritmo de control de congestión de VEGAS es mantener a diff 
 - [2] Paxson & Allman (2000, Noviembre) Computing TCP's Retransmission Timer - RFC 2988 [https://datatracker.ietf.org/doc/html/rfc2988](https://datatracker.ietf.org/doc/html/rfc2988)
 - [3] A. Wierman, T. Osogami, J. Olsén; A unified framework for modeling TCP-Vegas, TCP-SACK, and TCP-Reno. s.l. : School of Computer Science Carnegie Mellon University Pittsburgh, PA 15213,2003.
 - [4] OMNeT Simulation Library: OMNeT API Reference, [doc.omnetpp.org/omnetpp/api/index.html](https://doc.omnetpp.org/omnetpp/api/index.html)
-- [7] B. Thomas; Comparison of TCP Reno and TCP Vegas via fluid approximation. s.l. : Institut National de Recherche En Informatique Et En Automatique, 1998.
-- [20] C. Samios, M. Vernon; Modeling the throughput of TCP Vegas. s.l. : Department of Computer Sciences, University of Wisconsin. Madison, Wisconsin 53706, 2003.
-- [26] F. Kevin; Simulation-based comparisons of Tahoe, Reno, and SACK TCP. s.l. : Lawrence Berkeley National Laboratory One Cyclotron Road, Berkeley, CA 94720, 2003.
+- [5] B. Thomas; Comparison of TCP Reno and TCP Vegas via fluid approximation. s.l. : Institut National de Recherche En Informatique Et En Automatique, 1998.
+- [6] C. Samios, M. Vernon; Modeling the throughput of TCP Vegas. s.l. : Department of Computer Sciences, University of Wisconsin. Madison, Wisconsin 53706, 2003.
+- [7] F. Kevin; Simulation-based comparisons of Tahoe, Reno, and SACK TCP. s.l. : Lawrence Berkeley National Laboratory One Cyclotron Road, Berkeley, CA 94720, 2003.
 
 ---
 
