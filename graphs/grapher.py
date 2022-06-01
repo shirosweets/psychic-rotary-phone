@@ -58,6 +58,9 @@ def graph_measurements(measurements: list[Measurement]):
     graph_useful_load_curve(measurements)
     graph_delay_curve(measurements)
     graph_network_overload(measurements)
+    graph_ack(measurements)
+    graph_ret(measurements)
+    graph_rtt(measurements)
 
 
 def graph_useful_load_curve(measurements: list[Measurement]):
@@ -86,5 +89,32 @@ def graph_delay_curve(measurements: list[Measurement]):
     y_tag = Measurement.AVDEL_TAG
     x_label = "Carga ofrecida [pkt/seg]"
     y_label = "Retraso promedio [s]"
+    title = "Retraso"
+    graph(measurements, x_tag, y_tag, x_label, y_label, title)
+
+
+def graph_ret(measurements: list[Measurement]):
+    x_tag = Measurement.GENRATE_TAG
+    y_tag = Measurement.RET_TAG
+    x_label = "Carga ofrecida [pkt/seg]"
+    y_label = "Cantidad de retransmisiones"
+    title = "Retransmisiones"
+    graph(measurements, x_tag, y_tag, x_label, y_label, title)
+
+
+def graph_rtt(measurements: list[Measurement]):
+    x_tag = Measurement.GENRATE_TAG
+    y_tag = Measurement.RTT_TAG
+    x_label = "Carga ofrecida [pkt/seg]"
+    y_label = "Tiempo RTT promedio"
+    title = "RTT"
+    graph(measurements, x_tag, y_tag, x_label, y_label, title)
+
+
+def graph_ack(measurements: list[Measurement]):
+    x_tag = Measurement.GENRATE_TAG
+    y_tag = Measurement.ACKT_TAG
+    x_label = "Carga ofrecida [pkt/seg]"
+    y_label = "Tiempo de ACK promedio"
     title = "Retraso"
     graph(measurements, x_tag, y_tag, x_label, y_label, title)

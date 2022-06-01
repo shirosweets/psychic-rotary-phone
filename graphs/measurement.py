@@ -13,8 +13,11 @@ class Measurement:
     GENRATE_TAG = "Generation Rate"
     RECRATE_TAG = "Reception Rate"
     DROPRATE_TAG = "Drop Rate"
+    RTT_TAG = "RTT"
+    ACKT_TAG = "ACK Time"
+    RET_TAG = "Amount Retransmitted"
 
-    def __init__(self, case, itv, gen, delivered, dropQ, dropR, avdel):
+    def __init__(self, case, itv, gen, delivered, dropQ, dropR, avdel, rtt=0, ackt=0, ret=0):
         self.case = case
         self.itv = float(itv)
         self.gen = int(gen)
@@ -26,6 +29,9 @@ class Measurement:
         self.gen_per_second = self.gen / TOTAL_SIMULATION_TIME
         self.rec_per_second = self.delivered / TOTAL_SIMULATION_TIME
         self.drop_rate = 1 - self.delivered/self.gen
+        self.rtt = rtt
+        self.ackt = ackt
+        self.ret = ret
 
     def __str__(self) -> str:
         return str(self.to_dictionary())
@@ -41,7 +47,10 @@ class Measurement:
             self.AVDEL_TAG: self.avdel,
             self.GENRATE_TAG: self.gen_per_second,
             self.RECRATE_TAG: self.rec_per_second,
-            self.DROPRATE_TAG: self.drop_rate
+            self.DROPRATE_TAG: self.drop_rate,
+            self.RTT_TAG: self.rtt,
+            self.ACKT_TAG: self.ackt,
+            self.RET_TAG: self.ret
         }
 
     @staticmethod
