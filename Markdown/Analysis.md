@@ -500,8 +500,9 @@ En el caso I, la red funciona de manera óptima, se nota la mejora con la implem
 
 En cambio, para el caso II con nuestra implementación consigue una mejora considerable pero no óptima ya que no usa la red en su totalidad.
 
+![Carga ofrecida vs Carga Util](/documents/comparative_algorithms/ofrecida_vs_util_all.png)
 
-![Carga ofrecida vs Carga útil](/documents/assets/util_vs_ofrecida.png)
+![Retraso](/documents/comparative_algorithms/retraso_all.png)
 
 # Conclusión
 
