@@ -63,7 +63,7 @@ Las características del algoritmo son las siguientes:
    * Aumento linear de la *VC* (cada RTT de congestión) luego de un timeout
  * Temporizador de Retransmisión basado en RTT
  * Estimación suave de RTT basado en tiempo de respuesta.
-   > Se implementó Algoritmo de Jacobson (1988) y Algoritmo de Karn
+   > Se implementó algoritmo de Jacobson (1988) y una variante del algoritmo de Karn
  * Tamaño de header del `Volt` de 9 bytes.
    > **flags**: 1 byte (flags: `ACK`, `RET`)
    >
@@ -136,7 +136,11 @@ Luego de haber descartado parada y espera, se decidió evaluar cómo dividir las
 
 # Ventana de congestión
 
-La primera adición a nuestro modelo fue [`RenoManager.h`](../RenoManager.h) (originalmente llamado *CongestionWindow.h*) esta nos permite organizar cuales son los paquetes que estaá en la red en todo momento. Este modulo es utilizado por la capa del transmisor.
+Lo primero que apuntamos fue tener registro de los paquetes de la red eso dio lugar a la implementacion de `CongestionWindow.h` que luego paso a tener mas funcionalidades por lo que paso a llamarse [`RenoManager.h`](../RenoManager.h).
+
+- Con las adiciones de estos modulos y lógica del lado del emisor conseguimos retransmitir los paquetes perdidos pero no aun el control de congestión. Esas fueron agregados posteriores cuando implementamos arranque lento.
+
+Este módulo nos permite organizar cuales son los paquetes que estaá en la red en todo momento, y es utilizado por la capa del transmisor.
 
 Un detalle de la implementación es que cuando un paquete es agregado a la ventana inicia el temporizador de un evento del `timeout` de ese paquete, el cual nos sirve como un valor "time-to-live" para saber cuando retransmitir paquetes. Otra característica es la posibilidad de recibir `feedback` de la capa de receptor a través de ACKs.
 
@@ -162,16 +166,6 @@ public:
   void setSlowStart(bool state);
 }
 ```
-
-## Primera versión
-
-Lo primero que apuntamos fue tener registro de los paquetes de la red eso dio lugar a la implementacion de `CongestionWindow.h` que luego paso a tener mas funcionalidades por lo que paso a llamarse [`RenoManager.h`](../RenoManager.h).
-
-Con las adiciones de estos modulos y lógica del lado del emisor conseguimos retransmitir los paquetes perdidos pero no aun el control de congestión. Esas fueron agregados posteriores cuando implementamos arranque lento.
-
-## Segunda versión
-
-----
 
 # Estructura final de TLCP
 
@@ -254,6 +248,12 @@ class EventTimeout : public ::omnetpp::cMessage
 
 # Control de Flujo
 
+Para control de flujo simplemente guardamos la ventana de control actual en un entero directamente en el Sender, llamada `currentControlWindowSize`. Cuando se consulta si se puede enviar un Volt, se compara este número con la cantidad actual de mensajes en el *aire*, y si esa cantidad más el paquete que se desea enviar no supera la ventana, podemos enviar el paquete actual.
+
+# Control de Congestión
+
+Implementamos Reno con ventana corrediza y control por timeouts con RTT dinámico.
+
 ## `SlidingWindow`
 
 TAD Utilizado:
@@ -290,9 +290,7 @@ public:
 
 La `SlidingWindow` utiliza principalmente un diccionario de Int (Numeros de secuencia) -> packetMetadata que es nuestro TAD donde guardamos el paquete `volt`, la cantidad de ACKs que llego de ese paquete `ackCounter`, el tiempo de enviado `sendTime` y una flag de retransmision `retransmitted`.
 
-Ademas se encarga de la retransmision de paquetes perdidos, utiliza una idea similar a repeticion selectiva usando ACK's duplicados.
-
-# Control de Congestión
+Esto sirve para conservar paquetes que potencialmente puedan ser retransmitidos de ser necesario.
 
 ## `RenoManager`
 
@@ -319,16 +317,15 @@ public:
 };
 ```
 
-Adminsitra los paquetes a través de un diccionario Int (Numero de secuencia) -> EventTimeout, la clase `EventTimeout` como `Volt` fueron generados por el template de Omnet++ de `cMessage`.
+Administra los paquetes a través de un diccionario Int (Numero de secuencia) -> EventTimeout, la clase `EventTimeout` como `Volt` fueron generados por el template de Omnet++ de `cMessage`.
 
 En nuesta implementación utilizamos **arranque lento** para control de flujo, representamos esa instancia con la flag `isSlowStartStage`.
 
 Con `size` y `msgSendingAmount` se puede calcular la disponibilidad del diccionario.
 
-# RTT
+# `RTT`
 
-La implementación del RTT está en el modulo [`RTTManager.h`](../RTTManager.h), este nos permine manejar la inicialización del RTT, RTO y la desviación estándar.
-
+La implementación del RTT está en el modulo [`RTTManager.h`](../RTTManager.h), este nos permine manejar la estimación del RTT, RTO y la desviación estándar.
 
 ```cpp
 class RTTManager {
@@ -348,14 +345,16 @@ public:
 ```
 
 - `isFirstAckReceived` lo utilizamos para saber si es necesario realizar la primera inicialización o realizar la actualización suavizada.
--Para calcular el RTT y RTO se utilizo el algoritmo de `Jacobson (1988)`.
--Se inicializa el RTT en 1 usando como referencia el consejo del estandar `RFC 6298`, la desviacion estandar en 0 y RTO en 1.
--Se actualiza la estimacion por cada ACK de paquete que no a sido retransmitido.
--Este modulo se utiliza principalmente para estimar el tiempo dinamico de timeout para los paquetes que se crean.
+- Para calcular el `RTT` y `RTO` se utilizo el algoritmo de `Jacobson (1988)`.
+  - Se inicializa el `RTT = 1` usando como referencia el consejo del estándar `RFC 6298`, la desviación estándar en 0 y `RTO = 1`.
+- Se actualiza la estimación por cada ACK de paquete que no a sido retransmitido.
+- Este modulo se utiliza principalmente para estimar el tiempo dinámico de timeout para los paquetes que se crean.
 
 ## Karn
 
-Para calcular el RTT y RTO se utilizo el algoritmos de Jacobson Si bien`  nuestra intención original era seguir el algoritmo de Karn, por cuestiones de arquitectura accidentalmente caímos en un protocol que no lo hace *completamente*.
+Para calcular el RTT y RTO se utilizo el algoritmos de Jacobson.
+
+Si bien nuestra intención original era seguir el algoritmo de Karn, por cuestiones de arquitectura accidentalmente caímos en un protocol que no lo hace *completamente*.
 
 > Nota: Inicialmente cuando un paquete se asumía perdido, lo quitábamos de la **SW** (Sliding Window) temporalmente, y lo poníamos en la punta de la cola común de transmisión. De esa manera nos conservar la función de envio exactamente igual, lo cual simplificaba las cosas. Esta implementación terminó abandonandose ya que se descubrió un caso donde esto generaba problemas.
 >

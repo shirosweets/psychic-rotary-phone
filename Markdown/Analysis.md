@@ -53,7 +53,9 @@ Informe de la tarea de análisis del laboratorio 3 de Redes y Sistemas Distribui
 
 # Abstract
 
-En este laboratorio se estudió el comportamiento de las redes frente a problemas de congestión y flujo con la herramienta de simulación por eventos discretos *OMNETT++*. Se tomó una red simplificada y se hizo un análisis sobre un escenario con problemas por congestión, otro por problemas de flujo, y luego se estudió la efectividad en ambos casos de nuestra implementación de control de ambos problemas.
+En este laboratorio se estudia el comportamiento de las redes frente a problemas de congestión y flujo con la herramienta de simulación por eventos discretos *OMNETT++*. Se tomó una red simplificada y se realizó un análisis con el objetivo de identificar de qué escenario se trataba, dónde se produce el cuello de botella y en qué módulo ocurre. Un escenario presenta problemas por congestión y otro por problemas de flujo.
+
+Posteriormente se realizó un diseño e implementación de control de ambos problemas y se estudió la efectividad en dichos escenarios.
 
 # Análisis de la red sin control de congestión ni flujo
 
@@ -112,6 +114,10 @@ Esto es un ejemplo de problemas de *flujo*.
 
 ### Mediciones
 
+Se análizaron varias mediciones entontrando los límites de la red, desde donde la red no experimenta ningún tipo de pérdida de paquetes ni retrasos hasta el punto donde la red alcanza su límite natural. De este rango se tomaron datos para análisis.
+
+Se realizó también una tabla sobre la transmisión basándonos en cambiar la media de intervalo de creación de paquetes.
+
 Primero se tomó un intervalo de generación relativamente grande (**`T = 2s`**). Si bien el análisis teórico del problema dice que el receptor tiene un problema de flujo, si se ocupa poco la red no debería haber pédida de paquetes o una mínima pérdida.
 
 Caso I tabla
@@ -147,13 +153,22 @@ Caso I tabla
 >
 > *AvDel:* Retraso de entrega promedio
 
-
 ### Análisis de los resultados Caso I
 
 - Se puede notar que hasta el rango de aproximadamente `0.25` de intervalo la red no tiene ningún tipo de retraso. Las colas están prácticamente todo el tiempo vacías.
-- Luego de eso hasta el rango `0.18` las colas comienzan a llenarse pero todavía no se pierden paquetes. El problema comienza a vislumbrarse, lo cual se manifiesta en que retraso promedio que suba en 2 órdenes de magnitud (de `0.4` -> `14.52`).
-- De ahí en más aumentar la generación de paquetes finalmente genera la pérdida de los mismos y no solamente un aumento del retraso.
-- Se puede notar que la carga efectiva que de ahí en más el receptor puede recibir es de `1498` y se mantiene en esa cifra.
+- Luego de eso hasta el rango `0.18` las colas comienzan a llenarse pero todavía no se pierden paquetes. El problema comienza a vislumbrarse, lo cual se manifiesta en que retraso promedio que suba en 2 órdenes de magnitud (de `0.4` -> `14.52`). Aún así, no hay pérdida de paquetes, como se puede vislumbrar en el siguiente gráfico
+
+**Generación de paquetes con distribución exponencial de media = 0.18s**
+
+![Caso I Buffer Size intv = 0.18](/documents/assets/case_I_intv_018/case_I_intv_018_bufferStacked.png)
+
+- Total de paquetes generados y almacenados en el buffer del emisor: `1664` (`166.4. Mb`)
+- Total de paquetes recibidos y almacenados en el buffer de la subred: `1494` (`149.4 Mb`)
+- Total de paquetes recibidos y almacenados en el buffer del receptor: `1494` (`149.4 Mb`)
+
+De ahí en más aumentar la generación de paquetes finalmente genera la pérdida de los mismos además de más aumento en el retraso.
+
+Se puede notar que la carga efectiva que de ahí en más el receptor puede recibir es de `1498` y se mantiene en esa cifra.
 
 Con estos datos, se realizaron los siguientes gráficos:
 
@@ -167,26 +182,12 @@ Con estos datos, se realizaron los siguientes gráficos:
 - Total de paquetes recibidos y almacenados en el buffer de la subred: `1498` (`149.8 Mb`)
 - Total de paquetes recibidos y almacenados en el buffer del receptor: `1498` (`149.8 Mb`)
 
-![Caso I Delay intv = 0.1]()
-
-**Generación de paquetes con distribución exponencial de media = 0.18s**
-
-![Caso I Buffer Size intv = 0.18](/documents/assets/case_I_intv_018/case_I_intv_018_bufferStacked.png)
-
-- Total de paquetes generados y almacenados en el buffer del emisor: `1664` (`166.4. Mb`)
-- Total de paquetes recibidos y almacenados en el buffer de la subred: `1494` (`149.4 Mb`)
-- Total de paquetes recibidos y almacenados en el buffer del receptor: `1494` (`149.4 Mb`)
-
-![Caso I Delay intv = 0.18]()
-
-**Generación de paquetes con distribución exponencial de media = 2.0s**
+<!-- **Generación de paquetes con distribución exponencial de media = 2.0s**
 ![Caso I Buffer Size intv = 2.0](/documents/assets/case_I_intv_20/case_I_intv_2_0_bufferStacked.png)
 
 - Total de paquetes generados y almacenados en el buffer del emisor: `144` (`14.4 Mb`)
 - Total de paquetes recibidos y almacenados en el buffer de la subred: `144` (`14.4 Mb`)
-- Total de paquetes recibidos y almacenados en el buffer del receptor: `144` (`14.4 Mb`)
-
-![Caso I Delay intv = 2.0]()
+- Total de paquetes recibidos y almacenados en el buffer del receptor: `144` (`14.4 Mb`) -->
 
 ---
 
@@ -194,11 +195,13 @@ Con estos datos, se realizaron los siguientes gráficos:
 
 ### Hipótesis
 
-En este caso se percibe que la velocidad de generación es más rápida que la velocidad de las cola en recibir y enviar al paquete al sink.
+En este caso se percibe que la velocidad de generación es más rápida que la velocidad de las cola en recibir y enviar al paquete al Sink. Igual que el caso I exceptuando que el cuello de botella se encuentra en la subred (dataQueue).
 
 De esta manera la cola paulativamente se llenará y empezará a dropear paquetes.
 
 Este es un claro problema de congestión, la interred no puede manejar la velocidad del generador y al no haber caminos alternativos siempre habrá problemas de congestión.
+
+Las mediciones en este caso son análogas al anterior:
 
 ### Mediciones
 
@@ -225,6 +228,14 @@ Caso II tabla
 
 ### Análisis de los resultados Caso II
 
+- **Drop Q**: En este caso el datarate entre la cola intermedia y la capa del deceptor se divide a la mitad (de 1Mbps a 0.5Mbps), se mantiene el datarate del generador con la cola intermedia (1Mbps) lo que provoca el llenado de la cola intermedia, generando paquetes dropeados.
+
+En cuestión de progresión del cuello de botella notamos una velocidad similar (comienza a congestionarse la red y perder paquetes relativamente al mismo timepo). Cabe mencionar que como el tamaño del buffer intermedio es más chico que el del receptor del caso anterior (es decir donde ocurre el cuello de botella), la pérdida de paquetes que sufre es mayor y más temprana. Fuera de esto, el cuello de botella es muy similar.
+
+- **Capa de receiver**: En este caso no hay dropeo en la cola del receptor debido a que el datarate es el doble de rápido y por este mismo motivo el delay baja.
+
+A partir de los datos tomados se graficaron las siguientes métricas:
+
 **Generación de paquetes con distribución exponencial de media = 0.1s**
 
 En el siguiente gráfico podemos apreciar
@@ -235,8 +246,6 @@ En el siguiente gráfico podemos apreciar
 - Total de paquetes recibidos y almacenados en el buffer de la subred: `1498` (`149.8 Mb`)
 - Total de paquetes recibidos y almacenados en el buffer del receptor: `1498` (`149.8 Mb`)
 
-![Caso II Delay intv = 0.1]()
-
 **Generación de paquetes con distribución exponencial de media = 0.18s**
 
 ![Caso II Buffer Size intv = 0.18](/documents/assets/case_II_intv_018/case_II_intv_018_bufferStacked.png)
@@ -245,26 +254,23 @@ En el siguiente gráfico podemos apreciar
 - Total de paquetes recibidos y almacenados en el buffer de la subred: `1494` (`149.4 Mb`)
 - Total de paquetes recibidos y almacenados en el buffer del receptor: `1494` (`149.4 Mb`)
 
-![Caso II Delay intv = 0.18]()
-
-**Generación de paquetes con distribución exponencial de media = 2.0s**
+<!-- **Generación de paquetes con distribución exponencial de media = 2.0s**
 
 ![Caso II Buffer Size intv = 2.0](/documents/assets/case_II_intv_20/case_I_intv_2_0_bufferStacked.png)
 
 - Total de paquetes generados y almacenados en el buffer del emisor: `144` (`14.4 Mb`)
 - Total de paquetes recibidos y almacenados en el buffer de la subred: `144` (`14.4 Mb`)
-- Total de paquetes recibidos y almacenados en el buffer del receptor: `144` (`14.4 Mb`)
-
-![Caso II Delay intv = 2.0]()
+- Total de paquetes recibidos y almacenados en el buffer del receptor: `144` (`14.4 Mb`) -->
 
 ## Conclusión parcial
 ### ¿Qué diferencia observa entre el caso de estudio I y II? ¿Cuál es la fuente limitante en cada uno?
 
-Comparando con el caso 1 vemos 2 cambios significativos:
+Comparando los dos casos podemos ver lo siguiente:
 
-- **Capa de receiver**: En este caso no hay dropeo en la cola del receptor debido a que el datarate es el doble de rápido y por este mismo motivo el delay baja.
-- **Drop Q**: En este caso el datarate entre la cola intermedia y la capa del deceptor se divide a la mitad (de 1Mbps a 0.5Mbps), se mantiene el datarate del generador con la cola intermedia (1Mbps) lo que provoca el llenado de la cola intermedia, generando paquetes dropeados.
-
+- El cuello de botella sigue existiendo de manera similar, ambas redes tienen la misma carga útil máxima (1498 paquetes), lo que cambia es el lugar donde ocurre el cuello de botella. Como había sido supuesto.
+- El caso I es un problema de flujo mientras que el caso II es un problema de congestión.
+- Por la diferente de tamaño de buffer (la subred tiene menos buffer que el receptor) el colapso del caso II ocurre ligeramente antes.
+- La fuente limitante en cada caso es la diferencia de datarate en las conexiones.
 
 ### General
 
@@ -281,7 +287,6 @@ Posibles soluciones para dejar de perder paquetes:
 
 ### Diferencia entre control de flujo y control de congestión
 
-/* TODO */
 | Nombre                | Ubicación del problema                         | Impide                                                   |
 |-----------------------|------------------------------------------------|----------------------------------------------------------|
 | Control de Congestión | red entre medio del emisor y receptor (subred) | Que un conjunto de transmisiones sobrecarguen la red     |
@@ -298,28 +303,13 @@ El tamaño del header de cada paquete, llamado `Volt`, tiene tan solo **9** byte
 
 Para una explicación de las especificaciones e implementación de TLCP dirigirse a [**DISEÑO**](Design.md).
 
-Los detalles de la simulación son idénticos para cada caso de la red anterior sin control de flujo ni control, por lo que saltaremos directamente al análisis.
+Los detalles de la simulación son idénticos para cada caso de la red anterior sin control de flujo ni control, por lo que saltaremos directamente a la hipótesis.
 
-## TLCP Caso I
-
-| Conexión                           | Datarase      |
-|------------------------------------|---------------|
-| entre `TransRx` y `RecAppLayer`    | **`0.5Mbps`** |
-| entre `emisor` y `nodo intermedio` | **`1.0Mbps`** |
+# TLCP Caso I
 
 ### Hipótesis
 
-Con esos datos podemos ver a simple vista que existe un **cuello de botella** entre las dos capas de aplicación que se encuentra en el receptor mismo.
-
-El *receptor* va a recibir mensajes más rápidos de lo que puede procesarlos, eventualmente generando **droppeos** de paquetes.
-
-Esto es un ejemplo de problemas de *flujo*.
-
-Con TCLP los paquetes que se hayan perdido en la cola del receptor se retransmitiran.
-
-Se agregan 2 nuevas metricas:
-- La medición del RTT (Round-trip-time) es el tiempo de la salida del paquete del generador hasta la llegada de su ACK.
-- acktime es el timpo de creación del paquete hasta la llegada de su ACK.
+Como en este caso el cuello de botella ocurre al nivel host, tenemos acceso directo al estado del buffer y TLCP comunica este dato al emisor que puede ajustar su tranmisión de manera acorde. Dado esto, si bien seguimos teniendo un cuello de botella, esperamos resolver el problema de flujo de manera satisfactoria. TLCP utilizaría la conexión al máximo posible sin pérdida de paquetes.
 
 ### Mediciones
 
@@ -353,9 +343,15 @@ TLCP Caso I Tabla
 
 ### Análisis de los resultados TLCP Caso I
 
+Como se esperaba, TLCP maneja de manera óptima, incluso en el caso más estresante de la red, la cola del receptor se llena hasta casi el punto de colapso, pero entonces el receptor ajusta su datarate y manda solamente paquetes cuando el receptor le avisa que puede procesar más.
 
+Es decir que el receptor tiene siempre acceso a la mayor cantidad posible de data y cada vez que procesa otro paquete, recibe otro más.
 
-**Generación de paquetes con distribución exponencial de media = 0.1s**
+Se debe mencionar que no hay droppeo de paquetes, y el RTT medido siempre se mantiene fijo y muy bajo (0.2 s), esto es gracias a la interred no congestionada.
+
+Otra mención imporante es el delay, que es bastante mayor al caso I sin control. Esta comparación se hará en el análisis íntegro.
+
+**Generación de paquetes con distribución exponencial de media = 0.05s**
 
 ![TLCP Caso I Buffer Size intv = 0.05](/documents/assets/tlcp_case_I_intv_005/tlcp_case_I_intv_0_05_bufferSize_Stacked.png)
 
@@ -363,9 +359,7 @@ TLCP Caso I Tabla
 - Total de paquetes recibidos y almacenados en el buffer de la subred: `1498` (`149.8 Mb`)
 - Total de paquetes recibidos y almacenados en el buffer del receptor: `1498` (`149.8 Mb`)
 
-![TLCP Caso I Delay intv = 0.05]()
-
-**Generación de paquetes con distribución exponencial de media = 0.1s**
+<!-- **Generación de paquetes con distribución exponencial de media = 0.1s**
 
 ![TLCP Caso I Buffer Size intv = 0.1](/documents/assets/tlcp_case_I_intv_01/tlcp_case_I_intv_0_1_bufferSize_Stacked.png)
 
@@ -373,17 +367,13 @@ TLCP Caso I Tabla
 - Total de paquetes recibidos y almacenados en el buffer de la subred: `1498` (`149.8 Mb`)
 - Total de paquetes recibidos y almacenados en el buffer del receptor: `1498` (`149.8 Mb`)
 
-![TLCP Caso I Delay intv = 0.1]()
-
 **Generación de paquetes con distribución exponencial de media = 0.18s**
 
 ![TLCP Caso I Buffer Size intv = 0.18](/documents/assets/tlcp_case_I_intv_018/tlcp_case_I_intv_0_18_bufferSize_Stacked.png)
 
 - Total de paquetes generados y almacenados en el buffer del emisor: `1664` (`166.4 Mb`)
 - Total de paquetes recibidos y almacenados en el buffer de la subred: `1494` (`149.4 Mb`)
-- Total de paquetes recibidos y almacenados en el buffer del receptor: `1494` (`149.4 Mb`)
-
-![TLCP Caso I Delay intv = 0.18]()
+- Total de paquetes recibidos y almacenados en el buffer del receptor: `1494` (`149.4 Mb`) -->
 
 **Generación de paquetes con distribución exponencial de media = 2.0s**
 
@@ -392,8 +382,6 @@ TLCP Caso I Tabla
 - Total de paquetes generados y almacenados en el buffer del emisor: `144` (`14.4 Mb`)
 - Total de paquetes recibidos y almacenados en el buffer de la subred: `144` (`14.4 Mb`)
 - Total de paquetes recibidos y almacenados en el buffer del receptor: `144` (`14.4 Mb`)
-
-![TLCP Caso I Delay intv = 2.0]()
 
 ## TLCP Caso II
 
@@ -404,7 +392,11 @@ TLCP Caso I Tabla
 
 ### Hipótesis
 
-En esta implementación tenemos control de flujo y control de congestión, entonces a diferencia de la implementación base no debería perder paquetes bajo los mismos data rates de las líneas involucradas.
+Como no tenemos acceso directo a la subred, TLCP debe tomar una estimación de la congestión y ajustar su datarate en base a eso. Por esta razón, se estima que la solución no va a ser tan óptima como en el caso I, y vaya a haber menos carga útil que en el caso II sin control. Sin embargo, también se espera que no haya pérdida de paquetes, aunque sí puede haber retransmisiones innecesarias causadas por timeouts.
+
+El RTT debería ser mucho menos estable que en [TLCP Caso I](#tlcp-caso-i), pero aún así no debería crecer demasiado.
+
+Otra cosa que se espera que ocurra con TLCP es la llegada completa de la transmisión, en orden.
 
 ### Mediciones
 
@@ -433,31 +425,27 @@ TLCP Caso II Tabla
 
 ### Análisis de los resultados TLCP Caso II
 
-- Se percibe un aumento del delay medio de los diferentes casos de `intervalo de generación` debido a la implementación de control de congestión. En donde los paquetes quedan en la red más tiempo pero en consecuencia no se pierden.
+Se percibe un aumento del delay medio de los diferentes casos de `intervalo de generación` debido a la implementación de control de congestión.
 
-**Generación de paquetes con distribución exponencial de media = 0.1s**
+Como los paquetes quedan en la red más tiempo pero en consecuencia no se pierden, aunmentan el promedio del delay, que en la red sin control simplemente no llegaban a medirse.
 
-Notar que el buffer del receptor varía de `0` a `1`.
+![Retraso](/documents/comparative_algorithms/delay_all.png)
 
-![TLCP Caso II Buffer Size intv = 0.05](/documents/assets/tlcp_case_II_intv_005/tlcp_case_II_intv_0_05_bufferSize_Stacked.png)
+En cuantro a la productividad de la red misma, primero notamos que en casos de poca carga, la red se comporta correctamente, aunque el nivel de retranmisiones es más alto del esperado.
 
-- Total de paquetes generados y almacenados en el buffer del emisor: `5847` (`584.7 Mb`)
-- Total de paquetes recibidos y almacenados en el buffer de la subred: `1480` (`148.0 Mb`)
-- Total de paquetes recibidos y almacenados en el buffer del receptor: `1480` (`148.0 Mb`)
+Aún así, llegan todos los paquetes esperados:
 
-![TLCP Caso II Delay intv = 2.0]()
+**Generación de paquetes con distribución exponencial de media = 2.0s**
 
-**Generación de paquetes con distribución exponencial de media = 0.1s**
+![TLCP Caso II Buffer Size intv = 2.0](/documents/assets/tlcp_case_II_intv_20/tlcp_case_II_intv_2_0_bufferSize_Stacked.png)
 
-Notar que el buffer del receptor varía de `0` a `1`.
+- Total de paquetes generados y almacenados en el buffer del emisor: `144` (`14.4 Mb`)
+- Total de paquetes recibidos y almacenados en el buffer de la subred: `144` (`14.4 Mb`)
+- Total de paquetes recibidos y almacenados en el buffer del receptor: `144` (`14.4 Mb`)
 
-![TLCP Caso II Buffer Size intv = 0.1](/documents/assets/tlcp_case_II_intv_01/tlcp_case_II_intv_0_1_bufferSize_Stacked.png)
+En el caso de `Intv = 0.18`, podemos ver que la red ajusta varias veces su datarate, aumentando hasta cierto umbral, en este caso 15 paquetes en el buffer de la subred, y TLCP detecta el inicio de congestión y temporalmente baja su datarate. De esta manera la red nunca termina congestionandose.
 
-- Total de paquetes generados y almacenados en el buffer del emisor: `2933` (`293.3 Mb`)
-- Total de paquetes recibidos y almacenados en el buffer de la subred: `1457` (`145.7 Mb`)
-- Total de paquetes recibidos y almacenados en el buffer del receptor: `1457` (`145.7 Mb`)
-
-![TLCP Caso II Delay intv = 2.0]()
+Viendo el gráfico de buffers, podemos notar la forma de serrucho que tanto caracteriza a Reno
 
 **Generación de paquetes con distribución exponencial de media = 0.18s**
 
@@ -469,23 +457,34 @@ Notar que el buffer del receptor varía de `0` a `1`.
 - Total de paquetes recibidos y almacenados en el buffer de la subred: `1406` (`140.6 Mb`)
 - Total de paquetes recibidos y almacenados en el buffer del receptor: `1406` (`140.6 Mb`)
 
-![TLCP Caso II Delay intv = 2.0]()
+En intervalos de generación más alto la red también va ajustando el datarate:
 
-**Generación de paquetes con distribución exponencial de media = 2.0s**
+**Generación de paquetes con distribución exponencial de media = 0.1s**
 
-![TLCP Caso II Buffer Size intv = 2.0](/documents/assets/tlcp_case_II_intv_20/tlcp_case_II_intv_2_0_bufferSize_Stacked.png)
+Notar que el buffer del receptor varía de `0` a `1`.
 
-- Total de paquetes generados y almacenados en el buffer del emisor: `144` (`14.4 Mb`)
-- Total de paquetes recibidos y almacenados en el buffer de la subred: `144` (`14.4 Mb`)
-- Total de paquetes recibidos y almacenados en el buffer del receptor: `144` (`14.4 Mb`)
+![TLCP Caso II Buffer Size intv = 0.05](/documents/assets/tlcp_case_II_intv_005/tlcp_case_II_intv_0_05_bufferSize_Stacked.png)
 
-![TLCP Caso II Delay intv = 2.0]()
+- Total de paquetes generados y almacenados en el buffer del emisor: `5847` (`584.7 Mb`)
+- Total de paquetes recibidos y almacenados en el buffer de la subred: `1480` (`148.0 Mb`)
+- Total de paquetes recibidos y almacenados en el buffer del receptor: `1480` (`148.0 Mb`)
+
+**Generación de paquetes con distribución exponencial de media = 0.1s**
+
+Notar que el buffer del receptor varía de `0` a `1`.
+
+![TLCP Caso II Buffer Size intv = 0.1](/documents/assets/tlcp_case_II_intv_01/tlcp_case_II_intv_0_1_bufferSize_Stacked.png)
+
+- Total de paquetes generados y almacenados en el buffer del emisor: `2933` (`293.3 Mb`)
+- Total de paquetes recibidos y almacenados en el buffer de la subred: `1457` (`145.7 Mb`)
+- Total de paquetes recibidos y almacenados en el buffer del receptor: `1457` (`145.7 Mb`)
 
 
 ## Comparación con la red previa
 
-Comparando los 2 modelos existe un `trade-off` entre mantener el delay pero perder paquetes y aumentar el delay pero no perder paquetes.
+Lo primero que existe en comparación con la otra red, es que **TLCP nunca pierde paquetes**. Como se ve en los anteriores gráficos, los paquetes generados que la red no puede manejar se mantienen en el emisor sin congestionar a la misma.
 
+![Paquetes perdidos](/documents/comparative_algorithms/loss_all.png)
 
 ### **¿Cómo creen que se comporta su algoritmo de control de flujo y congestión?**
 
@@ -494,19 +493,26 @@ Se observó que se comporta como era esperado:
 - No pierde paquetes.
 - No pierde mucho performance.
 
+En cuanto a control de flujo, el algoritmo tiene la misma performance que la red anterior, solo que sin droppear paquetes, mientras que el caso de congestión si tiene menos carga útil. Acá podemos ver el gráfico de carga util:
+
+![Carga ofrecida vs Carga Util](/documents/comparative_algorithms/ofrecida_vs_util_all.png)
+
+Una característica rara que notamos es que TLCP en el caso iI mientras más carga tiene menos retransmisiones hace. El peak de retransmisiones ocurre con un intv bastante alto.
+
+![TLCP Retransmitidos](/documents/comparative_tlcp_alogithm/retransmissions_tlcp.png)
+
+En cuanto al RTT, en el **caso I permanece fijo en el mímimo de la red**, ya que la subred no tiene cuello de botella, mientras que el caso II si bien crece, se estabiliza por el valor `~1.8`, lo cual habla del control de congestion que posee TLCP.
+
+![TLCP RTT](/documents/comparative_tlcp_alogithm/rtt_tlcp.png)
+
+El ACK Time sigue un trayecto muy similar al delay promedio
+![TLCP Ack Time](/documents/comparative_tlcp_alogithm/ack_time_tlcp.png)
+
 ### **¿Funciona para el caso de estudio I y II por igual? ¿Por qué?**
 
 En el caso I, la red funciona de manera óptima, se nota la mejora con la implementación. El emisor manda exactamente lo que el receptor puede soportar/manejar.
 
-En cambio, para el caso II con nuestra implementación consigue una mejora considerable pero no óptima ya que no usa la red en su totalidad.
-
-![Carga ofrecida vs Carga Util](/documents/comparative_algorithms/ofrecida_vs_util_all.png)
-
-![Retraso](/documents/comparative_algorithms/retraso_all.png)
-
-# Conclusión
-
-/* TODO */
+En cambio, para el caso II con nuestra implementación consigue una mejora considerable teniendo en cuenta que no pierde paquetes, pero no óptima ya que no usa la red en su totalidad.
 
 # Mejoras posibles
 
