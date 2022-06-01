@@ -217,7 +217,79 @@ Por último este dato nos sirve para comunicar al emisor el tamaño de la ventan
 El windowSize máximo permitido es `2147483640`, lo cual es muy cercano al MAX_INT que se puede tener en **C**.
 
 # Control de Flujo
+
+## `SlidingWindow`
+
+TAD Utilizado:
+
+```C++
+struct __packetMetadata {
+	Volt * volt;
+	int ackCounter;
+  double sendTime = 0;
+  bool retransmitted = false;
+};
+```
+
+```C++
+class SlidingWindow {
+private:
+	int baseWindow = 0;
+  int bytesInFlight = 0;
+	std::map<int,packetMetadata> slidingWindow;
+public:
+	SlidingWindow();
+    virtual ~SlidingWindow();
+    int getAck(int seqN);
+    void addAck(int seqN);
+    void addVolt(Volt * volt);
+    Volt * popVolt(int seqN);
+    Volt * dupVolt(int seqN);
+    bool isVoltInWindow(int seqN);
+    double getSendTime(int seqN);
+    void addSendTime(int seqN, double time);
+    int getBaseWindow();
+    void setBaseWindow(int base);
+    int amountBytesInFlight();
+};
+```
+
+La `SlidingWindow` utiliza principalmente un diccionario de Int (Numeros de secuencia) -> packetMetadata que es nuestro TAD donde guardamos el paquete `volt`, la cantidad de ACKs que llego de ese paquete `ackCounter`, el tiempo de enviado `sendTime` y una flag de retransmision `retransmitted`.
+
+Ademas se encarga de la retransmision de paquetes perdidos, utiliza una idea similar a repeticion selectiva usando ACK's duplicados.
+
 # Control de Congestion
+
+## `RenoController`
+
+```C++
+class RenoManager {
+private:
+	int maxSize;
+	int size;
+	int msgSendingAmount;
+	bool isSlowStartStage = true;
+	std::map<int, EventTimeout*> window;
+	void logAvailableWin();
+public:
+	RenoManager();
+  virtual ~RenoManager();
+  int getMaxSize();
+  int getSize();
+	int getAvailableWin();
+	void setSize(int newSize);
+	void addTimeoutMsg(EventTimeout * msg);
+	EventTimeout * popTimeoutMsg(int seqN);
+  bool getSlowStart();
+  void setSlowStart(bool state);
+};
+```
+
+Esta clase se encarga de administrar y almacenar los `timeouts` de los paquetes en la red atravez de un diccionario Int (Numero de secuencia) -> EventTimeout, la clase `EventTimeout` como `volt` fueron generados por el template de Omnet++ de `cMessage`.
+
+En nuesta implementación utilizamos Arranque Lento para control de flujo, representamos esa instancia con la flag `isSlowStartStage`.
+Con `size` y `msgSendingAmount` se puede calcular la disponibilidad del diccionario.
+
 # RTT
 
 ## Karn
