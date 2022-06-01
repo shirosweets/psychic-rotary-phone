@@ -2,6 +2,11 @@
 
 Se presenta en detalle la especificación e implementación (en Omnet++) de nuestra solución para los problemas de control y flujo en la capa de transporte.
 
+# Integrantes
+- Carrizo, Ernesto.
+- Domínguez, Agustín.
+- Vispo, Valentina.
+
 ---
 
 **[ENUNCIADO](../Markdown/Assignment.md) | [README](../README.md) | [ANÁLISIS](../Markdown/Analysis.md)**

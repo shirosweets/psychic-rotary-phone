@@ -2,6 +2,11 @@
 
 Informe de la tarea de análisis del laboratorio 3 de Redes y Sistemas Distribuidos - Primer cuatrimestre, FAMaF 2022.
 
+# Integrantes
+- Carrizo, Ernesto.
+- Domínguez, Agustín.
+- Vispo, Valentina.
+
 ---
 
 **[ENUNCIADO](../Markdown/Assignment.md) | [README](../README.md) | [DISEÑO](../Markdown/Design.md)**
@@ -142,12 +147,13 @@ Caso I tabla
 >
 > *AvDel:* Retraso de entrega promedio
 
+
 ### Análisis de los resultados Caso I
 
-* Se puede notar que hasta el rango de aproximadamente `0.25` de intervalo la red no tiene ningún tipo de retraso. Las colas están prácticamente todo el tiempo vacías.
-* Luego de eso hasta el rango `0.18` las colas comienzan a llenarse pero todavía no se pierden paquetes. El problema comienza a vislumbrarse, lo cual se manifiesta en que retraso promedio que suba en 2 órdenes de magnitud (de `0.4` -> `14.52`).
-* De ahí en más aumentar la generación de paquetes finalmente genera la pérdida de los mismos y no solamente un aumento del retraso.
-* Se puede notar que la carga efectiva que de ahí en más el receptor puede recibir es de `1498` y se mantiene en esa cifra.
+- Se puede notar que hasta el rango de aproximadamente `0.25` de intervalo la red no tiene ningún tipo de retraso. Las colas están prácticamente todo el tiempo vacías.
+- Luego de eso hasta el rango `0.18` las colas comienzan a llenarse pero todavía no se pierden paquetes. El problema comienza a vislumbrarse, lo cual se manifiesta en que retraso promedio que suba en 2 órdenes de magnitud (de `0.4` -> `14.52`).
+- De ahí en más aumentar la generación de paquetes finalmente genera la pérdida de los mismos y no solamente un aumento del retraso.
+- Se puede notar que la carga efectiva que de ahí en más el receptor puede recibir es de `1498` y se mantiene en esa cifra.
 
 Con estos datos, se realizaron los siguientes gráficos:
 
@@ -255,22 +261,23 @@ En el siguiente gráfico podemos apreciar
 ### ¿Qué diferencia observa entre el caso de estudio I y II? ¿Cuál es la fuente limitante en cada uno?
 
 Comparando con el caso 1 vemos 2 cambios significativos:
-* **Capa de receiver**: En este caso no hay dropeo en la cola del receptor debido a que el datarate es el doble de rápido y por este mismo motivo el delay baja.
-* **Drop Q**: En este caso el datarate entre la cola intermedia y la capa del deceptor se divide a la mitad (de 1Mbps a 0.5Mbps), se mantiene el datarate del generador con la cola intermedia (1Mbps) lo que provoca el llenado de la cola intermedia, generando paquetes dropeados.
+
+- **Capa de receiver**: En este caso no hay dropeo en la cola del receptor debido a que el datarate es el doble de rápido y por este mismo motivo el delay baja.
+- **Drop Q**: En este caso el datarate entre la cola intermedia y la capa del deceptor se divide a la mitad (de 1Mbps a 0.5Mbps), se mantiene el datarate del generador con la cola intermedia (1Mbps) lo que provoca el llenado de la cola intermedia, generando paquetes dropeados.
 
 
 ### General
 
 El principal problema que tiene la red es que en ambos casos es que existe un cuello de botella:
-  - En el primer caso es la línea interna de la capa del receptor que conecta el sink con su cola.
-  - En el segundo caso es la línea que conecta la capa del receptor con la cola intermeedia.
+- En el primer caso es la línea interna de la capa del receptor que conecta el sink con su cola.
+- En el segundo caso es la línea que conecta la capa del receptor con la cola intermeedia.
 
 Respectivamente las colas dropean paquetes en el momento que se llenan.
 
 Posibles soluciones para dejar de perder paquetes:
 - Aumentar el data rate de dichos canales en cada caso.
 - Retransmitir los paquetes que se pierden.
-- Implementar control de congestion para evitar perder paquetes.
+- Implementar control de congestión para evitar perder paquetes.
 
 ### Diferencia entre control de flujo y control de congestión
 
@@ -317,9 +324,9 @@ Se agregan 2 nuevas metricas:
 ### Mediciones
 
 Para TLCP tenemos acceso a más métricas que agregamos al análisis:
- * **Ret**: Cantidad de paquetes que fueron retransmitidos
- * **RTT**: Promedio del tiempo que tarda en llegar un ACK para cada paquete
- * **ACKt**: Promedio del tiempo que tarda en llegar un ACK desde que se creó un paquete
+- **Ret**: Cantidad de paquetes que fueron retransmitidos.
+- **RTT**: Promedio del tiempo que tarda en llegar un ACK para cada paquete.
+- **ACKt**: Promedio del tiempo que tarda en llegar un ACK desde que se creó un paquete.
 
 TLCP Caso I Tabla
 
@@ -342,6 +349,7 @@ TLCP Caso I Tabla
 | 0.14     | 2136     | 1498     | 0      | 0      | 44.17      | 0.2 (0)     | 18 (13.9)          | 0     |
 | **0.1**  | **2933** | **1498** | **0**  | **0**  | **74.41**  | **0.2 (0)** | **49 (19)**        | **0** |
 | **0.05** | **5847** | **1498** | **0**  | **0**  | **112.27** | **0.2 (0)** | **92 (66)**        | **0** |
+
 
 ### Análisis de los resultados TLCP Caso I
 
@@ -396,9 +404,7 @@ TLCP Caso I Tabla
 
 ### Hipótesis
 
--En esta implementacion tenemos control de flujo y control de congestion, entonces a diferencia de la implementacion base no deberia perder paquetes bajo los mismos data rates de las lineas involucradas.
-
--
+En esta implementación tenemos control de flujo y control de congestión, entonces a diferencia de la implementación base no debería perder paquetes bajo los mismos data rates de las líneas involucradas.
 
 ### Mediciones
 
@@ -424,12 +430,14 @@ TLCP Caso II Tabla
 | **0.1**  | **2933** | **1457** | **0**  | **0**  | **78.4**  | **1.9 (0.8)**     | **78 (44)**        | **1** |
 | **0.05** | **5847** | **1480** | **0**  | **0**  | **118.3** | **1.88 (0.8)**    | **114 (64)**       | **0** |
 
+
 ### Análisis de los resultados TLCP Caso II
 
-/* TODO */
-- Se percibe un aumento del delay medio de los diferentes casos de `intervalo de generacion` debido a la implementacion de control de congestion. En donde los paquetes quedan en la red mas tiempo pero en consecuencia no se pierden.
+- Se percibe un aumento del delay medio de los diferentes casos de `intervalo de generación` debido a la implementación de control de congestión. En donde los paquetes quedan en la red más tiempo pero en consecuencia no se pierden.
 
 **Generación de paquetes con distribución exponencial de media = 0.1s**
+
+Notar que el buffer del receptor varía de `0` a `1`.
 
 ![TLCP Caso II Buffer Size intv = 0.05](/documents/assets/tlcp_case_II_intv_005/tlcp_case_II_intv_0_05_bufferSize_Stacked.png)
 
@@ -437,51 +445,61 @@ TLCP Caso II Tabla
 - Total de paquetes recibidos y almacenados en el buffer de la subred: `1480` (`148.0 Mb`)
 - Total de paquetes recibidos y almacenados en el buffer del receptor: `1480` (`148.0 Mb`)
 
-![TLCP Caso I Delay intv = 2.0]()
+![TLCP Caso II Delay intv = 2.0]()
 
 **Generación de paquetes con distribución exponencial de media = 0.1s**
+
+Notar que el buffer del receptor varía de `0` a `1`.
 
 ![TLCP Caso II Buffer Size intv = 0.1](/documents/assets/tlcp_case_II_intv_01/tlcp_case_II_intv_0_1_bufferSize_Stacked.png)
 
 - Total de paquetes generados y almacenados en el buffer del emisor: `2933` (`293.3 Mb`)
 - Total de paquetes recibidos y almacenados en el buffer de la subred: `1457` (`145.7 Mb`)
-- Total de paquetes recibidos y almacenados en el buffer del receptor: `` (` Mb`)
+- Total de paquetes recibidos y almacenados en el buffer del receptor: `1457` (`145.7 Mb`)
 
-![TLCP Caso I Delay intv = 2.0]()
+![TLCP Caso II Delay intv = 2.0]()
 
 **Generación de paquetes con distribución exponencial de media = 0.18s**
 
+Notar que el buffer del receptor varía de `0` a `1`.
+
 ![TLCP Caso II Buffer Size intv = 0.18](/documents/assets/tlcp_case_II_intv_018/tlcp_case_II_intv_0_18_bufferSize_Stacked.png)
 
-- Total de paquetes generados y almacenados en el buffer del emisor: `` (` Mb`)
-- Total de paquetes recibidos y almacenados en el buffer de la subred: `` (` Mb`)
-- Total de paquetes recibidos y almacenados en el buffer del receptor: `` (` Mb`)
+- Total de paquetes generados y almacenados en el buffer del emisor: `1664` (`166.4 Mb`)
+- Total de paquetes recibidos y almacenados en el buffer de la subred: `1406` (`140.6 Mb`)
+- Total de paquetes recibidos y almacenados en el buffer del receptor: `1406` (`140.6 Mb`)
 
-![TLCP Caso I Delay intv = 2.0]()
+![TLCP Caso II Delay intv = 2.0]()
 
 **Generación de paquetes con distribución exponencial de media = 2.0s**
 
 ![TLCP Caso II Buffer Size intv = 2.0](/documents/assets/tlcp_case_II_intv_20/tlcp_case_II_intv_2_0_bufferSize_Stacked.png)
 
-- Total de paquetes generados y almacenados en el buffer del emisor: `` (` Mb`)
-- Total de paquetes recibidos y almacenados en el buffer de la subred: `` (` Mb`)
-- Total de paquetes recibidos y almacenados en el buffer del receptor: `` (` Mb`)
+- Total de paquetes generados y almacenados en el buffer del emisor: `144` (`14.4 Mb`)
+- Total de paquetes recibidos y almacenados en el buffer de la subred: `144` (`14.4 Mb`)
+- Total de paquetes recibidos y almacenados en el buffer del receptor: `144` (`14.4 Mb`)
 
-![TLCP Caso I Delay intv = 2.0]()
+![TLCP Caso II Delay intv = 2.0]()
 
 
 ## Comparación con la red previa
 
-/* TODO */
-- Comparando los 2 modelos existe un `trade off` entre 
+Comparando los 2 modelos existe un `trade-off` entre mantener el delay pero perder paquetes y aumentar el delay pero no perder paquetes.
+
 
 ### **¿Cómo creen que se comporta su algoritmo de control de flujo y congestión?**
 
-/* TODO */
+Se observó que se comporta como era esperado:
+
+- No pierde paquetes.
+- No pierde mucho performance.
 
 ### **¿Funciona para el caso de estudio I y II por igual? ¿Por qué?**
 
-/* TODO */
+En el caso I, la red funciona de manera óptima, se nota la mejora con la implementación. El emisor manda exactamente lo que el receptor puede soportar/manejar.
+
+En cambio, para el caso II con nuestra implementación consigue una mejora considerable pero no óptima ya que no usa la red en su totalidad.
+
 
 ![Carga ofrecida vs Carga útil](/documents/assets/util_vs_ofrecida.png)
 
